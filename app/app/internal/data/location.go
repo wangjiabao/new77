@@ -16,6 +16,7 @@ type Location struct {
 	Col           int64     `gorm:"type:int;not null"`
 	Status        string    `gorm:"type:varchar(45);not null"`
 	CurrentLevel  int64     `gorm:"type:int;not null"`
+	Count         int64     `gorm:"type:int;not null"`
 	Current       int64     `gorm:"type:bigint;not null"`
 	CurrentMax    int64     `gorm:"type:bigint;not null"`
 	CurrentMaxNew int64     `gorm:"type:bigint;not null"`
@@ -33,8 +34,12 @@ type LocationNew struct {
 	CurrentMax        int64     `gorm:"type:bigint;not null"`
 	Usdt              int64     `gorm:"type:bigint;not null"`
 	CurrentMaxNew     int64     `gorm:"type:bigint;not null"`
+	Count             int64     `gorm:"type:int;not null"`
 	StopLocationAgain int64     `gorm:"type:int;not null"`
 	OutRate           int64     `gorm:"type:int;not null"`
+	Top               int64     `gorm:"type:int;not null"`
+	Total             int64     `gorm:"type:bigint;not null"`
+	Biw               int64     `gorm:"type:bigint;not null"`
 	StopCoin          int64     `gorm:"type:bigint;not null"`
 	StopDate          time.Time `gorm:"type:datetime;not null"`
 	CreatedAt         time.Time `gorm:"type:datetime;not null"`
@@ -133,6 +138,7 @@ func (lr *LocationRepo) CreateLocationNew(ctx context.Context, rel *biz.Location
 	location.OutRate = rel.OutRate
 	location.StopDate = rel.StopDate
 	location.Usdt = amount
+	location.Top = rel.Top
 	res := lr.data.DB(ctx).Table("location_new").Create(&location)
 	if res.Error != nil {
 		return nil, errors.New(500, "CREATE_LOCATION_ERROR", "占位信息创建失败")
@@ -197,9 +203,9 @@ func (lr *LocationRepo) GetLocationDailyYesterday(ctx context.Context, day int) 
 }
 
 // GetLocationLast .
-func (lr *LocationRepo) GetLocationLast(ctx context.Context) (*biz.Location, error) {
-	var location Location
-	if err := lr.data.db.Table("location").Where("status=?", "running").Order("id desc").First(&location).Error; err != nil {
+func (lr *LocationRepo) GetLocationLast(ctx context.Context) (*biz.LocationNew, error) {
+	var location LocationNew
+	if err := lr.data.db.Table("location_new").Where("count<?", 3).Order("id desc").First(&location).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.NotFound("LOCATION_NOT_FOUND", "location not found")
 		}
@@ -207,15 +213,14 @@ func (lr *LocationRepo) GetLocationLast(ctx context.Context) (*biz.Location, err
 		return nil, errors.New(500, "LOCATION ERROR", err.Error())
 	}
 
-	return &biz.Location{
-		ID:           location.ID,
-		UserId:       location.UserId,
-		Status:       location.Status,
-		CurrentLevel: location.CurrentLevel,
-		Current:      location.Current,
-		CurrentMax:   location.CurrentMax,
-		Row:          location.Row,
-		Col:          location.Col,
+	return &biz.LocationNew{
+		ID:         location.ID,
+		UserId:     location.UserId,
+		Status:     location.Status,
+		Current:    location.Current,
+		CurrentMax: location.CurrentMax,
+		Count:      location.Count,
+		Top:        location.Top,
 	}, nil
 }
 
@@ -237,6 +242,28 @@ func (lr *LocationRepo) GetMyLocationLast(ctx context.Context, userId int64) (*b
 		Current:    location.Current,
 		CurrentMax: location.CurrentMax,
 		StopDate:   location.StopDate,
+	}, nil
+}
+
+// GetMyLocationById .
+func (lr *LocationRepo) GetMyLocationById(ctx context.Context, id int64) (*biz.LocationNew, error) {
+	var location LocationNew
+	if err := lr.data.DB(ctx).Table("location_new").Where("id", id).First(&location).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.NotFound("LOCATION_NOT_FOUND", "location not found")
+		}
+
+		return nil, errors.New(500, "LOCATION ERROR", err.Error())
+	}
+
+	return &biz.LocationNew{
+		ID:         location.ID,
+		UserId:     location.UserId,
+		Status:     location.Status,
+		Current:    location.Current,
+		CurrentMax: location.CurrentMax,
+		StopDate:   location.StopDate,
+		Top:        location.Top,
 	}, nil
 }
 
@@ -771,6 +798,32 @@ func (lr *LocationRepo) UpdateLocationNew2(ctx context.Context, id int64, status
 		if 0 == res.RowsAffected || res.Error != nil {
 			return res.Error
 		}
+	}
+
+	return nil
+}
+
+// UpdateLocationNewCount .
+func (lr *LocationRepo) UpdateLocationNewCount(ctx context.Context, id int64, count int64, total int64) error {
+
+	res := lr.data.DB(ctx).Table("location_new").
+		Where("id=?", id).
+		Updates(map[string]interface{}{"count": count, "total": gorm.Expr("total + ?", total)})
+	if 0 == res.RowsAffected || res.Error != nil {
+		return res.Error
+	}
+
+	return nil
+}
+
+// UpdateLocationNewTotal .
+func (lr *LocationRepo) UpdateLocationNewTotal(ctx context.Context, id int64, total int64) error {
+
+	res := lr.data.DB(ctx).Table("location_new").
+		Where("id=?", id).
+		Updates(map[string]interface{}{"total": gorm.Expr("total + ?", total)})
+	if 0 == res.RowsAffected || res.Error != nil {
+		return res.Error
 	}
 
 	return nil

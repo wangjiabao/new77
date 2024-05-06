@@ -30,7 +30,7 @@ var (
 
 // BuySomethingMetaData contains all meta data concerning the BuySomething contract.
 var BuySomethingMetaData = &bind.MetaData{
-	ABI: "[{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"amountType\",\"type\":\"uint256\"}],\"name\":\"buy\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_user\",\"type\":\"address\"}],\"name\":\"setUser\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_user\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_usdt\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"buyCompleted\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"startIndex\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"endIndex\",\"type\":\"uint256\"}],\"name\":\"getUserAmountByIndex\",\"outputs\":[{\"internalType\":\"uint256[]\",\"name\":\"\",\"type\":\"uint256[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getUserLength\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"startIndex\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"endIndex\",\"type\":\"uint256\"}],\"name\":\"getUsersByIndex\",\"outputs\":[{\"internalType\":\"address[]\",\"name\":\"\",\"type\":\"address[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"usdt\",\"outputs\":[{\"internalType\":\"contractIERC20\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"user\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"userAmount\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"users\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]",
+	ABI: "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_usdt\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"AccessControlBadConfirmation\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"neededRole\",\"type\":\"bytes32\"}],\"name\":\"AccessControlUnauthorizedAccount\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"num\",\"type\":\"uint256\"}],\"name\":\"buy\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"grantRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"callerConfirmation\",\"type\":\"address\"}],\"name\":\"renounceRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"revokeRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"previousAdminRole\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"newAdminRole\",\"type\":\"bytes32\"}],\"name\":\"RoleAdminChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleGranted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleRevoked\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account_\",\"type\":\"address\"}],\"name\":\"setAccount\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"account\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"DEFAULT_ADMIN_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"}],\"name\":\"getRoleAdmin\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getUserLength\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getUsers\",\"outputs\":[{\"internalType\":\"address[]\",\"name\":\"\",\"type\":\"address[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"startIndex\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"endIndex\",\"type\":\"uint256\"}],\"name\":\"getUsersAmountByIndex\",\"outputs\":[{\"internalType\":\"uint256[]\",\"name\":\"\",\"type\":\"uint256[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"startIndex\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"endIndex\",\"type\":\"uint256\"}],\"name\":\"getUsersByIndex\",\"outputs\":[{\"internalType\":\"address[]\",\"name\":\"\",\"type\":\"address[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"hasRole\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"usdt\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"users\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"usersAmount\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]",
 }
 
 // BuySomethingABI is the input ABI used to generate the binding from.
@@ -179,35 +179,97 @@ func (_BuySomething *BuySomethingTransactorRaw) Transact(opts *bind.TransactOpts
 	return _BuySomething.Contract.contract.Transact(opts, method, params...)
 }
 
-// GetUserAmountByIndex is a free data retrieval call binding the contract method 0xa01ece07.
+// DEFAULTADMINROLE is a free data retrieval call binding the contract method 0xa217fddf.
 //
-// Solidity: function getUserAmountByIndex(uint256 startIndex, uint256 endIndex) view returns(uint256[])
-func (_BuySomething *BuySomethingCaller) GetUserAmountByIndex(opts *bind.CallOpts, startIndex *big.Int, endIndex *big.Int) ([]*big.Int, error) {
+// Solidity: function DEFAULT_ADMIN_ROLE() view returns(bytes32)
+func (_BuySomething *BuySomethingCaller) DEFAULTADMINROLE(opts *bind.CallOpts) ([32]byte, error) {
 	var out []interface{}
-	err := _BuySomething.contract.Call(opts, &out, "getUserAmountByIndex", startIndex, endIndex)
+	err := _BuySomething.contract.Call(opts, &out, "DEFAULT_ADMIN_ROLE")
 
 	if err != nil {
-		return *new([]*big.Int), err
+		return *new([32]byte), err
 	}
 
-	out0 := *abi.ConvertType(out[0], new([]*big.Int)).(*[]*big.Int)
+	out0 := *abi.ConvertType(out[0], new([32]byte)).(*[32]byte)
 
 	return out0, err
 
 }
 
-// GetUserAmountByIndex is a free data retrieval call binding the contract method 0xa01ece07.
+// DEFAULTADMINROLE is a free data retrieval call binding the contract method 0xa217fddf.
 //
-// Solidity: function getUserAmountByIndex(uint256 startIndex, uint256 endIndex) view returns(uint256[])
-func (_BuySomething *BuySomethingSession) GetUserAmountByIndex(startIndex *big.Int, endIndex *big.Int) ([]*big.Int, error) {
-	return _BuySomething.Contract.GetUserAmountByIndex(&_BuySomething.CallOpts, startIndex, endIndex)
+// Solidity: function DEFAULT_ADMIN_ROLE() view returns(bytes32)
+func (_BuySomething *BuySomethingSession) DEFAULTADMINROLE() ([32]byte, error) {
+	return _BuySomething.Contract.DEFAULTADMINROLE(&_BuySomething.CallOpts)
 }
 
-// GetUserAmountByIndex is a free data retrieval call binding the contract method 0xa01ece07.
+// DEFAULTADMINROLE is a free data retrieval call binding the contract method 0xa217fddf.
 //
-// Solidity: function getUserAmountByIndex(uint256 startIndex, uint256 endIndex) view returns(uint256[])
-func (_BuySomething *BuySomethingCallerSession) GetUserAmountByIndex(startIndex *big.Int, endIndex *big.Int) ([]*big.Int, error) {
-	return _BuySomething.Contract.GetUserAmountByIndex(&_BuySomething.CallOpts, startIndex, endIndex)
+// Solidity: function DEFAULT_ADMIN_ROLE() view returns(bytes32)
+func (_BuySomething *BuySomethingCallerSession) DEFAULTADMINROLE() ([32]byte, error) {
+	return _BuySomething.Contract.DEFAULTADMINROLE(&_BuySomething.CallOpts)
+}
+
+// Account is a free data retrieval call binding the contract method 0x5dab2420.
+//
+// Solidity: function account() view returns(address)
+func (_BuySomething *BuySomethingCaller) Account(opts *bind.CallOpts) (common.Address, error) {
+	var out []interface{}
+	err := _BuySomething.contract.Call(opts, &out, "account")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
+}
+
+// Account is a free data retrieval call binding the contract method 0x5dab2420.
+//
+// Solidity: function account() view returns(address)
+func (_BuySomething *BuySomethingSession) Account() (common.Address, error) {
+	return _BuySomething.Contract.Account(&_BuySomething.CallOpts)
+}
+
+// Account is a free data retrieval call binding the contract method 0x5dab2420.
+//
+// Solidity: function account() view returns(address)
+func (_BuySomething *BuySomethingCallerSession) Account() (common.Address, error) {
+	return _BuySomething.Contract.Account(&_BuySomething.CallOpts)
+}
+
+// GetRoleAdmin is a free data retrieval call binding the contract method 0x248a9ca3.
+//
+// Solidity: function getRoleAdmin(bytes32 role) view returns(bytes32)
+func (_BuySomething *BuySomethingCaller) GetRoleAdmin(opts *bind.CallOpts, role [32]byte) ([32]byte, error) {
+	var out []interface{}
+	err := _BuySomething.contract.Call(opts, &out, "getRoleAdmin", role)
+
+	if err != nil {
+		return *new([32]byte), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([32]byte)).(*[32]byte)
+
+	return out0, err
+
+}
+
+// GetRoleAdmin is a free data retrieval call binding the contract method 0x248a9ca3.
+//
+// Solidity: function getRoleAdmin(bytes32 role) view returns(bytes32)
+func (_BuySomething *BuySomethingSession) GetRoleAdmin(role [32]byte) ([32]byte, error) {
+	return _BuySomething.Contract.GetRoleAdmin(&_BuySomething.CallOpts, role)
+}
+
+// GetRoleAdmin is a free data retrieval call binding the contract method 0x248a9ca3.
+//
+// Solidity: function getRoleAdmin(bytes32 role) view returns(bytes32)
+func (_BuySomething *BuySomethingCallerSession) GetRoleAdmin(role [32]byte) ([32]byte, error) {
+	return _BuySomething.Contract.GetRoleAdmin(&_BuySomething.CallOpts, role)
 }
 
 // GetUserLength is a free data retrieval call binding the contract method 0x7456fed6.
@@ -241,6 +303,68 @@ func (_BuySomething *BuySomethingCallerSession) GetUserLength() (*big.Int, error
 	return _BuySomething.Contract.GetUserLength(&_BuySomething.CallOpts)
 }
 
+// GetUsers is a free data retrieval call binding the contract method 0x00ce8e3e.
+//
+// Solidity: function getUsers() view returns(address[])
+func (_BuySomething *BuySomethingCaller) GetUsers(opts *bind.CallOpts) ([]common.Address, error) {
+	var out []interface{}
+	err := _BuySomething.contract.Call(opts, &out, "getUsers")
+
+	if err != nil {
+		return *new([]common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([]common.Address)).(*[]common.Address)
+
+	return out0, err
+
+}
+
+// GetUsers is a free data retrieval call binding the contract method 0x00ce8e3e.
+//
+// Solidity: function getUsers() view returns(address[])
+func (_BuySomething *BuySomethingSession) GetUsers() ([]common.Address, error) {
+	return _BuySomething.Contract.GetUsers(&_BuySomething.CallOpts)
+}
+
+// GetUsers is a free data retrieval call binding the contract method 0x00ce8e3e.
+//
+// Solidity: function getUsers() view returns(address[])
+func (_BuySomething *BuySomethingCallerSession) GetUsers() ([]common.Address, error) {
+	return _BuySomething.Contract.GetUsers(&_BuySomething.CallOpts)
+}
+
+// GetUsersAmountByIndex is a free data retrieval call binding the contract method 0xadaf9e71.
+//
+// Solidity: function getUsersAmountByIndex(uint256 startIndex, uint256 endIndex) view returns(uint256[])
+func (_BuySomething *BuySomethingCaller) GetUsersAmountByIndex(opts *bind.CallOpts, startIndex *big.Int, endIndex *big.Int) ([]*big.Int, error) {
+	var out []interface{}
+	err := _BuySomething.contract.Call(opts, &out, "getUsersAmountByIndex", startIndex, endIndex)
+
+	if err != nil {
+		return *new([]*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([]*big.Int)).(*[]*big.Int)
+
+	return out0, err
+
+}
+
+// GetUsersAmountByIndex is a free data retrieval call binding the contract method 0xadaf9e71.
+//
+// Solidity: function getUsersAmountByIndex(uint256 startIndex, uint256 endIndex) view returns(uint256[])
+func (_BuySomething *BuySomethingSession) GetUsersAmountByIndex(startIndex *big.Int, endIndex *big.Int) ([]*big.Int, error) {
+	return _BuySomething.Contract.GetUsersAmountByIndex(&_BuySomething.CallOpts, startIndex, endIndex)
+}
+
+// GetUsersAmountByIndex is a free data retrieval call binding the contract method 0xadaf9e71.
+//
+// Solidity: function getUsersAmountByIndex(uint256 startIndex, uint256 endIndex) view returns(uint256[])
+func (_BuySomething *BuySomethingCallerSession) GetUsersAmountByIndex(startIndex *big.Int, endIndex *big.Int) ([]*big.Int, error) {
+	return _BuySomething.Contract.GetUsersAmountByIndex(&_BuySomething.CallOpts, startIndex, endIndex)
+}
+
 // GetUsersByIndex is a free data retrieval call binding the contract method 0xfe36c56c.
 //
 // Solidity: function getUsersByIndex(uint256 startIndex, uint256 endIndex) view returns(address[])
@@ -272,35 +396,66 @@ func (_BuySomething *BuySomethingCallerSession) GetUsersByIndex(startIndex *big.
 	return _BuySomething.Contract.GetUsersByIndex(&_BuySomething.CallOpts, startIndex, endIndex)
 }
 
-// Owner is a free data retrieval call binding the contract method 0x8da5cb5b.
+// HasRole is a free data retrieval call binding the contract method 0x91d14854.
 //
-// Solidity: function owner() view returns(address)
-func (_BuySomething *BuySomethingCaller) Owner(opts *bind.CallOpts) (common.Address, error) {
+// Solidity: function hasRole(bytes32 role, address account) view returns(bool)
+func (_BuySomething *BuySomethingCaller) HasRole(opts *bind.CallOpts, role [32]byte, account common.Address) (bool, error) {
 	var out []interface{}
-	err := _BuySomething.contract.Call(opts, &out, "owner")
+	err := _BuySomething.contract.Call(opts, &out, "hasRole", role, account)
 
 	if err != nil {
-		return *new(common.Address), err
+		return *new(bool), err
 	}
 
-	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
 
 	return out0, err
 
 }
 
-// Owner is a free data retrieval call binding the contract method 0x8da5cb5b.
+// HasRole is a free data retrieval call binding the contract method 0x91d14854.
 //
-// Solidity: function owner() view returns(address)
-func (_BuySomething *BuySomethingSession) Owner() (common.Address, error) {
-	return _BuySomething.Contract.Owner(&_BuySomething.CallOpts)
+// Solidity: function hasRole(bytes32 role, address account) view returns(bool)
+func (_BuySomething *BuySomethingSession) HasRole(role [32]byte, account common.Address) (bool, error) {
+	return _BuySomething.Contract.HasRole(&_BuySomething.CallOpts, role, account)
 }
 
-// Owner is a free data retrieval call binding the contract method 0x8da5cb5b.
+// HasRole is a free data retrieval call binding the contract method 0x91d14854.
 //
-// Solidity: function owner() view returns(address)
-func (_BuySomething *BuySomethingCallerSession) Owner() (common.Address, error) {
-	return _BuySomething.Contract.Owner(&_BuySomething.CallOpts)
+// Solidity: function hasRole(bytes32 role, address account) view returns(bool)
+func (_BuySomething *BuySomethingCallerSession) HasRole(role [32]byte, account common.Address) (bool, error) {
+	return _BuySomething.Contract.HasRole(&_BuySomething.CallOpts, role, account)
+}
+
+// SupportsInterface is a free data retrieval call binding the contract method 0x01ffc9a7.
+//
+// Solidity: function supportsInterface(bytes4 interfaceId) view returns(bool)
+func (_BuySomething *BuySomethingCaller) SupportsInterface(opts *bind.CallOpts, interfaceId [4]byte) (bool, error) {
+	var out []interface{}
+	err := _BuySomething.contract.Call(opts, &out, "supportsInterface", interfaceId)
+
+	if err != nil {
+		return *new(bool), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+
+	return out0, err
+
+}
+
+// SupportsInterface is a free data retrieval call binding the contract method 0x01ffc9a7.
+//
+// Solidity: function supportsInterface(bytes4 interfaceId) view returns(bool)
+func (_BuySomething *BuySomethingSession) SupportsInterface(interfaceId [4]byte) (bool, error) {
+	return _BuySomething.Contract.SupportsInterface(&_BuySomething.CallOpts, interfaceId)
+}
+
+// SupportsInterface is a free data retrieval call binding the contract method 0x01ffc9a7.
+//
+// Solidity: function supportsInterface(bytes4 interfaceId) view returns(bool)
+func (_BuySomething *BuySomethingCallerSession) SupportsInterface(interfaceId [4]byte) (bool, error) {
+	return _BuySomething.Contract.SupportsInterface(&_BuySomething.CallOpts, interfaceId)
 }
 
 // Usdt is a free data retrieval call binding the contract method 0x2f48ab7d.
@@ -334,68 +489,6 @@ func (_BuySomething *BuySomethingCallerSession) Usdt() (common.Address, error) {
 	return _BuySomething.Contract.Usdt(&_BuySomething.CallOpts)
 }
 
-// User is a free data retrieval call binding the contract method 0x4f8632ba.
-//
-// Solidity: function user() view returns(address)
-func (_BuySomething *BuySomethingCaller) User(opts *bind.CallOpts) (common.Address, error) {
-	var out []interface{}
-	err := _BuySomething.contract.Call(opts, &out, "user")
-
-	if err != nil {
-		return *new(common.Address), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
-
-	return out0, err
-
-}
-
-// User is a free data retrieval call binding the contract method 0x4f8632ba.
-//
-// Solidity: function user() view returns(address)
-func (_BuySomething *BuySomethingSession) User() (common.Address, error) {
-	return _BuySomething.Contract.User(&_BuySomething.CallOpts)
-}
-
-// User is a free data retrieval call binding the contract method 0x4f8632ba.
-//
-// Solidity: function user() view returns(address)
-func (_BuySomething *BuySomethingCallerSession) User() (common.Address, error) {
-	return _BuySomething.Contract.User(&_BuySomething.CallOpts)
-}
-
-// UserAmount is a free data retrieval call binding the contract method 0xd2b23b72.
-//
-// Solidity: function userAmount(uint256 ) view returns(uint256)
-func (_BuySomething *BuySomethingCaller) UserAmount(opts *bind.CallOpts, arg0 *big.Int) (*big.Int, error) {
-	var out []interface{}
-	err := _BuySomething.contract.Call(opts, &out, "userAmount", arg0)
-
-	if err != nil {
-		return *new(*big.Int), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
-
-	return out0, err
-
-}
-
-// UserAmount is a free data retrieval call binding the contract method 0xd2b23b72.
-//
-// Solidity: function userAmount(uint256 ) view returns(uint256)
-func (_BuySomething *BuySomethingSession) UserAmount(arg0 *big.Int) (*big.Int, error) {
-	return _BuySomething.Contract.UserAmount(&_BuySomething.CallOpts, arg0)
-}
-
-// UserAmount is a free data retrieval call binding the contract method 0xd2b23b72.
-//
-// Solidity: function userAmount(uint256 ) view returns(uint256)
-func (_BuySomething *BuySomethingCallerSession) UserAmount(arg0 *big.Int) (*big.Int, error) {
-	return _BuySomething.Contract.UserAmount(&_BuySomething.CallOpts, arg0)
-}
-
 // Users is a free data retrieval call binding the contract method 0x365b98b2.
 //
 // Solidity: function users(uint256 ) view returns(address)
@@ -427,51 +520,145 @@ func (_BuySomething *BuySomethingCallerSession) Users(arg0 *big.Int) (common.Add
 	return _BuySomething.Contract.Users(&_BuySomething.CallOpts, arg0)
 }
 
-// Buy is a paid mutator transaction binding the contract method 0xd96a094a.
+// UsersAmount is a free data retrieval call binding the contract method 0x0963b51e.
 //
-// Solidity: function buy(uint256 amountType) returns()
-func (_BuySomething *BuySomethingTransactor) Buy(opts *bind.TransactOpts, amountType *big.Int) (*types.Transaction, error) {
-	return _BuySomething.contract.Transact(opts, "buy", amountType)
+// Solidity: function usersAmount(uint256 ) view returns(uint256)
+func (_BuySomething *BuySomethingCaller) UsersAmount(opts *bind.CallOpts, arg0 *big.Int) (*big.Int, error) {
+	var out []interface{}
+	err := _BuySomething.contract.Call(opts, &out, "usersAmount", arg0)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
+}
+
+// UsersAmount is a free data retrieval call binding the contract method 0x0963b51e.
+//
+// Solidity: function usersAmount(uint256 ) view returns(uint256)
+func (_BuySomething *BuySomethingSession) UsersAmount(arg0 *big.Int) (*big.Int, error) {
+	return _BuySomething.Contract.UsersAmount(&_BuySomething.CallOpts, arg0)
+}
+
+// UsersAmount is a free data retrieval call binding the contract method 0x0963b51e.
+//
+// Solidity: function usersAmount(uint256 ) view returns(uint256)
+func (_BuySomething *BuySomethingCallerSession) UsersAmount(arg0 *big.Int) (*big.Int, error) {
+	return _BuySomething.Contract.UsersAmount(&_BuySomething.CallOpts, arg0)
 }
 
 // Buy is a paid mutator transaction binding the contract method 0xd96a094a.
 //
-// Solidity: function buy(uint256 amountType) returns()
-func (_BuySomething *BuySomethingSession) Buy(amountType *big.Int) (*types.Transaction, error) {
-	return _BuySomething.Contract.Buy(&_BuySomething.TransactOpts, amountType)
+// Solidity: function buy(uint256 num) returns()
+func (_BuySomething *BuySomethingTransactor) Buy(opts *bind.TransactOpts, num *big.Int) (*types.Transaction, error) {
+	return _BuySomething.contract.Transact(opts, "buy", num)
 }
 
 // Buy is a paid mutator transaction binding the contract method 0xd96a094a.
 //
-// Solidity: function buy(uint256 amountType) returns()
-func (_BuySomething *BuySomethingTransactorSession) Buy(amountType *big.Int) (*types.Transaction, error) {
-	return _BuySomething.Contract.Buy(&_BuySomething.TransactOpts, amountType)
+// Solidity: function buy(uint256 num) returns()
+func (_BuySomething *BuySomethingSession) Buy(num *big.Int) (*types.Transaction, error) {
+	return _BuySomething.Contract.Buy(&_BuySomething.TransactOpts, num)
 }
 
-// SetUser is a paid mutator transaction binding the contract method 0x858ced35.
+// Buy is a paid mutator transaction binding the contract method 0xd96a094a.
 //
-// Solidity: function setUser(address _user) returns()
-func (_BuySomething *BuySomethingTransactor) SetUser(opts *bind.TransactOpts, _user common.Address) (*types.Transaction, error) {
-	return _BuySomething.contract.Transact(opts, "setUser", _user)
+// Solidity: function buy(uint256 num) returns()
+func (_BuySomething *BuySomethingTransactorSession) Buy(num *big.Int) (*types.Transaction, error) {
+	return _BuySomething.Contract.Buy(&_BuySomething.TransactOpts, num)
 }
 
-// SetUser is a paid mutator transaction binding the contract method 0x858ced35.
+// GrantRole is a paid mutator transaction binding the contract method 0x2f2ff15d.
 //
-// Solidity: function setUser(address _user) returns()
-func (_BuySomething *BuySomethingSession) SetUser(_user common.Address) (*types.Transaction, error) {
-	return _BuySomething.Contract.SetUser(&_BuySomething.TransactOpts, _user)
+// Solidity: function grantRole(bytes32 role, address account) returns()
+func (_BuySomething *BuySomethingTransactor) GrantRole(opts *bind.TransactOpts, role [32]byte, account common.Address) (*types.Transaction, error) {
+	return _BuySomething.contract.Transact(opts, "grantRole", role, account)
 }
 
-// SetUser is a paid mutator transaction binding the contract method 0x858ced35.
+// GrantRole is a paid mutator transaction binding the contract method 0x2f2ff15d.
 //
-// Solidity: function setUser(address _user) returns()
-func (_BuySomething *BuySomethingTransactorSession) SetUser(_user common.Address) (*types.Transaction, error) {
-	return _BuySomething.Contract.SetUser(&_BuySomething.TransactOpts, _user)
+// Solidity: function grantRole(bytes32 role, address account) returns()
+func (_BuySomething *BuySomethingSession) GrantRole(role [32]byte, account common.Address) (*types.Transaction, error) {
+	return _BuySomething.Contract.GrantRole(&_BuySomething.TransactOpts, role, account)
 }
 
-// BuySomethingBuyCompletedIterator is returned from FilterBuyCompleted and is used to iterate over the raw logs and unpacked data for BuyCompleted events raised by the BuySomething contract.
-type BuySomethingBuyCompletedIterator struct {
-	Event *BuySomethingBuyCompleted // Event containing the contract specifics and raw log
+// GrantRole is a paid mutator transaction binding the contract method 0x2f2ff15d.
+//
+// Solidity: function grantRole(bytes32 role, address account) returns()
+func (_BuySomething *BuySomethingTransactorSession) GrantRole(role [32]byte, account common.Address) (*types.Transaction, error) {
+	return _BuySomething.Contract.GrantRole(&_BuySomething.TransactOpts, role, account)
+}
+
+// RenounceRole is a paid mutator transaction binding the contract method 0x36568abe.
+//
+// Solidity: function renounceRole(bytes32 role, address callerConfirmation) returns()
+func (_BuySomething *BuySomethingTransactor) RenounceRole(opts *bind.TransactOpts, role [32]byte, callerConfirmation common.Address) (*types.Transaction, error) {
+	return _BuySomething.contract.Transact(opts, "renounceRole", role, callerConfirmation)
+}
+
+// RenounceRole is a paid mutator transaction binding the contract method 0x36568abe.
+//
+// Solidity: function renounceRole(bytes32 role, address callerConfirmation) returns()
+func (_BuySomething *BuySomethingSession) RenounceRole(role [32]byte, callerConfirmation common.Address) (*types.Transaction, error) {
+	return _BuySomething.Contract.RenounceRole(&_BuySomething.TransactOpts, role, callerConfirmation)
+}
+
+// RenounceRole is a paid mutator transaction binding the contract method 0x36568abe.
+//
+// Solidity: function renounceRole(bytes32 role, address callerConfirmation) returns()
+func (_BuySomething *BuySomethingTransactorSession) RenounceRole(role [32]byte, callerConfirmation common.Address) (*types.Transaction, error) {
+	return _BuySomething.Contract.RenounceRole(&_BuySomething.TransactOpts, role, callerConfirmation)
+}
+
+// RevokeRole is a paid mutator transaction binding the contract method 0xd547741f.
+//
+// Solidity: function revokeRole(bytes32 role, address account) returns()
+func (_BuySomething *BuySomethingTransactor) RevokeRole(opts *bind.TransactOpts, role [32]byte, account common.Address) (*types.Transaction, error) {
+	return _BuySomething.contract.Transact(opts, "revokeRole", role, account)
+}
+
+// RevokeRole is a paid mutator transaction binding the contract method 0xd547741f.
+//
+// Solidity: function revokeRole(bytes32 role, address account) returns()
+func (_BuySomething *BuySomethingSession) RevokeRole(role [32]byte, account common.Address) (*types.Transaction, error) {
+	return _BuySomething.Contract.RevokeRole(&_BuySomething.TransactOpts, role, account)
+}
+
+// RevokeRole is a paid mutator transaction binding the contract method 0xd547741f.
+//
+// Solidity: function revokeRole(bytes32 role, address account) returns()
+func (_BuySomething *BuySomethingTransactorSession) RevokeRole(role [32]byte, account common.Address) (*types.Transaction, error) {
+	return _BuySomething.Contract.RevokeRole(&_BuySomething.TransactOpts, role, account)
+}
+
+// SetAccount is a paid mutator transaction binding the contract method 0x29f6d57c.
+//
+// Solidity: function setAccount(address account_) returns()
+func (_BuySomething *BuySomethingTransactor) SetAccount(opts *bind.TransactOpts, account_ common.Address) (*types.Transaction, error) {
+	return _BuySomething.contract.Transact(opts, "setAccount", account_)
+}
+
+// SetAccount is a paid mutator transaction binding the contract method 0x29f6d57c.
+//
+// Solidity: function setAccount(address account_) returns()
+func (_BuySomething *BuySomethingSession) SetAccount(account_ common.Address) (*types.Transaction, error) {
+	return _BuySomething.Contract.SetAccount(&_BuySomething.TransactOpts, account_)
+}
+
+// SetAccount is a paid mutator transaction binding the contract method 0x29f6d57c.
+//
+// Solidity: function setAccount(address account_) returns()
+func (_BuySomething *BuySomethingTransactorSession) SetAccount(account_ common.Address) (*types.Transaction, error) {
+	return _BuySomething.Contract.SetAccount(&_BuySomething.TransactOpts, account_)
+}
+
+// BuySomethingRoleAdminChangedIterator is returned from FilterRoleAdminChanged and is used to iterate over the raw logs and unpacked data for RoleAdminChanged events raised by the BuySomething contract.
+type BuySomethingRoleAdminChangedIterator struct {
+	Event *BuySomethingRoleAdminChanged // Event containing the contract specifics and raw log
 
 	contract *bind.BoundContract // Generic contract to use for unpacking event data
 	event    string              // Event name to use for unpacking event data
@@ -485,7 +672,7 @@ type BuySomethingBuyCompletedIterator struct {
 // Next advances the iterator to the subsequent event, returning whether there
 // are any more events found. In case of a retrieval or parsing error, false is
 // returned and Error() can be queried for the exact failure.
-func (it *BuySomethingBuyCompletedIterator) Next() bool {
+func (it *BuySomethingRoleAdminChangedIterator) Next() bool {
 	// If the iterator failed, stop iterating
 	if it.fail != nil {
 		return false
@@ -494,7 +681,7 @@ func (it *BuySomethingBuyCompletedIterator) Next() bool {
 	if it.done {
 		select {
 		case log := <-it.logs:
-			it.Event = new(BuySomethingBuyCompleted)
+			it.Event = new(BuySomethingRoleAdminChanged)
 			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 				it.fail = err
 				return false
@@ -509,7 +696,7 @@ func (it *BuySomethingBuyCompletedIterator) Next() bool {
 	// Iterator still in progress, wait for either a data or an error event
 	select {
 	case log := <-it.logs:
-		it.Event = new(BuySomethingBuyCompleted)
+		it.Event = new(BuySomethingRoleAdminChanged)
 		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 			it.fail = err
 			return false
@@ -525,52 +712,69 @@ func (it *BuySomethingBuyCompletedIterator) Next() bool {
 }
 
 // Error returns any retrieval or parsing error occurred during filtering.
-func (it *BuySomethingBuyCompletedIterator) Error() error {
+func (it *BuySomethingRoleAdminChangedIterator) Error() error {
 	return it.fail
 }
 
 // Close terminates the iteration process, releasing any pending underlying
 // resources.
-func (it *BuySomethingBuyCompletedIterator) Close() error {
+func (it *BuySomethingRoleAdminChangedIterator) Close() error {
 	it.sub.Unsubscribe()
 	return nil
 }
 
-// BuySomethingBuyCompleted represents a BuyCompleted event raised by the BuySomething contract.
-type BuySomethingBuyCompleted struct {
-	Account common.Address
-	Amount  *big.Int
-	Raw     types.Log // Blockchain specific contextual infos
+// BuySomethingRoleAdminChanged represents a RoleAdminChanged event raised by the BuySomething contract.
+type BuySomethingRoleAdminChanged struct {
+	Role              [32]byte
+	PreviousAdminRole [32]byte
+	NewAdminRole      [32]byte
+	Raw               types.Log // Blockchain specific contextual infos
 }
 
-// FilterBuyCompleted is a free log retrieval operation binding the contract event 0x05ab47d0dcbc24cb46b0c25c580ee836acbbba15a6e78f4b409b6f7428dc7477.
+// FilterRoleAdminChanged is a free log retrieval operation binding the contract event 0xbd79b86ffe0ab8e8776151514217cd7cacd52c909f66475c3af44e129f0b00ff.
 //
-// Solidity: event buyCompleted(address indexed account, uint256 amount)
-func (_BuySomething *BuySomethingFilterer) FilterBuyCompleted(opts *bind.FilterOpts, account []common.Address) (*BuySomethingBuyCompletedIterator, error) {
+// Solidity: event RoleAdminChanged(bytes32 indexed role, bytes32 indexed previousAdminRole, bytes32 indexed newAdminRole)
+func (_BuySomething *BuySomethingFilterer) FilterRoleAdminChanged(opts *bind.FilterOpts, role [][32]byte, previousAdminRole [][32]byte, newAdminRole [][32]byte) (*BuySomethingRoleAdminChangedIterator, error) {
 
-	var accountRule []interface{}
-	for _, accountItem := range account {
-		accountRule = append(accountRule, accountItem)
+	var roleRule []interface{}
+	for _, roleItem := range role {
+		roleRule = append(roleRule, roleItem)
+	}
+	var previousAdminRoleRule []interface{}
+	for _, previousAdminRoleItem := range previousAdminRole {
+		previousAdminRoleRule = append(previousAdminRoleRule, previousAdminRoleItem)
+	}
+	var newAdminRoleRule []interface{}
+	for _, newAdminRoleItem := range newAdminRole {
+		newAdminRoleRule = append(newAdminRoleRule, newAdminRoleItem)
 	}
 
-	logs, sub, err := _BuySomething.contract.FilterLogs(opts, "buyCompleted", accountRule)
+	logs, sub, err := _BuySomething.contract.FilterLogs(opts, "RoleAdminChanged", roleRule, previousAdminRoleRule, newAdminRoleRule)
 	if err != nil {
 		return nil, err
 	}
-	return &BuySomethingBuyCompletedIterator{contract: _BuySomething.contract, event: "buyCompleted", logs: logs, sub: sub}, nil
+	return &BuySomethingRoleAdminChangedIterator{contract: _BuySomething.contract, event: "RoleAdminChanged", logs: logs, sub: sub}, nil
 }
 
-// WatchBuyCompleted is a free log subscription operation binding the contract event 0x05ab47d0dcbc24cb46b0c25c580ee836acbbba15a6e78f4b409b6f7428dc7477.
+// WatchRoleAdminChanged is a free log subscription operation binding the contract event 0xbd79b86ffe0ab8e8776151514217cd7cacd52c909f66475c3af44e129f0b00ff.
 //
-// Solidity: event buyCompleted(address indexed account, uint256 amount)
-func (_BuySomething *BuySomethingFilterer) WatchBuyCompleted(opts *bind.WatchOpts, sink chan<- *BuySomethingBuyCompleted, account []common.Address) (event.Subscription, error) {
+// Solidity: event RoleAdminChanged(bytes32 indexed role, bytes32 indexed previousAdminRole, bytes32 indexed newAdminRole)
+func (_BuySomething *BuySomethingFilterer) WatchRoleAdminChanged(opts *bind.WatchOpts, sink chan<- *BuySomethingRoleAdminChanged, role [][32]byte, previousAdminRole [][32]byte, newAdminRole [][32]byte) (event.Subscription, error) {
 
-	var accountRule []interface{}
-	for _, accountItem := range account {
-		accountRule = append(accountRule, accountItem)
+	var roleRule []interface{}
+	for _, roleItem := range role {
+		roleRule = append(roleRule, roleItem)
+	}
+	var previousAdminRoleRule []interface{}
+	for _, previousAdminRoleItem := range previousAdminRole {
+		previousAdminRoleRule = append(previousAdminRoleRule, previousAdminRoleItem)
+	}
+	var newAdminRoleRule []interface{}
+	for _, newAdminRoleItem := range newAdminRole {
+		newAdminRoleRule = append(newAdminRoleRule, newAdminRoleItem)
 	}
 
-	logs, sub, err := _BuySomething.contract.WatchLogs(opts, "buyCompleted", accountRule)
+	logs, sub, err := _BuySomething.contract.WatchLogs(opts, "RoleAdminChanged", roleRule, previousAdminRoleRule, newAdminRoleRule)
 	if err != nil {
 		return nil, err
 	}
@@ -580,8 +784,8 @@ func (_BuySomething *BuySomethingFilterer) WatchBuyCompleted(opts *bind.WatchOpt
 			select {
 			case log := <-logs:
 				// New log arrived, parse the event and forward to the user
-				event := new(BuySomethingBuyCompleted)
-				if err := _BuySomething.contract.UnpackLog(event, "buyCompleted", log); err != nil {
+				event := new(BuySomethingRoleAdminChanged)
+				if err := _BuySomething.contract.UnpackLog(event, "RoleAdminChanged", log); err != nil {
 					return err
 				}
 				event.Raw = log
@@ -602,12 +806,336 @@ func (_BuySomething *BuySomethingFilterer) WatchBuyCompleted(opts *bind.WatchOpt
 	}), nil
 }
 
-// ParseBuyCompleted is a log parse operation binding the contract event 0x05ab47d0dcbc24cb46b0c25c580ee836acbbba15a6e78f4b409b6f7428dc7477.
+// ParseRoleAdminChanged is a log parse operation binding the contract event 0xbd79b86ffe0ab8e8776151514217cd7cacd52c909f66475c3af44e129f0b00ff.
 //
-// Solidity: event buyCompleted(address indexed account, uint256 amount)
-func (_BuySomething *BuySomethingFilterer) ParseBuyCompleted(log types.Log) (*BuySomethingBuyCompleted, error) {
-	event := new(BuySomethingBuyCompleted)
-	if err := _BuySomething.contract.UnpackLog(event, "buyCompleted", log); err != nil {
+// Solidity: event RoleAdminChanged(bytes32 indexed role, bytes32 indexed previousAdminRole, bytes32 indexed newAdminRole)
+func (_BuySomething *BuySomethingFilterer) ParseRoleAdminChanged(log types.Log) (*BuySomethingRoleAdminChanged, error) {
+	event := new(BuySomethingRoleAdminChanged)
+	if err := _BuySomething.contract.UnpackLog(event, "RoleAdminChanged", log); err != nil {
+		return nil, err
+	}
+	event.Raw = log
+	return event, nil
+}
+
+// BuySomethingRoleGrantedIterator is returned from FilterRoleGranted and is used to iterate over the raw logs and unpacked data for RoleGranted events raised by the BuySomething contract.
+type BuySomethingRoleGrantedIterator struct {
+	Event *BuySomethingRoleGranted // Event containing the contract specifics and raw log
+
+	contract *bind.BoundContract // Generic contract to use for unpacking event data
+	event    string              // Event name to use for unpacking event data
+
+	logs chan types.Log        // Log channel receiving the found contract events
+	sub  ethereum.Subscription // Subscription for errors, completion and termination
+	done bool                  // Whether the subscription completed delivering logs
+	fail error                 // Occurred error to stop iteration
+}
+
+// Next advances the iterator to the subsequent event, returning whether there
+// are any more events found. In case of a retrieval or parsing error, false is
+// returned and Error() can be queried for the exact failure.
+func (it *BuySomethingRoleGrantedIterator) Next() bool {
+	// If the iterator failed, stop iterating
+	if it.fail != nil {
+		return false
+	}
+	// If the iterator completed, deliver directly whatever's available
+	if it.done {
+		select {
+		case log := <-it.logs:
+			it.Event = new(BuySomethingRoleGranted)
+			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+				it.fail = err
+				return false
+			}
+			it.Event.Raw = log
+			return true
+
+		default:
+			return false
+		}
+	}
+	// Iterator still in progress, wait for either a data or an error event
+	select {
+	case log := <-it.logs:
+		it.Event = new(BuySomethingRoleGranted)
+		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+			it.fail = err
+			return false
+		}
+		it.Event.Raw = log
+		return true
+
+	case err := <-it.sub.Err():
+		it.done = true
+		it.fail = err
+		return it.Next()
+	}
+}
+
+// Error returns any retrieval or parsing error occurred during filtering.
+func (it *BuySomethingRoleGrantedIterator) Error() error {
+	return it.fail
+}
+
+// Close terminates the iteration process, releasing any pending underlying
+// resources.
+func (it *BuySomethingRoleGrantedIterator) Close() error {
+	it.sub.Unsubscribe()
+	return nil
+}
+
+// BuySomethingRoleGranted represents a RoleGranted event raised by the BuySomething contract.
+type BuySomethingRoleGranted struct {
+	Role    [32]byte
+	Account common.Address
+	Sender  common.Address
+	Raw     types.Log // Blockchain specific contextual infos
+}
+
+// FilterRoleGranted is a free log retrieval operation binding the contract event 0x2f8788117e7eff1d82e926ec794901d17c78024a50270940304540a733656f0d.
+//
+// Solidity: event RoleGranted(bytes32 indexed role, address indexed account, address indexed sender)
+func (_BuySomething *BuySomethingFilterer) FilterRoleGranted(opts *bind.FilterOpts, role [][32]byte, account []common.Address, sender []common.Address) (*BuySomethingRoleGrantedIterator, error) {
+
+	var roleRule []interface{}
+	for _, roleItem := range role {
+		roleRule = append(roleRule, roleItem)
+	}
+	var accountRule []interface{}
+	for _, accountItem := range account {
+		accountRule = append(accountRule, accountItem)
+	}
+	var senderRule []interface{}
+	for _, senderItem := range sender {
+		senderRule = append(senderRule, senderItem)
+	}
+
+	logs, sub, err := _BuySomething.contract.FilterLogs(opts, "RoleGranted", roleRule, accountRule, senderRule)
+	if err != nil {
+		return nil, err
+	}
+	return &BuySomethingRoleGrantedIterator{contract: _BuySomething.contract, event: "RoleGranted", logs: logs, sub: sub}, nil
+}
+
+// WatchRoleGranted is a free log subscription operation binding the contract event 0x2f8788117e7eff1d82e926ec794901d17c78024a50270940304540a733656f0d.
+//
+// Solidity: event RoleGranted(bytes32 indexed role, address indexed account, address indexed sender)
+func (_BuySomething *BuySomethingFilterer) WatchRoleGranted(opts *bind.WatchOpts, sink chan<- *BuySomethingRoleGranted, role [][32]byte, account []common.Address, sender []common.Address) (event.Subscription, error) {
+
+	var roleRule []interface{}
+	for _, roleItem := range role {
+		roleRule = append(roleRule, roleItem)
+	}
+	var accountRule []interface{}
+	for _, accountItem := range account {
+		accountRule = append(accountRule, accountItem)
+	}
+	var senderRule []interface{}
+	for _, senderItem := range sender {
+		senderRule = append(senderRule, senderItem)
+	}
+
+	logs, sub, err := _BuySomething.contract.WatchLogs(opts, "RoleGranted", roleRule, accountRule, senderRule)
+	if err != nil {
+		return nil, err
+	}
+	return event.NewSubscription(func(quit <-chan struct{}) error {
+		defer sub.Unsubscribe()
+		for {
+			select {
+			case log := <-logs:
+				// New log arrived, parse the event and forward to the user
+				event := new(BuySomethingRoleGranted)
+				if err := _BuySomething.contract.UnpackLog(event, "RoleGranted", log); err != nil {
+					return err
+				}
+				event.Raw = log
+
+				select {
+				case sink <- event:
+				case err := <-sub.Err():
+					return err
+				case <-quit:
+					return nil
+				}
+			case err := <-sub.Err():
+				return err
+			case <-quit:
+				return nil
+			}
+		}
+	}), nil
+}
+
+// ParseRoleGranted is a log parse operation binding the contract event 0x2f8788117e7eff1d82e926ec794901d17c78024a50270940304540a733656f0d.
+//
+// Solidity: event RoleGranted(bytes32 indexed role, address indexed account, address indexed sender)
+func (_BuySomething *BuySomethingFilterer) ParseRoleGranted(log types.Log) (*BuySomethingRoleGranted, error) {
+	event := new(BuySomethingRoleGranted)
+	if err := _BuySomething.contract.UnpackLog(event, "RoleGranted", log); err != nil {
+		return nil, err
+	}
+	event.Raw = log
+	return event, nil
+}
+
+// BuySomethingRoleRevokedIterator is returned from FilterRoleRevoked and is used to iterate over the raw logs and unpacked data for RoleRevoked events raised by the BuySomething contract.
+type BuySomethingRoleRevokedIterator struct {
+	Event *BuySomethingRoleRevoked // Event containing the contract specifics and raw log
+
+	contract *bind.BoundContract // Generic contract to use for unpacking event data
+	event    string              // Event name to use for unpacking event data
+
+	logs chan types.Log        // Log channel receiving the found contract events
+	sub  ethereum.Subscription // Subscription for errors, completion and termination
+	done bool                  // Whether the subscription completed delivering logs
+	fail error                 // Occurred error to stop iteration
+}
+
+// Next advances the iterator to the subsequent event, returning whether there
+// are any more events found. In case of a retrieval or parsing error, false is
+// returned and Error() can be queried for the exact failure.
+func (it *BuySomethingRoleRevokedIterator) Next() bool {
+	// If the iterator failed, stop iterating
+	if it.fail != nil {
+		return false
+	}
+	// If the iterator completed, deliver directly whatever's available
+	if it.done {
+		select {
+		case log := <-it.logs:
+			it.Event = new(BuySomethingRoleRevoked)
+			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+				it.fail = err
+				return false
+			}
+			it.Event.Raw = log
+			return true
+
+		default:
+			return false
+		}
+	}
+	// Iterator still in progress, wait for either a data or an error event
+	select {
+	case log := <-it.logs:
+		it.Event = new(BuySomethingRoleRevoked)
+		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+			it.fail = err
+			return false
+		}
+		it.Event.Raw = log
+		return true
+
+	case err := <-it.sub.Err():
+		it.done = true
+		it.fail = err
+		return it.Next()
+	}
+}
+
+// Error returns any retrieval or parsing error occurred during filtering.
+func (it *BuySomethingRoleRevokedIterator) Error() error {
+	return it.fail
+}
+
+// Close terminates the iteration process, releasing any pending underlying
+// resources.
+func (it *BuySomethingRoleRevokedIterator) Close() error {
+	it.sub.Unsubscribe()
+	return nil
+}
+
+// BuySomethingRoleRevoked represents a RoleRevoked event raised by the BuySomething contract.
+type BuySomethingRoleRevoked struct {
+	Role    [32]byte
+	Account common.Address
+	Sender  common.Address
+	Raw     types.Log // Blockchain specific contextual infos
+}
+
+// FilterRoleRevoked is a free log retrieval operation binding the contract event 0xf6391f5c32d9c69d2a47ea670b442974b53935d1edc7fd64eb21e047a839171b.
+//
+// Solidity: event RoleRevoked(bytes32 indexed role, address indexed account, address indexed sender)
+func (_BuySomething *BuySomethingFilterer) FilterRoleRevoked(opts *bind.FilterOpts, role [][32]byte, account []common.Address, sender []common.Address) (*BuySomethingRoleRevokedIterator, error) {
+
+	var roleRule []interface{}
+	for _, roleItem := range role {
+		roleRule = append(roleRule, roleItem)
+	}
+	var accountRule []interface{}
+	for _, accountItem := range account {
+		accountRule = append(accountRule, accountItem)
+	}
+	var senderRule []interface{}
+	for _, senderItem := range sender {
+		senderRule = append(senderRule, senderItem)
+	}
+
+	logs, sub, err := _BuySomething.contract.FilterLogs(opts, "RoleRevoked", roleRule, accountRule, senderRule)
+	if err != nil {
+		return nil, err
+	}
+	return &BuySomethingRoleRevokedIterator{contract: _BuySomething.contract, event: "RoleRevoked", logs: logs, sub: sub}, nil
+}
+
+// WatchRoleRevoked is a free log subscription operation binding the contract event 0xf6391f5c32d9c69d2a47ea670b442974b53935d1edc7fd64eb21e047a839171b.
+//
+// Solidity: event RoleRevoked(bytes32 indexed role, address indexed account, address indexed sender)
+func (_BuySomething *BuySomethingFilterer) WatchRoleRevoked(opts *bind.WatchOpts, sink chan<- *BuySomethingRoleRevoked, role [][32]byte, account []common.Address, sender []common.Address) (event.Subscription, error) {
+
+	var roleRule []interface{}
+	for _, roleItem := range role {
+		roleRule = append(roleRule, roleItem)
+	}
+	var accountRule []interface{}
+	for _, accountItem := range account {
+		accountRule = append(accountRule, accountItem)
+	}
+	var senderRule []interface{}
+	for _, senderItem := range sender {
+		senderRule = append(senderRule, senderItem)
+	}
+
+	logs, sub, err := _BuySomething.contract.WatchLogs(opts, "RoleRevoked", roleRule, accountRule, senderRule)
+	if err != nil {
+		return nil, err
+	}
+	return event.NewSubscription(func(quit <-chan struct{}) error {
+		defer sub.Unsubscribe()
+		for {
+			select {
+			case log := <-logs:
+				// New log arrived, parse the event and forward to the user
+				event := new(BuySomethingRoleRevoked)
+				if err := _BuySomething.contract.UnpackLog(event, "RoleRevoked", log); err != nil {
+					return err
+				}
+				event.Raw = log
+
+				select {
+				case sink <- event:
+				case err := <-sub.Err():
+					return err
+				case <-quit:
+					return nil
+				}
+			case err := <-sub.Err():
+				return err
+			case <-quit:
+				return nil
+			}
+		}
+	}), nil
+}
+
+// ParseRoleRevoked is a log parse operation binding the contract event 0xf6391f5c32d9c69d2a47ea670b442974b53935d1edc7fd64eb21e047a839171b.
+//
+// Solidity: event RoleRevoked(bytes32 indexed role, address indexed account, address indexed sender)
+func (_BuySomething *BuySomethingFilterer) ParseRoleRevoked(log types.Log) (*BuySomethingRoleRevoked, error) {
+	event := new(BuySomethingRoleRevoked)
+	if err := _BuySomething.contract.UnpackLog(event, "RoleRevoked", log); err != nil {
 		return nil, err
 	}
 	event.Raw = log

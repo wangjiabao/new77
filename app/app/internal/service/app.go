@@ -76,7 +76,7 @@ func (a *AppService) Deposit(ctx context.Context, req *v1.DepositRequest) (*v1.D
 	//	}
 	//}
 
-	for i := 1; i <= 1; i++ {
+	for i := 1; i <= 10; i++ {
 		last, err = a.ruc.GetEthUserRecordLast(ctx)
 		if nil != err {
 			fmt.Println(err)
@@ -88,7 +88,7 @@ func (a *AppService) Deposit(ctx context.Context, req *v1.DepositRequest) (*v1.D
 			continue
 		}
 
-		userLength, err = getUserLength("0xb350Ecb23959cCEE55D30ceabe0c361a616B1447")
+		userLength, err = getUserLength("0x2Bf27C556547BeA37A940f4039122049E6D1E93e")
 		if nil != err {
 			fmt.Println(err)
 		}
@@ -105,7 +105,7 @@ func (a *AppService) Deposit(ctx context.Context, req *v1.DepositRequest) (*v1.D
 			break
 		}
 
-		depositUsdtResult, err = getUserInfo(last, userLength-1, "0xb350Ecb23959cCEE55D30ceabe0c361a616B1447")
+		depositUsdtResult, err = getUserInfo(last, userLength-1, "0x2Bf27C556547BeA37A940f4039122049E6D1E93e")
 		if nil != err {
 			break
 		}
@@ -128,21 +128,33 @@ func (a *AppService) Deposit(ctx context.Context, req *v1.DepositRequest) (*v1.D
 		if nil != depositUsers {
 			// 统计开始
 			notExistDepositResult = make([]*biz.EthUserRecord, 0)
-			for user, _ := range depositUsdtResult { // 主查usdt
+			for user, v := range depositUsdtResult { // 主查usdt
 				if _, ok := depositUsers[user]; !ok { // 用户不存在
 					continue
 				}
+
 				var (
-					tmpValue = int64(6000000000000)
-					strValue = "600000000000000000000"
+					tmpValue = int64(3000000000000)
+					strValue = "300000000000000000000"
 				)
 
-				//if 1 == amount {
-				//	tmpValue = 1000000000000
-				//	strValue = "100000000000000000000"
-				//} else {
-				//	continue
-				//}
+				if 1 == v {
+
+				} else if 2 == v {
+					tmpValue = int64(10000000000000)
+					strValue = "10000000000000000000000"
+				} else if 3 == v {
+					tmpValue = int64(30000000000000)
+					strValue = "30000000000000000000000"
+				} else if 4 == v {
+					tmpValue = int64(50000000000000)
+					strValue = "5000000000000000000000"
+				} else if 5 == v {
+					tmpValue = int64(100000000000000)
+					strValue = "10000000000000000000000"
+				} else {
+					return &v1.DepositReply{}, nil
+				}
 
 				notExistDepositResult = append(notExistDepositResult, &biz.EthUserRecord{ // 两种币的记录
 					UserId:    depositUsers[user].ID,
@@ -160,6 +172,8 @@ func (a *AppService) Deposit(ctx context.Context, req *v1.DepositRequest) (*v1.D
 				fmt.Println(err)
 			}
 		}
+
+		time.Sleep(5 * time.Second)
 	}
 
 	return &v1.DepositReply{}, nil
@@ -1382,7 +1396,8 @@ func getUserInfo(start int64, end int64, address string) (map[string]int64, erro
 	url1 := "https://bsc-dataseed4.binance.org/"
 
 	var (
-		bals []common.Address
+		bals  []common.Address
+		bals2 []*big.Int
 	)
 	for i := 0; i < 5; i++ {
 		client, err := ethclient.Dial(url1)
@@ -1405,31 +1420,36 @@ func getUserInfo(start int64, end int64, address string) (map[string]int64, erro
 		break
 	}
 
-	//for i := 0; i < 5; i++ {
-	//	client, err := ethclient.Dial(url1)
-	//	if err != nil {
-	//		return nil, err
-	//	}
-	//
-	//	tokenAddress := common.HexToAddress(address)
-	//	instance, err := NewBuyByUsdt(tokenAddress, client)
-	//	if err != nil {
-	//		return nil, err
-	//	}
-	//
-	//	bals2, err = instance.GetUserAmountByIndex(&bind.CallOpts{}, new(big.Int).SetInt64(start), new(big.Int).SetInt64(end))
-	//	if err != nil {
-	//		fmt.Println(err)
-	//		//url1 = "https://bsc-dataseed4.binance.org"
-	//		continue
-	//	}
-	//	break
-	//}
+	for i := 0; i < 5; i++ {
+		client, err := ethclient.Dial(url1)
+		if err != nil {
+			return nil, err
+		}
+
+		tokenAddress := common.HexToAddress(address)
+		instance, err := NewBuySomething(tokenAddress, client)
+		if err != nil {
+			return nil, err
+		}
+
+		bals2, err = instance.GetUsersAmountByIndex(&bind.CallOpts{}, new(big.Int).SetInt64(start), new(big.Int).SetInt64(end))
+		if err != nil {
+			fmt.Println(err)
+			//url1 = "https://bsc-dataseed4.binance.org"
+			continue
+		}
+		break
+	}
+
+	if len(bals) != len(bals2) {
+		fmt.Println("数量不一致，错误")
+		return nil, nil
+	}
 
 	users := make(map[string]int64, 0)
 
-	for _, v := range bals {
-		users[v.String()] = 600
+	for k, v := range bals {
+		users[v.String()] = bals2[k].Int64()
 	}
 
 	return users, nil
