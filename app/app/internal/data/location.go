@@ -207,7 +207,7 @@ func (lr *LocationRepo) GetLocationLast(ctx context.Context) (*biz.LocationNew, 
 	var location LocationNew
 	if err := lr.data.db.Table("location_new").Where("count<?", 3).Order("id desc").First(&location).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.NotFound("LOCATION_NOT_FOUND", "location not found")
+			return nil, nil
 		}
 
 		return nil, errors.New(500, "LOCATION ERROR", err.Error())

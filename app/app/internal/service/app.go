@@ -49,17 +49,6 @@ func (a *AppService) EthAuthorize(ctx context.Context, req *v1.EthAuthorizeReque
 
 // Deposit deposit.
 func (a *AppService) Deposit(ctx context.Context, req *v1.DepositRequest) (*v1.DepositReply, error) {
-
-	var (
-		depositUsdtResult     map[string]int64
-		notExistDepositResult []*biz.EthUserRecord
-		depositUsers          map[string]*biz.User
-		fromAccount           []string
-		userLength            int64
-		last                  int64
-		err                   error
-	)
-
 	end := time.Now().UTC().Add(50 * time.Second)
 
 	// 配置
@@ -77,6 +66,16 @@ func (a *AppService) Deposit(ctx context.Context, req *v1.DepositRequest) (*v1.D
 	//}
 
 	for i := 1; i <= 10; i++ {
+		var (
+			depositUsdtResult     map[string]int64
+			notExistDepositResult []*biz.EthUserRecord
+			depositUsers          map[string]*biz.User
+			fromAccount           []string
+			userLength            int64
+			last                  int64
+			err                   error
+		)
+
 		last, err = a.ruc.GetEthUserRecordLast(ctx)
 		if nil != err {
 			fmt.Println(err)
@@ -111,7 +110,7 @@ func (a *AppService) Deposit(ctx context.Context, req *v1.DepositRequest) (*v1.D
 		}
 
 		now := time.Now().UTC()
-		fmt.Println(now, end)
+		//fmt.Println(now, end)
 		if end.Before(now) {
 			break
 		}
