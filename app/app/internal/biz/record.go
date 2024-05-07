@@ -50,8 +50,12 @@ type LocationNew struct {
 	Count             int64
 	StopCoin          int64
 	Top               int64
+	Usdt              int64
 	Total             int64
+	TotalTwo          int64
+	TotalThree        int64
 	Biw               int64
+	TopNum            int64
 	StopDate          time.Time
 	CreatedAt         time.Time
 }
@@ -86,7 +90,8 @@ type LocationRepo interface {
 	CreateLocation(ctx context.Context, rel *Location) (*Location, error)
 	GetLocationLast(ctx context.Context) (*LocationNew, error)
 	GetMyLocationLast(ctx context.Context, userId int64) (*LocationNew, error)
-	GetMyLocationById(ctx context.Context, id int64) (*LocationNew, error)
+	GetLocationById(ctx context.Context, id int64) (*LocationNew, error)
+	GetMyLocationLastRunning(ctx context.Context, userId int64) (*LocationNew, error)
 	GetLocationDailyYesterday(ctx context.Context, day int) ([]*LocationNew, error)
 	GetMyStopLocationLast(ctx context.Context, userId int64) (*Location, error)
 	GetMyLocationRunningLast(ctx context.Context, userId int64) (*Location, error)
@@ -108,7 +113,7 @@ type LocationRepo interface {
 	GetLocationUserCount(ctx context.Context) int64
 	GetLocationByIds(ctx context.Context, userIds ...int64) ([]*LocationNew, error)
 	GetAllLocations(ctx context.Context) ([]*Location, error)
-	GetAllLocationsNew(ctx context.Context) ([]*LocationNew, error)
+	GetAllLocationsNew(ctx context.Context, currentMax int64) ([]*LocationNew, error)
 	GetAllLocationsNew2(ctx context.Context) ([]*LocationNew, error)
 	GetLocationsByUserIds(ctx context.Context, userIds []int64) ([]*Location, error)
 
@@ -119,6 +124,7 @@ type LocationRepo interface {
 	GetLocationsNewByUserId(ctx context.Context, userId int64) ([]*LocationNew, error)
 	GetLocationsNew2ByUserId(ctx context.Context, userId int64) ([]*LocationNew, error)
 	UpdateLocationNew(ctx context.Context, id int64, status string, current int64, stopDate time.Time) error
+	UpdateLocationNewNew(ctx context.Context, id int64, status string, current int64, biw int64, stopDate time.Time) error
 	UpdateLocationNew2(ctx context.Context, id int64, status string, current int64, stopDate time.Time) error
 	UpdateLocationNewCurrent(ctx context.Context, id int64, current int64) error
 	GetRunningLocations(ctx context.Context) ([]*LocationNew, error)
@@ -126,7 +132,8 @@ type LocationRepo interface {
 	GetLocationsByNum(ctx context.Context, start int64, end int64) ([]*LocationNew, error)
 	UpdateLocationNew7(ctx context.Context, id int64, status string, num int64, currentMax int64, stopDate time.Time) error
 	UpdateLocationNewCount(ctx context.Context, id int64, count int64, total int64) error
-	UpdateLocationNewTotal(ctx context.Context, id int64, total int64) error
+	UpdateLocationNewTotal(ctx context.Context, id int64, count int64, total int64) error
+	UpdateLocationNewTotalSub(ctx context.Context, id int64, count int64, total int64) error
 }
 
 func NewRecordUseCase(
@@ -175,128 +182,136 @@ func (ruc *RecordUseCase) GetGlobalLock(ctx context.Context) (*GlobalLock, error
 func (ruc *RecordUseCase) EthUserRecordHandle(ctx context.Context, ethUserRecord ...*EthUserRecord) (bool, error) {
 
 	var (
-	//configs        []*Config
-	//bPrice         int64
-	//bPriceBase     int64
-	//recommendRate1 int64
-	//recommendRate2 int64
-	//recommendRate3 int64
-	//recommendRate4 int64
-	//recommendRate5 int64
-	//recommendRate6 int64
-	//recommendRate7 int64
-	//recommendRate8 int64
-	//recommendBase  = int64(100)
+		configs  []*Config
+		buyOne   int64
+		buyTwo   int64
+		buyThree int64
+		buyFour  int64
+		buyFive  int64
+		//bPrice         int64
+		//bPriceBase     int64
+		//recommendRate1 int64
+		//recommendRate2 int64
+		//recommendRate3 int64
+		//recommendRate4 int64
+		//recommendRate5 int64
+		//recommendRate6 int64
+		//recommendRate7 int64
+		//recommendRate8 int64
+		//recommendBase  = int64(100)
 	)
-	//// 配置
-	//configs, _ = ruc.configRepo.GetConfigByKeys(ctx, "b_price", "b_price_base", "recommend_rate_1", "recommend_rate_2", "recommend_rate_3", "recommend_rate_4", "recommend_rate_5", "recommend_rate_6", "recommend_rate_7", "recommend_rate_8")
-	//
-	//if nil != configs {
-	//	for _, vConfig := range configs {
-	//		if "b_price" == vConfig.KeyName {
-	//			bPrice, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-	//		}
-	//		if "b_price_base" == vConfig.KeyName {
-	//			bPriceBase, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-	//		}
-	//		if "recommend_rate_1" == vConfig.KeyName {
-	//			recommendRate1, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-	//		}
-	//		if "recommend_rate_2" == vConfig.KeyName {
-	//			recommendRate2, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-	//		}
-	//		if "recommend_rate_3" == vConfig.KeyName {
-	//			recommendRate3, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-	//		}
-	//		if "recommend_rate_4" == vConfig.KeyName {
-	//			recommendRate4, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-	//		}
-	//		if "recommend_rate_5" == vConfig.KeyName {
-	//			recommendRate5, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-	//		}
-	//		if "recommend_rate_6" == vConfig.KeyName {
-	//			recommendRate6, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-	//		}
-	//		if "recommend_rate_7" == vConfig.KeyName {
-	//			recommendRate7, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-	//		}
-	//		if "recommend_rate_8" == vConfig.KeyName {
-	//			recommendRate8, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-	//		}
-	//	}
-	//}
+	// 配置
+	configs, _ = ruc.configRepo.GetConfigByKeys(ctx, "buy_one", "buy_two", "buy_three", "buy_four", "buy_five", "b_price", "b_price_base", "recommend_rate_1", "recommend_rate_2", "recommend_rate_3", "recommend_rate_4", "recommend_rate_5", "recommend_rate_6", "recommend_rate_7", "recommend_rate_8")
+	if nil != configs {
+		for _, vConfig := range configs {
+			if "buy_one" == vConfig.KeyName {
+				buyOne, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			}
+			if "buy_two" == vConfig.KeyName {
+				buyTwo, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			}
+			if "buy_three" == vConfig.KeyName {
+				buyThree, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			}
+			if "buy_four" == vConfig.KeyName {
+				buyFour, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			}
+			if "buy_five" == vConfig.KeyName {
+				buyFive, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			}
+
+			//		if "b_price_base" == vConfig.KeyName {
+			//			bPriceBase, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			//		}
+			//		if "recommend_rate_1" == vConfig.KeyName {
+			//			recommendRate1, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			//		}
+			//		if "recommend_rate_2" == vConfig.KeyName {
+			//			recommendRate2, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			//		}
+			//		if "recommend_rate_3" == vConfig.KeyName {
+			//			recommendRate3, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			//		}
+			//		if "recommend_rate_4" == vConfig.KeyName {
+			//			recommendRate4, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			//		}
+			//		if "recommend_rate_5" == vConfig.KeyName {
+			//			recommendRate5, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			//		}
+			//		if "recommend_rate_6" == vConfig.KeyName {
+			//			recommendRate6, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			//		}
+			//		if "recommend_rate_7" == vConfig.KeyName {
+			//			recommendRate7, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			//		}
+			//		if "recommend_rate_8" == vConfig.KeyName {
+			//			recommendRate8, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			//		}
+		}
+	}
 
 	for _, v := range ethUserRecord {
 		var (
-			//currentLocationNew      *LocationNew
-			userRecommend           *UserRecommend
-			myUserRecommendUserId   int64
-			myUserRecommendUserInfo *UserInfo
-			myLocations             []*LocationNew
-			tmpRecommendUserIds     []string
-			tmpRecommendUserIdsInt  []int64
-			err                     error
+			allLocations []*LocationNew
+			myLocations  []*LocationNew
+			err          error
 		)
+
+		// 获取当前用户的占位信息，已经有运行中的跳过
+		allLocations, err = ruc.locationRepo.GetAllLocationsNew(ctx, v.RelAmount*25/10) // 同倍率的
+		if nil == allLocations {                                                        // 查询异常跳过本次循环
+			fmt.Println(err, "错误投资", v)
+			continue
+		}
+		if nil != err {
+			fmt.Println(err, "123")
+			continue
+		}
+
+		if 3000000000000 == v.RelAmount && int64(len(allLocations)) < buyOne {
+
+		} else if 10000000000000 == v.RelAmount && int64(len(allLocations)) < buyTwo {
+
+		} else if 30000000000000 == v.RelAmount && int64(len(allLocations)) < buyThree {
+
+		} else if 50000000000000 == v.RelAmount && int64(len(allLocations)) < buyFour {
+
+		} else if 100000000000000 == v.RelAmount && int64(len(allLocations)) < buyFive {
+
+		} else {
+			fmt.Println(v, "1234")
+			continue
+		}
 
 		// 获取当前用户的占位信息，已经有运行中的跳过
 		myLocations, err = ruc.locationRepo.GetLocationsNewByUserId(ctx, v.UserId)
 		if nil == myLocations { // 查询异常跳过本次循环
-			fmt.Println(err, "错误投资", v)
+			fmt.Println(err, "错误投资2", v)
 			continue
 		}
-
 		if nil != err {
 			fmt.Println(err, "12")
 			continue
 		}
 
 		if 0 < len(myLocations) {
+			var (
+				stop bool
+			)
+
 			for _, vMyLocations := range myLocations {
 				if "stop" != vMyLocations.Status {
-					continue
-				}
-
-				fmt.Println(err, "已投资", v)
-			}
-		}
-
-		// 用户推荐信息，
-		userRecommend, err = ruc.userRecommendRepo.GetUserRecommendByUserId(ctx, v.UserId)
-		if nil != err {
-			fmt.Println(err, "错误投资1", v)
-			continue
-		}
-
-		// 得到用户直推的用户
-		if "" != userRecommend.RecommendCode {
-			tmpRecommendUserIds = strings.Split(userRecommend.RecommendCode, "D")
-			if 2 <= len(tmpRecommendUserIds) {
-				myUserRecommendUserId, _ = strconv.ParseInt(tmpRecommendUserIds[len(tmpRecommendUserIds)-1], 10, 64) // 最后一位是直推人
-			}
-
-			lastKey := len(tmpRecommendUserIds) - 1
-			if 1 <= lastKey {
-				for i := 0; i <= lastKey; i++ {
-					// 有占位信息，推荐人推荐人的上一代
-					if lastKey-i <= 0 {
-						break
-					}
-
-					tmpMyTopUserRecommendUserId, _ := strconv.ParseInt(tmpRecommendUserIds[lastKey-i], 10, 64) // 最后一位是直推人
-					tmpRecommendUserIdsInt = append(tmpRecommendUserIdsInt, tmpMyTopUserRecommendUserId)
+					stop = true
+					fmt.Println(err, "已投资", v)
+					break
 				}
 			}
 
-		}
-		if 0 < myUserRecommendUserId {
-			myUserRecommendUserInfo, err = ruc.userInfoRepo.GetUserInfoByUserId(ctx, myUserRecommendUserId)
-			if nil != err {
-				fmt.Println(err, "错误投资2", v)
-				continue
+			if stop {
+				continue // 跳过
 			}
 		}
 
-		//
 		// 获取当前用户的占位信息，已经有运行中的跳过
 		var (
 			lastLocation *LocationNew
@@ -306,34 +321,28 @@ func (ruc *RecordUseCase) EthUserRecordHandle(ctx context.Context, ethUserRecord
 			return false, err
 		}
 
-		if err = ruc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
-			// 充值记录
-			_, err = ruc.ethUserRecordRepo.CreateEthUserRecordListByHash(ctx, &EthUserRecord{
-				Hash:     v.Hash,
-				UserId:   v.UserId,
-				Status:   v.Status,
-				Type:     v.Type,
-				Amount:   v.Amount,
-				CoinType: v.CoinType,
-				Last:     v.Last,
-			})
-			if nil != err {
-				return err
+		// 推荐人
+		var (
+			userRecommend         *UserRecommend
+			myUserRecommendUserId int64
+			tmpRecommendUserIds   []string
+		)
+		userRecommend, err = ruc.userRecommendRepo.GetUserRecommendByUserId(ctx, v.UserId)
+		if nil != err {
+			continue
+		}
+		if "" != userRecommend.RecommendCode {
+			tmpRecommendUserIds = strings.Split(userRecommend.RecommendCode, "D")
+			if 2 <= len(tmpRecommendUserIds) {
+				myUserRecommendUserId, _ = strconv.ParseInt(tmpRecommendUserIds[len(tmpRecommendUserIds)-1], 10, 64) // 最后一位是直推人
 			}
+		}
 
-			// 推荐人
-			if nil != myUserRecommendUserInfo {
-				if 0 == len(myLocations) {
-					myUserRecommendUserInfo.HistoryRecommend += 1
-					_, err = ruc.userInfoRepo.UpdateUserInfo(ctx, myUserRecommendUserInfo) // 推荐人信息修改
-					if nil != err {
-						return err
-					}
-				}
-			}
+		if err = ruc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
 
 			var (
 				tmpTop int64
+				tmpNum int64
 			)
 			if nil != lastLocation {
 				err = ruc.locationRepo.UpdateLocationNewCount(ctx, lastLocation.ID, lastLocation.Count+1, v.RelAmount/10000000000)
@@ -341,12 +350,14 @@ func (ruc *RecordUseCase) EthUserRecordHandle(ctx context.Context, ethUserRecord
 					return err
 				}
 				tmpTop = lastLocation.ID
+				tmpNum = lastLocation.Count + 1
 
 				var (
-					currentTop = lastLocation.Top
+					currentTop    = lastLocation.Top
+					currentTopNum = lastLocation.TopNum
 				)
-				for 0 < currentTop {
-					err = ruc.locationRepo.UpdateLocationNewTotal(ctx, currentTop, v.RelAmount/10000000000)
+				for j := 0; j < 20 && 0 < currentTop && 0 < currentTopNum; j++ {
+					err = ruc.locationRepo.UpdateLocationNewTotal(ctx, currentTop, currentTopNum, v.RelAmount/10000000000)
 					if nil != err {
 						return err
 					}
@@ -354,17 +365,18 @@ func (ruc *RecordUseCase) EthUserRecordHandle(ctx context.Context, ethUserRecord
 					var (
 						currentLocation *LocationNew
 					)
-					currentLocation, err = ruc.locationRepo.GetMyLocationById(ctx, currentTop)
+					currentLocation, err = ruc.locationRepo.GetLocationById(ctx, currentTop)
 					if nil != err {
 						return err
 					}
 
-					if nil != currentLocation && 0 < currentLocation.Top {
+					if nil != currentLocation && 0 < currentLocation.Top && 0 < currentLocation.TopNum {
 						currentTop = currentLocation.Top
+						currentTopNum = currentLocation.TopNum
 						continue
 					}
 
-					currentTop = -1
+					break
 				}
 			}
 
@@ -375,10 +387,33 @@ func (ruc *RecordUseCase) EthUserRecordHandle(ctx context.Context, ethUserRecord
 				CurrentMax: v.RelAmount * 25 / 10, // 2.5倍率
 				Num:        1,
 				Top:        tmpTop,
+				TopNum:     tmpNum,
 			}, v.RelAmount)
 
 			if nil != err {
 				return err
+			}
+
+			// 充值记录
+			_, err = ruc.ethUserRecordRepo.CreateEthUserRecordListByHash(ctx, &EthUserRecord{
+				Hash:     v.Hash,
+				UserId:   v.UserId,
+				Status:   v.Status,
+				Type:     v.Type,
+				Amount:   v.Amount,
+				CoinType: v.CoinType,
+				Last:     v.Last,
+			})
+
+			if nil != err {
+				return err
+			}
+
+			if 0 < myUserRecommendUserId {
+				err = ruc.userRecommendRepo.UpdateUserRecommendTotal(ctx, myUserRecommendUserId, v.RelAmount/10000000000)
+				if nil != err {
+					return err
+				}
 			}
 
 			//if 0 < len(tmpRecommendUserIdsInt) {
