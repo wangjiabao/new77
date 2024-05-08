@@ -2103,7 +2103,7 @@ func (ub *UserBalanceRepo) FourRewardBiw(ctx context.Context, userId int64, rewa
 	var err error
 	if err = ub.data.DB(ctx).Table("user_balance").
 		Where("user_id=?", userId).
-		Updates(map[string]interface{}{"balance_usdt": gorm.Expr("balance_usdt + ?", rewardAmount)}).Error; nil != err {
+		Updates(map[string]interface{}{"balance_usdt": gorm.Expr("balance_usdt + ?", rewardAmount), "four_total": gorm.Expr("four_total + ?", rewardAmount)}).Error; nil != err {
 		return 0, errors.NotFound("user balance err", "user balance not found")
 	}
 
@@ -2144,7 +2144,7 @@ func (ub *UserBalanceRepo) RecommendRewardBiw(ctx context.Context, userId int64,
 	var err error
 	if err = ub.data.DB(ctx).Table("user_balance").
 		Where("user_id=?", userId).
-		Updates(map[string]interface{}{"balance_dhb": gorm.Expr("balance_dhb + ?", rewardAmount)}).Error; nil != err {
+		Updates(map[string]interface{}{"balance_dhb": gorm.Expr("balance_dhb + ?", rewardAmount), "recommend_total": gorm.Expr("recommend_total + ?", rewardAmount)}).Error; nil != err {
 		return 0, errors.NotFound("user balance err", "user balance not found")
 	}
 
@@ -2185,7 +2185,7 @@ func (ub *UserBalanceRepo) LocationRewardBiw(ctx context.Context, userId int64, 
 	var err error
 	if err = ub.data.DB(ctx).Table("user_balance").
 		Where("user_id=?", userId).
-		Updates(map[string]interface{}{"balance_dhb": gorm.Expr("balance_dhb + ?", rewardAmount)}).Error; nil != err {
+		Updates(map[string]interface{}{"balance_dhb": gorm.Expr("balance_dhb + ?", rewardAmount), "location_total": gorm.Expr("location_total + ?", rewardAmount)}).Error; nil != err {
 		return 0, errors.NotFound("user balance err", "user balance not found")
 	}
 
@@ -2225,7 +2225,7 @@ func (ub *UserBalanceRepo) AreaRewardBiw(ctx context.Context, userId int64, rewa
 	var err error
 	if err = ub.data.DB(ctx).Table("user_balance").
 		Where("user_id=?", userId).
-		Updates(map[string]interface{}{"balance_dhb": gorm.Expr("balance_dhb + ?", rewardAmount)}).Error; nil != err {
+		Updates(map[string]interface{}{"balance_dhb": gorm.Expr("balance_dhb + ?", rewardAmount), "area_total": gorm.Expr("area_total + ?", rewardAmount)}).Error; nil != err {
 		return 0, errors.NotFound("user balance err", "user balance not found")
 	}
 
