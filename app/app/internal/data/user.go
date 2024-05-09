@@ -1179,7 +1179,7 @@ func (ub UserBalanceRepo) CreateUserBalance(ctx context.Context, u *biz.User) (*
 // GetUserBalance .
 func (ub UserBalanceRepo) GetUserBalance(ctx context.Context, userId int64) (*biz.UserBalance, error) {
 	var userBalance UserBalance
-	if err := ub.data.db.Where("user_id=?", userId).Table("user_balance").First(&userBalance).Error; err != nil {
+	if err := ub.data.DB(ctx).Where("user_id=?", userId).Table("user_balance").First(&userBalance).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.NotFound("USER_BALANCE_NOT_FOUND", "user balance not found")
 		}

@@ -1181,14 +1181,30 @@ func (uuc *UserUseCase) AdminConfigUpdate(ctx context.Context, req *v1.AdminConf
 	//
 	//	users, err = uuc.repo.GetAllUsers(ctx)
 	//	for _, v := range users {
-	//
 	//		var (
 	//			runningLocation *LocationNew
+	//			userBalance     *UserBalance
 	//		)
 	//		runningLocation, err = uuc.locationRepo.GetMyLocationLastRunning(ctx, v.ID)
 	//		if nil != err {
 	//			fmt.Println(err)
 	//			continue
+	//		}
+	//
+	//		userBalance, err = uuc.ubRepo.GetUserBalance(ctx, v.ID)
+	//		if nil != err {
+	//			fmt.Println(err)
+	//			continue
+	//		}
+	//
+	//		if bPrice > originBprice {
+	//			// 涨价
+	//			tmp := userBalance.BalanceDhb/bPriceBase*bPrice - userBalance.BalanceDhb/bPriceBase*originBprice
+	//
+	//		} else if bPrice < originBprice {
+	//			// 降价
+	//			tmp := userBalance.BalanceDhb/bPriceBase*originBprice - userBalance.BalanceDhb/bPriceBase*bPrice
+	//
 	//		}
 	//
 	//		_, err = uuc.ubRepo.ExchangeBiw(ctx, v.ID, bPrice, bPriceBase, feeRate)
@@ -2617,6 +2633,9 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 		rewardLocationYesOne := rewardLocationYes / 100 * areaNumOne / int64(len(userLocationsOne))
 		if 0 < rewardLocationYesOne {
 			for _, vUserLocationsItem := range userLocationsOne {
+				if _, ok := stopLocationIds[vUserLocationsItem.ID]; ok { // 上一轮已经停止了
+					continue
+				}
 				// 奖励
 				tmpCurrentReward := rewardLocationYesOne
 				bLocationRewardAmount := tmpCurrentReward / bPrice * bPriceBase
@@ -2690,6 +2709,9 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 		rewardLocationYesTwo := rewardLocationYes / 100 * areaNumTwo / int64(len(userLocationsTwo))
 		if 0 < rewardLocationYesTwo {
 			for _, vUserLocationsItem := range userLocationsTwo {
+				if _, ok := stopLocationIds[vUserLocationsItem.ID]; ok { // 上一轮已经停止了
+					continue
+				}
 				// 奖励
 				tmpCurrentReward := rewardLocationYesTwo
 				bLocationRewardAmount := tmpCurrentReward / bPrice * bPriceBase
@@ -2763,6 +2785,9 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 		rewardLocationYesThree := rewardLocationYes / 100 * areaNumThree / int64(len(userLocationsThree))
 		if 0 < rewardLocationYesThree {
 			for _, vUserLocationsItem := range userLocationsThree {
+				if _, ok := stopLocationIds[vUserLocationsItem.ID]; ok { // 上一轮已经停止了
+					continue
+				}
 				// 奖励
 				tmpCurrentReward := rewardLocationYesThree
 				bLocationRewardAmount := tmpCurrentReward / bPrice * bPriceBase
@@ -2836,6 +2861,9 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 		rewardLocationYesFour := rewardLocationYes / 100 * areaNumFour / int64(len(userLocationsFour))
 		if 0 < rewardLocationYesFour {
 			for _, vUserLocationsItem := range userLocationsFour {
+				if _, ok := stopLocationIds[vUserLocationsItem.ID]; ok { // 上一轮已经停止了
+					continue
+				}
 				// 奖励
 				tmpCurrentReward := rewardLocationYesFour
 				bLocationRewardAmount := tmpCurrentReward / bPrice * bPriceBase
@@ -2909,6 +2937,9 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 		rewardLocationYesFive := rewardLocationYes / 100 * areaNumFive / int64(len(userLocationsFive))
 		if 0 < rewardLocationYesFive {
 			for _, vUserLocationsItem := range userLocationsFive {
+				if _, ok := stopLocationIds[vUserLocationsItem.ID]; ok { // 上一轮已经停止了
+					continue
+				}
 				// 奖励
 				tmpCurrentReward := rewardLocationYesFive
 				bLocationRewardAmount := tmpCurrentReward / bPrice * bPriceBase
