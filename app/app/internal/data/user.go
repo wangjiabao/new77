@@ -2140,7 +2140,7 @@ func (ub *UserBalanceRepo) FourRewardBiw(ctx context.Context, userId int64, rewa
 }
 
 // ExchangeBiw .
-func (ub *UserBalanceRepo) ExchangeBiw(ctx context.Context, userId int64, price int64, priceBase int64, feeRate int64) (int64, error) {
+func (ub *UserBalanceRepo) ExchangeBiw(ctx context.Context, userId int64, price int64, priceBase int64, feeRate int64, originPrice int64, originPriceBase int64) (int64, error) {
 	var userBalance UserBalance
 	var err error
 	err = ub.data.DB(ctx).Where(&UserBalance{UserId: userId}).Table("user_balance").First(&userBalance).Error
@@ -2152,7 +2152,7 @@ func (ub *UserBalanceRepo) ExchangeBiw(ctx context.Context, userId int64, price 
 		return 0, nil
 	}
 
-	tmp := userBalance.BalanceDhb * price / priceBase
+	tmp := userBalance.BalanceDhb / priceBase * price
 	tmp -= tmp * feeRate / 1000
 	if err = ub.data.DB(ctx).Table("user_balance").
 		Where("user_id=?", userId).
@@ -2180,7 +2180,7 @@ func (ub *UserBalanceRepo) RecommendRewardBiw(ctx context.Context, userId int64,
 
 	if "stop" == stop {
 		if 0 < userBalance.BalanceDhb {
-			tmp := userBalance.BalanceDhb * price / priceBase
+			tmp := userBalance.BalanceDhb / priceBase * price
 			tmp -= tmp * feeRate / 1000
 			if err = ub.data.DB(ctx).Table("user_balance").
 				Where("user_id=?", userId).
@@ -2233,7 +2233,7 @@ func (ub *UserBalanceRepo) LocationRewardBiw(ctx context.Context, userId int64, 
 
 	if "stop" == stop {
 		if 0 < userBalance.BalanceDhb {
-			tmp := userBalance.BalanceDhb * price / priceBase
+			tmp := userBalance.BalanceDhb / priceBase * price
 			tmp -= tmp * feeRate / 1000
 			if err = ub.data.DB(ctx).Table("user_balance").
 				Where("user_id=?", userId).
@@ -2285,7 +2285,7 @@ func (ub *UserBalanceRepo) AreaRewardBiw(ctx context.Context, userId int64, rewa
 
 	if "stop" == stop {
 		if 0 < userBalance.BalanceDhb {
-			tmp := userBalance.BalanceDhb * price / priceBase
+			tmp := userBalance.BalanceDhb / priceBase * price
 			tmp -= tmp * feeRate / 1000
 			if err = ub.data.DB(ctx).Table("user_balance").
 				Where("user_id=?", userId).
