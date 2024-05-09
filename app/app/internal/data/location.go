@@ -272,6 +272,7 @@ func (lr *LocationRepo) GetMyLocationLastRunning(ctx context.Context, userId int
 		Top:        location.Top,
 		Num:        location.Num,
 		Count:      location.Count,
+		TopNum:     location.TopNum,
 	}, nil
 }
 
@@ -547,6 +548,8 @@ func (lr *LocationRepo) GetLocationsByTop(ctx context.Context, top int64) ([]*bi
 			Status:        location.Status,
 			StopDate:      location.StopDate,
 			Count:         location.Count,
+			Top:           location.Top,
+			TopNum:        location.TopNum,
 		})
 	}
 
