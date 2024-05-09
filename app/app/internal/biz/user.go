@@ -184,10 +184,11 @@ type UserBalanceRepo interface {
 	WithdrawReward(ctx context.Context, userId int64, amount int64, locationId int64, myLocationId int64, locationType string, status string) (int64, error)
 	RecommendReward(ctx context.Context, userId int64, amount int64, locationId int64, status string) (int64, error)
 	RecommendTeamReward(ctx context.Context, userId int64, rewardAmount int64, amount int64, amountDhb int64, locationId int64, recommendNum int64, status string) (int64, error)
-	RecommendRewardBiw(ctx context.Context, userId int64, rewardAmount int64, recommendNum int64) (int64, error)
-	LocationRewardBiw(ctx context.Context, userId int64, rewardAmount int64) (int64, error)
-	AreaRewardBiw(ctx context.Context, userId int64, rewardAmount int64, areaType int64) (int64, error)
+	RecommendRewardBiw(ctx context.Context, userId int64, rewardAmount int64, recommendNum int64, stop string, price int64, priceBase int64, feeRate int64) (int64, error)
+	LocationRewardBiw(ctx context.Context, userId int64, rewardAmount int64, stop string, price int64, priceBase int64, feeRate int64) (int64, error)
+	AreaRewardBiw(ctx context.Context, userId int64, rewardAmount int64, areaType int64, stop string, price int64, priceBase int64, feeRate int64) (int64, error)
 	FourRewardBiw(ctx context.Context, userId int64, rewardAmount int64, num int64) (int64, error)
+	ExchangeBiw(ctx context.Context, userId int64, price int64, priceBase int64, feeRate int64) (int64, error)
 	SystemWithdrawReward(ctx context.Context, amount int64, locationId int64) error
 	SystemReward(ctx context.Context, amount int64, locationId int64) error
 	SystemDailyReward(ctx context.Context, amount int64, locationId int64) error
@@ -1148,6 +1149,37 @@ func (uuc *UserUseCase) AdminConfigUpdate(ctx context.Context, req *v1.AdminConf
 	)
 
 	res := &v1.AdminConfigUpdateReply{}
+
+	if 1 == req.SendBody.Id || 2 == req.SendBody.Id {
+
+		var (
+			configs    []*Config
+			bPrice     int64
+			bPriceBase int64
+			feeRate    int64
+			users      []*User
+		)
+		configs, _ = uuc.configRepo.GetConfigByKeys(ctx, "b_price", "b_price_base", "exchange_rate")
+		if nil != configs {
+			for _, vConfig := range configs {
+				if "b_price" == vConfig.KeyName {
+					bPrice, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+				} else if "b_price_base" == vConfig.KeyName {
+					bPriceBase, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+				} else if "exchange_rate" == vConfig.KeyName {
+					feeRate, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+				}
+			}
+		}
+
+		users, err = uuc.repo.GetAllUsers(ctx)
+		for _, v := range users {
+			_, err = uuc.ubRepo.ExchangeBiw(ctx, v.ID, bPrice, bPriceBase, feeRate)
+			if nil != err {
+				return nil, err
+			}
+		}
+	}
 
 	_, err = uuc.configRepo.UpdateConfig(ctx, req.SendBody.Id, req.SendBody.Value)
 	if nil != err {
@@ -2183,11 +2215,12 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 		three              int64
 		four               int64
 		total              int64
+		feeRate            int64
 		err                error
 	)
 
 	configs, _ = uuc.configRepo.GetConfigByKeys(ctx,
-		"location_reward_rate", "b_price", "b_price_base",
+		"location_reward_rate", "b_price", "b_price_base", "exchange_rate",
 		"recommend_one_rate", "recommend_two_rate",
 		"recommend_three_rate", "recommend_four_rate",
 		"recommend_five_rate", "recommend_six_rate",
@@ -2249,6 +2282,8 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 				four, _ = strconv.ParseInt(vConfig.Value, 10, 64)
 			} else if "total" == vConfig.KeyName {
 				total, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			} else if "exchange_rate" == vConfig.KeyName {
+				feeRate, _ = strconv.ParseInt(vConfig.Value, 10, 64)
 			}
 		}
 	}
@@ -2286,7 +2321,7 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 						return err
 					}
 
-					_, err = uuc.ubRepo.LocationRewardBiw(ctx, vUserLocations.UserId, bLocationRewardAmount)
+					_, err = uuc.ubRepo.LocationRewardBiw(ctx, vUserLocations.UserId, bLocationRewardAmount, vUserLocations.Status, bPrice, bPriceBase, feeRate)
 					if nil != err {
 						return err
 					}
@@ -2380,23 +2415,28 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 								continue
 							}
 
+							tmpMinUsdt := tmpMyTopUserRecommendUserLocationLast.Usdt
+							if vUserLocations.Usdt < tmpMinUsdt {
+								tmpMinUsdt = vUserLocations.Usdt
+							}
+
 							var tmpMyRecommendAmount int64
 							if 0 == i { // 当前用户被此人直推
-								tmpMyRecommendAmount = tmpMyTopUserRecommendUserLocationLast.Usdt / 1000 * locationRewardRate / 100 * recommendOneRate
+								tmpMyRecommendAmount = tmpMinUsdt / 1000 * locationRewardRate / 100 * recommendOneRate
 							} else if 1 == i {
-								tmpMyRecommendAmount = tmpMyTopUserRecommendUserLocationLast.Usdt / 1000 * locationRewardRate / 100 * recommendTwoRate
+								tmpMyRecommendAmount = tmpMinUsdt / 1000 * locationRewardRate / 100 * recommendTwoRate
 							} else if 2 == i && 2 <= len(myUserRecommendUserLocationsLast) { // 3代需要复投1次
-								tmpMyRecommendAmount = tmpMyTopUserRecommendUserLocationLast.Usdt / 1000 * locationRewardRate / 100 * recommendThreeRate
+								tmpMyRecommendAmount = tmpMinUsdt / 1000 * locationRewardRate / 100 * recommendThreeRate
 							} else if 3 == i && 3 <= len(myUserRecommendUserLocationsLast) { // 4代需要复投2次
-								tmpMyRecommendAmount = tmpMyTopUserRecommendUserLocationLast.Usdt / 1000 * locationRewardRate / 100 * recommendFourRate
+								tmpMyRecommendAmount = tmpMinUsdt / 1000 * locationRewardRate / 100 * recommendFourRate
 							} else if 4 == i && 4 <= len(myUserRecommendUserLocationsLast) { // 5代需要复投3次
-								tmpMyRecommendAmount = tmpMyTopUserRecommendUserLocationLast.Usdt / 1000 * locationRewardRate / 100 * recommendFiveRate
+								tmpMyRecommendAmount = tmpMinUsdt / 1000 * locationRewardRate / 100 * recommendFiveRate
 							} else if 5 == i && 5 <= len(myUserRecommendUserLocationsLast) { // 6代需要复投4次
-								tmpMyRecommendAmount = tmpMyTopUserRecommendUserLocationLast.Usdt / 1000 * locationRewardRate / 100 * recommendSixRate
+								tmpMyRecommendAmount = tmpMinUsdt / 1000 * locationRewardRate / 100 * recommendSixRate
 							} else if 6 == i && 6 <= len(myUserRecommendUserLocationsLast) { // 7代需要复投5次
-								tmpMyRecommendAmount = tmpMyTopUserRecommendUserLocationLast.Usdt / 1000 * locationRewardRate / 100 * recommendSevenRate
+								tmpMyRecommendAmount = tmpMinUsdt / 1000 * locationRewardRate / 100 * recommendSevenRate
 							} else if 7 == i && 7 <= len(myUserRecommendUserLocationsLast) { // 8代需要复投6次
-								tmpMyRecommendAmount = tmpMyTopUserRecommendUserLocationLast.Usdt / 1000 * locationRewardRate / 100 * recommendEightRate
+								tmpMyRecommendAmount = tmpMinUsdt / 1000 * locationRewardRate / 100 * recommendEightRate
 							} else {
 								continue
 							}
@@ -2421,7 +2461,7 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 											return err
 										}
 
-										_, err = uuc.ubRepo.RecommendRewardBiw(ctx, tmpMyTopUserRecommendUserId, bAmount, int64(i+1)) // 推荐人奖励
+										_, err = uuc.ubRepo.RecommendRewardBiw(ctx, tmpMyTopUserRecommendUserId, bAmount, int64(i+1), tmpMyTopUserRecommendUserLocationLast.Status, bPrice, bPriceBase, feeRate) // 推荐人奖励
 										if nil != err {
 											return err
 										}
@@ -2581,7 +2621,7 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 								return err
 							}
 
-							_, err = uuc.ubRepo.AreaRewardBiw(ctx, vUserLocationsItem.UserId, bLocationRewardAmount, 1)
+							_, err = uuc.ubRepo.AreaRewardBiw(ctx, vUserLocationsItem.UserId, bLocationRewardAmount, 1, vUserLocationsItem.Status, bPrice, bPriceBase, feeRate)
 							if nil != err {
 								return err
 							}
@@ -2654,7 +2694,7 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 								return err
 							}
 
-							_, err = uuc.ubRepo.AreaRewardBiw(ctx, vUserLocationsItem.UserId, bLocationRewardAmount, 2)
+							_, err = uuc.ubRepo.AreaRewardBiw(ctx, vUserLocationsItem.UserId, bLocationRewardAmount, 2, vUserLocationsItem.Status, bPrice, bPriceBase, feeRate)
 							if nil != err {
 								return err
 							}
@@ -2727,7 +2767,7 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 								return err
 							}
 
-							_, err = uuc.ubRepo.AreaRewardBiw(ctx, vUserLocationsItem.UserId, bLocationRewardAmount, 3)
+							_, err = uuc.ubRepo.AreaRewardBiw(ctx, vUserLocationsItem.UserId, bLocationRewardAmount, 3, vUserLocationsItem.Status, bPrice, bPriceBase, feeRate)
 							if nil != err {
 								return err
 							}
@@ -2800,7 +2840,7 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 								return err
 							}
 
-							_, err = uuc.ubRepo.AreaRewardBiw(ctx, vUserLocationsItem.UserId, bLocationRewardAmount, 4)
+							_, err = uuc.ubRepo.AreaRewardBiw(ctx, vUserLocationsItem.UserId, bLocationRewardAmount, 4, vUserLocationsItem.Status, bPrice, bPriceBase, feeRate)
 							if nil != err {
 								return err
 							}
@@ -2873,7 +2913,7 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 								return err
 							}
 
-							_, err = uuc.ubRepo.AreaRewardBiw(ctx, vUserLocationsItem.UserId, bLocationRewardAmount, 5)
+							_, err = uuc.ubRepo.AreaRewardBiw(ctx, vUserLocationsItem.UserId, bLocationRewardAmount, 5, vUserLocationsItem.Status, bPrice, bPriceBase, feeRate)
 							if nil != err {
 								return err
 							}

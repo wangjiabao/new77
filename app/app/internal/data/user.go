@@ -2139,8 +2139,32 @@ func (ub *UserBalanceRepo) FourRewardBiw(ctx context.Context, userId int64, rewa
 	return userBalanceRecode.ID, nil
 }
 
+// ExchangeBiw .
+func (ub *UserBalanceRepo) ExchangeBiw(ctx context.Context, userId int64, price int64, priceBase int64, feeRate int64) (int64, error) {
+	var userBalance UserBalance
+	var err error
+	err = ub.data.DB(ctx).Where(&UserBalance{UserId: userId}).Table("user_balance").First(&userBalance).Error
+	if err != nil {
+		return 0, err
+	}
+
+	if 0 >= userBalance.BalanceDhb {
+		return 0, nil
+	}
+
+	tmp := userBalance.BalanceDhb * price / priceBase
+	tmp -= tmp * feeRate / 1000
+	if err = ub.data.DB(ctx).Table("user_balance").
+		Where("user_id=?", userId).
+		Updates(map[string]interface{}{"balance_dhb": gorm.Expr("balance_dhb - ?", userBalance.BalanceDhb), "balance_usdt": gorm.Expr("balance_usdt + ?", tmp)}).Error; nil != err {
+		return 0, errors.NotFound("user balance err", "user balance not found")
+	}
+
+	return 0, nil
+}
+
 // RecommendRewardBiw .
-func (ub *UserBalanceRepo) RecommendRewardBiw(ctx context.Context, userId int64, rewardAmount int64, recommendNum int64) (int64, error) {
+func (ub *UserBalanceRepo) RecommendRewardBiw(ctx context.Context, userId int64, rewardAmount int64, recommendNum int64, stop string, price int64, priceBase int64, feeRate int64) (int64, error) {
 	var err error
 	if err = ub.data.DB(ctx).Table("user_balance").
 		Where("user_id=?", userId).
@@ -2152,6 +2176,18 @@ func (ub *UserBalanceRepo) RecommendRewardBiw(ctx context.Context, userId int64,
 	err = ub.data.DB(ctx).Where(&UserBalance{UserId: userId}).Table("user_balance").First(&userBalance).Error
 	if err != nil {
 		return 0, err
+	}
+
+	if "stop" == stop {
+		if 0 < userBalance.BalanceDhb {
+			tmp := userBalance.BalanceDhb * price / priceBase
+			tmp -= tmp * feeRate / 1000
+			if err = ub.data.DB(ctx).Table("user_balance").
+				Where("user_id=?", userId).
+				Updates(map[string]interface{}{"balance_dhb": gorm.Expr("balance_dhb - ?", userBalance.BalanceDhb), "balance_usdt": gorm.Expr("balance_usdt + ?", tmp)}).Error; nil != err {
+				return 0, errors.NotFound("user balance err", "user balance not found")
+			}
+		}
 	}
 
 	var userBalanceRecode UserBalanceRecord
@@ -2181,7 +2217,7 @@ func (ub *UserBalanceRepo) RecommendRewardBiw(ctx context.Context, userId int64,
 }
 
 // LocationRewardBiw .
-func (ub *UserBalanceRepo) LocationRewardBiw(ctx context.Context, userId int64, rewardAmount int64) (int64, error) {
+func (ub *UserBalanceRepo) LocationRewardBiw(ctx context.Context, userId int64, rewardAmount int64, stop string, price int64, priceBase int64, feeRate int64) (int64, error) {
 	var err error
 	if err = ub.data.DB(ctx).Table("user_balance").
 		Where("user_id=?", userId).
@@ -2193,6 +2229,18 @@ func (ub *UserBalanceRepo) LocationRewardBiw(ctx context.Context, userId int64, 
 	err = ub.data.DB(ctx).Where(&UserBalance{UserId: userId}).Table("user_balance").First(&userBalance).Error
 	if err != nil {
 		return 0, err
+	}
+
+	if "stop" == stop {
+		if 0 < userBalance.BalanceDhb {
+			tmp := userBalance.BalanceDhb * price / priceBase
+			tmp -= tmp * feeRate / 1000
+			if err = ub.data.DB(ctx).Table("user_balance").
+				Where("user_id=?", userId).
+				Updates(map[string]interface{}{"balance_dhb": gorm.Expr("balance_dhb - ?", userBalance.BalanceDhb), "balance_usdt": gorm.Expr("balance_usdt + ?", tmp)}).Error; nil != err {
+				return 0, errors.NotFound("user balance err", "user balance not found")
+			}
+		}
 	}
 
 	var userBalanceRecode UserBalanceRecord
@@ -2221,7 +2269,7 @@ func (ub *UserBalanceRepo) LocationRewardBiw(ctx context.Context, userId int64, 
 }
 
 // AreaRewardBiw .
-func (ub *UserBalanceRepo) AreaRewardBiw(ctx context.Context, userId int64, rewardAmount int64, areaType int64) (int64, error) {
+func (ub *UserBalanceRepo) AreaRewardBiw(ctx context.Context, userId int64, rewardAmount int64, areaType int64, stop string, price int64, priceBase int64, feeRate int64) (int64, error) {
 	var err error
 	if err = ub.data.DB(ctx).Table("user_balance").
 		Where("user_id=?", userId).
@@ -2233,6 +2281,18 @@ func (ub *UserBalanceRepo) AreaRewardBiw(ctx context.Context, userId int64, rewa
 	err = ub.data.DB(ctx).Where(&UserBalance{UserId: userId}).Table("user_balance").First(&userBalance).Error
 	if err != nil {
 		return 0, err
+	}
+
+	if "stop" == stop {
+		if 0 < userBalance.BalanceDhb {
+			tmp := userBalance.BalanceDhb * price / priceBase
+			tmp -= tmp * feeRate / 1000
+			if err = ub.data.DB(ctx).Table("user_balance").
+				Where("user_id=?", userId).
+				Updates(map[string]interface{}{"balance_dhb": gorm.Expr("balance_dhb - ?", userBalance.BalanceDhb), "balance_usdt": gorm.Expr("balance_usdt + ?", tmp)}).Error; nil != err {
+				return 0, errors.NotFound("user balance err", "user balance not found")
+			}
+		}
 	}
 
 	var userBalanceRecode UserBalanceRecord
