@@ -273,6 +273,7 @@ func (lr *LocationRepo) GetMyLocationLastRunning(ctx context.Context, userId int
 		Num:        location.Num,
 		Count:      location.Count,
 		TopNum:     location.TopNum,
+		Usdt:       location.Usdt,
 	}, nil
 }
 
@@ -866,6 +867,19 @@ func (lr *LocationRepo) UpdateLocationNewNew(ctx context.Context, id int64, stat
 		if 0 == res.RowsAffected || res.Error != nil {
 			return res.Error
 		}
+	}
+
+	return nil
+}
+
+// UpdateLocationNewNewNew .
+func (lr *LocationRepo) UpdateLocationNewNewNew(ctx context.Context, id int64, current int64) error {
+	res := lr.data.DB(ctx).Table("location_new").
+		Where("id=?", id).
+		Where("status=?", "running").
+		Updates(map[string]interface{}{"current": gorm.Expr("current - ?", current)})
+	if 0 == res.RowsAffected || res.Error != nil {
+		return res.Error
 	}
 
 	return nil

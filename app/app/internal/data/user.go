@@ -2268,6 +2268,23 @@ func (ub *UserBalanceRepo) LocationRewardBiw(ctx context.Context, userId int64, 
 	return userBalanceRecode.ID, nil
 }
 
+// PriceChange .
+func (ub *UserBalanceRepo) PriceChange(ctx context.Context, userId int64, rewardAmount int64, up string) error {
+	var err error
+
+	var reward Reward
+	reward.UserId = userId
+	reward.Amount = rewardAmount
+	reward.Type = up               // 本次分红的行为类型
+	reward.Reason = "price_change" // 给我分红的理由
+	err = ub.data.DB(ctx).Table("reward").Create(&reward).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // AreaRewardBiw .
 func (ub *UserBalanceRepo) AreaRewardBiw(ctx context.Context, userId int64, rewardAmount int64, areaType int64, stop string, price int64, priceBase int64, feeRate int64) (int64, error) {
 	var err error
