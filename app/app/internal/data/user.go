@@ -2140,7 +2140,7 @@ func (ub *UserBalanceRepo) FourRewardBiw(ctx context.Context, userId int64, rewa
 }
 
 // ExchangeBiw .
-func (ub *UserBalanceRepo) ExchangeBiw(ctx context.Context, userId int64, price int64, priceBase int64, feeRate int64, originPrice int64, originPriceBase int64) (int64, error) {
+func (ub *UserBalanceRepo) ExchangeBiw(ctx context.Context, userId int64, price int64, priceBase int64, feeRate int64, originPrice int64) (int64, error) {
 	var userBalance UserBalance
 	var err error
 	err = ub.data.DB(ctx).Where(&UserBalance{UserId: userId}).Table("user_balance").First(&userBalance).Error

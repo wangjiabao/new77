@@ -269,6 +269,9 @@ func (lr *LocationRepo) GetMyLocationLastRunning(ctx context.Context, userId int
 		Current:    location.Current,
 		CurrentMax: location.CurrentMax,
 		StopDate:   location.StopDate,
+		Top:        location.Top,
+		Num:        location.Num,
+		Count:      location.Count,
 	}, nil
 }
 
@@ -513,6 +516,37 @@ func (lr *LocationRepo) GetAllLocationsNew(ctx context.Context, currentMax int64
 			Current:       location.Current,
 			CurrentMax:    location.CurrentMax,
 			CurrentMaxNew: location.CurrentMaxNew,
+		})
+	}
+
+	return res, nil
+}
+
+// GetLocationsByTop .
+func (lr *LocationRepo) GetLocationsByTop(ctx context.Context, top int64) ([]*biz.LocationNew, error) {
+	var locations []*LocationNew
+	res := make([]*biz.LocationNew, 0)
+	if err := lr.data.db.Table("location_new").
+		Where("top=?", top).
+		Order("id asc").Find(&locations).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return res, errors.NotFound("LOCATION_NOT_FOUND", "location not found")
+		}
+
+		return nil, errors.New(500, "LOCATION ERROR", err.Error())
+	}
+
+	for _, location := range locations {
+		res = append(res, &biz.LocationNew{
+			ID:            location.ID,
+			UserId:        location.UserId,
+			Num:           location.Num,
+			Current:       location.Current,
+			CurrentMax:    location.CurrentMax,
+			CurrentMaxNew: location.CurrentMaxNew,
+			Status:        location.Status,
+			StopDate:      location.StopDate,
+			Count:         location.Count,
 		})
 	}
 

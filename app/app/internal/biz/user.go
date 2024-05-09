@@ -188,7 +188,7 @@ type UserBalanceRepo interface {
 	LocationRewardBiw(ctx context.Context, userId int64, rewardAmount int64, stop string, price int64, priceBase int64, feeRate int64) (int64, error)
 	AreaRewardBiw(ctx context.Context, userId int64, rewardAmount int64, areaType int64, stop string, price int64, priceBase int64, feeRate int64) (int64, error)
 	FourRewardBiw(ctx context.Context, userId int64, rewardAmount int64, num int64) (int64, error)
-	ExchangeBiw(ctx context.Context, userId int64, price int64, priceBase int64, feeRate int64, originPrice int64, originPriceBase int64) (int64, error)
+	ExchangeBiw(ctx context.Context, userId int64, price int64, priceBase int64, feeRate int64, originPrice int64) (int64, error)
 	SystemWithdrawReward(ctx context.Context, amount int64, locationId int64) error
 	SystemReward(ctx context.Context, amount int64, locationId int64) error
 	SystemDailyReward(ctx context.Context, amount int64, locationId int64) error
@@ -1153,13 +1153,12 @@ func (uuc *UserUseCase) AdminConfigUpdate(ctx context.Context, req *v1.AdminConf
 	if 1 == req.SendBody.Id {
 
 		var (
-			configs          []*Config
-			bPrice           int64
-			bPriceBase       int64
-			originBprice     int64
-			originBpriceBase int64
-			feeRate          int64
-			users            []*User
+			configs      []*Config
+			bPrice       int64
+			bPriceBase   int64
+			originBprice int64
+			feeRate      int64
+			users        []*User
 		)
 		configs, _ = uuc.configRepo.GetConfigByKeys(ctx, "b_price", "b_price_base", "exchange_rate")
 		if nil != configs {
@@ -1167,7 +1166,7 @@ func (uuc *UserUseCase) AdminConfigUpdate(ctx context.Context, req *v1.AdminConf
 				if "b_price" == vConfig.KeyName {
 					originBprice, _ = strconv.ParseInt(vConfig.Value, 10, 64)
 				} else if "b_price_base" == vConfig.KeyName {
-					originBpriceBase, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+					bPriceBase, _ = strconv.ParseInt(vConfig.Value, 10, 64)
 				} else if "exchange_rate" == vConfig.KeyName {
 					feeRate, _ = strconv.ParseInt(vConfig.Value, 10, 64)
 				}
@@ -1175,7 +1174,6 @@ func (uuc *UserUseCase) AdminConfigUpdate(ctx context.Context, req *v1.AdminConf
 		}
 
 		bPrice, _ = strconv.ParseInt(req.SendBody.Value, 10, 64)
-		bPriceBase = originBpriceBase
 
 		if 0 >= bPrice || 0 >= bPriceBase {
 			return nil, err
@@ -1183,7 +1181,7 @@ func (uuc *UserUseCase) AdminConfigUpdate(ctx context.Context, req *v1.AdminConf
 
 		users, err = uuc.repo.GetAllUsers(ctx)
 		for _, v := range users {
-			_, err = uuc.ubRepo.ExchangeBiw(ctx, v.ID, bPrice, bPriceBase, feeRate, originBprice, originBpriceBase)
+			_, err = uuc.ubRepo.ExchangeBiw(ctx, v.ID, bPrice, bPriceBase, feeRate, originBprice)
 			if nil != err {
 				return nil, err
 			}
@@ -2340,7 +2338,7 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 				if "stop" == vUserLocations.Status {
 					tmpTop := vUserLocations.Top
 					tmpTopNum := vUserLocations.TopNum
-					for j := 0; j < 20 && 0 < tmpTop && 0 < tmpTopNum; j++ {
+					for j := 0; j < 10000 && 0 < tmpTop && 0 < tmpTopNum; j++ {
 						err = uuc.locationRepo.UpdateLocationNewTotalSub(ctx, tmpTop, tmpTopNum, vUserLocations.Usdt/10000000000)
 						if nil != err {
 							return err
@@ -2479,7 +2477,7 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 										if "stop" == tmpMyTopUserRecommendUserLocationLast.Status {
 											tmpTop := tmpMyTopUserRecommendUserLocationLast.Top
 											tmpTopNum := tmpMyTopUserRecommendUserLocationLast.TopNum
-											for j := 0; j < 20 && 0 < tmpTop && 0 < tmpTopNum; j++ {
+											for j := 0; j < 10000 && 0 < tmpTop && 0 < tmpTopNum; j++ {
 												err = uuc.locationRepo.UpdateLocationNewTotalSub(ctx, tmpTop, tmpTopNum, tmpMyTopUserRecommendUserLocationLast.Usdt/10000000000)
 												if nil != err {
 													return err
@@ -2640,7 +2638,7 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 						if "stop" == vUserLocationsItem.Status {
 							tmpTop := vUserLocationsItem.Top
 							tmpTopNum := vUserLocationsItem.TopNum
-							for j := 0; j < 20 && 0 < tmpTop && 0 < tmpTopNum; j++ {
+							for j := 0; j < 10000 && 0 < tmpTop && 0 < tmpTopNum; j++ {
 								err = uuc.locationRepo.UpdateLocationNewTotalSub(ctx, tmpTop, tmpTopNum, vUserLocationsItem.Usdt/10000000000)
 								if nil != err {
 									return err
@@ -2713,7 +2711,7 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 						if "stop" == vUserLocationsItem.Status {
 							tmpTop := vUserLocationsItem.Top
 							tmpTopNum := vUserLocationsItem.TopNum
-							for j := 0; j < 20 && 0 < tmpTop && 0 < tmpTopNum; j++ {
+							for j := 0; j < 10000 && 0 < tmpTop && 0 < tmpTopNum; j++ {
 								err = uuc.locationRepo.UpdateLocationNewTotalSub(ctx, tmpTop, tmpTopNum, vUserLocationsItem.Usdt/10000000000)
 								if nil != err {
 									return err
@@ -2786,7 +2784,7 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 						if "stop" == vUserLocationsItem.Status {
 							tmpTop := vUserLocationsItem.Top
 							tmpTopNum := vUserLocationsItem.TopNum
-							for j := 0; j < 20 && 0 < tmpTop && 0 < tmpTopNum; j++ {
+							for j := 0; j < 10000 && 0 < tmpTop && 0 < tmpTopNum; j++ {
 								err = uuc.locationRepo.UpdateLocationNewTotalSub(ctx, tmpTop, tmpTopNum, vUserLocationsItem.Usdt/10000000000)
 								if nil != err {
 									return err
@@ -2859,7 +2857,7 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 						if "stop" == vUserLocationsItem.Status {
 							tmpTop := vUserLocationsItem.Top
 							tmpTopNum := vUserLocationsItem.TopNum
-							for j := 0; j < 20 && 0 < tmpTop && 0 < tmpTopNum; j++ {
+							for j := 0; j < 10000 && 0 < tmpTop && 0 < tmpTopNum; j++ {
 								err = uuc.locationRepo.UpdateLocationNewTotalSub(ctx, tmpTop, tmpTopNum, vUserLocationsItem.Usdt/10000000000)
 								if nil != err {
 									return err
@@ -2932,7 +2930,7 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 						if "stop" == vUserLocationsItem.Status {
 							tmpTop := vUserLocationsItem.Top
 							tmpTopNum := vUserLocationsItem.TopNum
-							for j := 0; j < 20 && 0 < tmpTop && 0 < tmpTopNum; j++ {
+							for j := 0; j < 10000 && 0 < tmpTop && 0 < tmpTopNum; j++ {
 								err = uuc.locationRepo.UpdateLocationNewTotalSub(ctx, tmpTop, tmpTopNum, vUserLocationsItem.Usdt/10000000000)
 								if nil != err {
 									return err

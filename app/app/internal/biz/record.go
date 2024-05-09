@@ -115,6 +115,7 @@ type LocationRepo interface {
 	GetAllLocations(ctx context.Context) ([]*Location, error)
 	GetAllLocationsNew(ctx context.Context, currentMax int64) ([]*LocationNew, error)
 	GetAllLocationsNew2(ctx context.Context) ([]*LocationNew, error)
+	GetLocationsByTop(ctx context.Context, top int64) ([]*LocationNew, error)
 	GetLocationsByUserIds(ctx context.Context, userIds []int64) ([]*Location, error)
 
 	CreateLocation2New(ctx context.Context, rel *LocationNew, amount int64) (*LocationNew, error)
@@ -252,9 +253,10 @@ func (ruc *RecordUseCase) EthUserRecordHandle(ctx context.Context, ethUserRecord
 
 	for _, v := range ethUserRecord {
 		var (
-			allLocations []*LocationNew
-			myLocations  []*LocationNew
-			err          error
+			allLocations   []*LocationNew
+			myLocations    []*LocationNew
+			myLastLocation *LocationNew
+			err            error
 		)
 
 		// 获取当前用户的占位信息，已经有运行中的跳过
@@ -305,20 +307,13 @@ func (ruc *RecordUseCase) EthUserRecordHandle(ctx context.Context, ethUserRecord
 					fmt.Println(err, "已投资", v)
 					break
 				}
+
+				myLastLocation = vMyLocations // 遍历到最后一个
 			}
 
 			if stop {
-				continue // 跳过
+				continue // 跳过已经投资
 			}
-		}
-
-		// 获取当前用户的占位信息，已经有运行中的跳过
-		var (
-			lastLocation *LocationNew
-		)
-		lastLocation, err = ruc.locationRepo.GetLocationLast(ctx)
-		if nil != err {
-			return false, err
 		}
 
 		// 推荐人
@@ -338,12 +333,89 @@ func (ruc *RecordUseCase) EthUserRecordHandle(ctx context.Context, ethUserRecord
 			}
 		}
 
+		// 直推人投资
+		var (
+			myRecommmendLocation *LocationNew
+		)
+		if 0 < myUserRecommendUserId {
+			myRecommmendLocation, err = ruc.locationRepo.GetMyLocationLastRunning(ctx, myUserRecommendUserId)
+			if nil != err {
+				continue
+			}
+		}
+
+		// 顺位
+		var (
+			lastLocation *LocationNew
+		)
+		lastLocation, err = ruc.locationRepo.GetLocationLast(ctx)
+		if nil != err {
+			continue
+		}
+
+		// 有直推人占位且第一次入金，挂在直推人名下，按位查找
+		if nil != myRecommmendLocation && nil == myLastLocation {
+			var (
+				selectLocation *LocationNew // 选中的
+			)
+			if 3 <= myRecommmendLocation.Count {
+				var tmpSopFor bool
+
+				tmpIds := make([]int64, 0)
+				tmpIds = append(tmpIds, myRecommmendLocation.ID)
+				for _, vTmpId := range tmpIds { // 小于3个人
+					// 查找
+					var (
+						topLocations []*LocationNew
+					)
+					topLocations, err = ruc.locationRepo.GetLocationsByTop(ctx, vTmpId)
+					if nil != err {
+						break
+					}
+
+					/// 没数据
+					if 0 >= len(topLocations) {
+						tmpSopFor = true
+						break
+					}
+
+					for _, vTopLocations := range topLocations {
+						if 3 > vTopLocations.Count {
+							selectLocation = vTopLocations
+							break
+						}
+						tmpIds = append(tmpIds, vTopLocations.ID)
+					}
+
+					if nil != selectLocation {
+						break
+					}
+					//
+				}
+
+				if tmpSopFor {
+					continue
+				}
+
+			} else {
+				selectLocation = myRecommmendLocation
+			}
+
+			lastLocation = selectLocation
+		} else if nil != myLastLocation || nil == myRecommmendLocation { // 2复投，直接顺位 2直推无位置或一号用户无直推人，顺位补齐
+
+		} else {
+			continue
+		}
+
 		if err = ruc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
 
 			var (
 				tmpTop int64
 				tmpNum int64
 			)
+
+			// 顺位
 			if nil != lastLocation {
 				err = ruc.locationRepo.UpdateLocationNewCount(ctx, lastLocation.ID, lastLocation.Count+1, v.RelAmount/10000000000)
 				if nil != err {
@@ -356,7 +428,8 @@ func (ruc *RecordUseCase) EthUserRecordHandle(ctx context.Context, ethUserRecord
 					currentTop    = lastLocation.Top
 					currentTopNum = lastLocation.TopNum
 				)
-				for j := 0; j < 20 && 0 < currentTop && 0 < currentTopNum; j++ {
+				// 大小区业绩
+				for j := 0; j < 10000 && 0 < currentTop && 0 < currentTopNum; j++ {
 					err = ruc.locationRepo.UpdateLocationNewTotal(ctx, currentTop, currentTopNum, v.RelAmount/10000000000)
 					if nil != err {
 						return err
