@@ -256,7 +256,7 @@ func (lr *LocationRepo) GetMyLocationLastRunning(ctx context.Context, userId int
 	var location LocationNew
 	if err := lr.data.db.Table("location_new").Where("user_id", userId).Where("status=?", "running").Order("id desc").First(&location).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.NotFound("LOCATION_NOT_FOUND", "location not found")
+			return nil, nil
 		}
 
 		return nil, errors.New(500, "LOCATION ERROR", err.Error())
