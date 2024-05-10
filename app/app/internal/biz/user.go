@@ -1224,13 +1224,13 @@ func (uuc *UserUseCase) AdminConfigUpdate(ctx context.Context, req *v1.AdminConf
 							}
 						}
 
-						_, err = uuc.ubRepo.ExchangeBiw(ctx, v.ID, bPrice, bPriceBase, feeRate)
-						if nil != err {
-							return err
-						}
-
 						// 业绩减掉
 						if "stop" == runningLocation.Status {
+							_, err = uuc.ubRepo.ExchangeBiw(ctx, v.ID, bPrice, bPriceBase, feeRate)
+							if nil != err {
+								return err
+							}
+
 							tmpTop := runningLocation.Top
 							tmpTopNum := runningLocation.TopNum
 							for j := 0; j < 10000 && 0 < tmpTop && 0 < tmpTopNum; j++ {
@@ -1280,11 +1280,6 @@ func (uuc *UserUseCase) AdminConfigUpdate(ctx context.Context, req *v1.AdminConf
 								if nil != err {
 									return err
 								}
-							}
-
-							_, err = uuc.ubRepo.ExchangeBiw(ctx, v.ID, bPrice, bPriceBase, feeRate)
-							if nil != err {
-								return err
 							}
 
 							return nil
