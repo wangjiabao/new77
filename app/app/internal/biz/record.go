@@ -412,48 +412,46 @@ func (ruc *RecordUseCase) EthUserRecordHandle(ctx context.Context, ethUserRecord
 			if nil != err {
 				continue
 			}
-			if nil == firstLocation {
-				continue
-			}
-
-			if 3 <= firstLocation.Count {
-				tmpIds := make([]int64, 0)
-				tmpIds = append(tmpIds, firstLocation.ID)
-				for _, vTmpId := range tmpIds { // 小于3个人
-					// 查找
-					var (
-						topLocations []*LocationNew
-					)
-					topLocations, err = ruc.locationRepo.GetLocationsByTop(ctx, vTmpId)
-					if nil != err {
-						break
-					}
-
-					/// 没数据
-					if 0 >= len(topLocations) {
-						tmpSopFor = true
-						break
-					}
-
-					for _, vTopLocations := range topLocations {
-						if 3 > vTopLocations.Count {
-							selectLocation = vTopLocations
+			if nil != firstLocation {
+				if 3 <= firstLocation.Count {
+					tmpIds := make([]int64, 0)
+					tmpIds = append(tmpIds, firstLocation.ID)
+					for _, vTmpId := range tmpIds { // 小于3个人
+						// 查找
+						var (
+							topLocations []*LocationNew
+						)
+						topLocations, err = ruc.locationRepo.GetLocationsByTop(ctx, vTmpId)
+						if nil != err {
 							break
 						}
-						tmpIds = append(tmpIds, vTopLocations.ID)
+
+						/// 没数据
+						if 0 >= len(topLocations) {
+							tmpSopFor = true
+							break
+						}
+
+						for _, vTopLocations := range topLocations {
+							if 3 > vTopLocations.Count {
+								selectLocation = vTopLocations
+								break
+							}
+							tmpIds = append(tmpIds, vTopLocations.ID)
+						}
+
+						if nil != selectLocation {
+							break
+						}
+						//
 					}
 
-					if nil != selectLocation {
-						break
+					if tmpSopFor {
+						continue
 					}
-					//
+				} else {
+					selectLocation = firstLocation
 				}
-
-				if tmpSopFor {
-					continue
-				}
-			} else {
-				selectLocation = firstLocation
 			}
 
 			lastLocation = selectLocation
