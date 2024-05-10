@@ -136,6 +136,7 @@ type LocationRepo interface {
 	UpdateLocationNewCount(ctx context.Context, id int64, count int64, total int64) error
 	UpdateLocationNewTotal(ctx context.Context, id int64, count int64, total int64) error
 	UpdateLocationNewTotalSub(ctx context.Context, id int64, count int64, total int64) error
+	GetLocationFirst(ctx context.Context) (*LocationNew, error)
 }
 
 func NewRecordUseCase(
@@ -349,10 +350,6 @@ func (ruc *RecordUseCase) EthUserRecordHandle(ctx context.Context, ethUserRecord
 		var (
 			lastLocation *LocationNew
 		)
-		lastLocation, err = ruc.locationRepo.GetLocationLast(ctx)
-		if nil != err {
-			continue
-		}
 
 		// 有直推人占位且第一次入金，挂在直推人名下，按位查找
 		if nil != myRecommmendLocation && nil == myLastLocation {
@@ -405,6 +402,61 @@ func (ruc *RecordUseCase) EthUserRecordHandle(ctx context.Context, ethUserRecord
 			lastLocation = selectLocation
 		} else if nil != myLastLocation || nil == myRecommmendLocation { // 2复投，直接顺位 2直推无位置或一号用户无直推人，顺位补齐
 
+			var (
+				firstLocation  *LocationNew
+				tmpSopFor      bool
+				selectLocation *LocationNew // 选中的
+			)
+
+			firstLocation, err = ruc.locationRepo.GetLocationFirst(ctx)
+			if nil != err {
+				continue
+			}
+			if nil == firstLocation {
+				continue
+			}
+
+			if 3 <= firstLocation.Count {
+				tmpIds := make([]int64, 0)
+				tmpIds = append(tmpIds, firstLocation.ID)
+				for _, vTmpId := range tmpIds { // 小于3个人
+					// 查找
+					var (
+						topLocations []*LocationNew
+					)
+					topLocations, err = ruc.locationRepo.GetLocationsByTop(ctx, vTmpId)
+					if nil != err {
+						break
+					}
+
+					/// 没数据
+					if 0 >= len(topLocations) {
+						tmpSopFor = true
+						break
+					}
+
+					for _, vTopLocations := range topLocations {
+						if 3 > vTopLocations.Count {
+							selectLocation = vTopLocations
+							break
+						}
+						tmpIds = append(tmpIds, vTopLocations.ID)
+					}
+
+					if nil != selectLocation {
+						break
+					}
+					//
+				}
+
+				if tmpSopFor {
+					continue
+				}
+			} else {
+				selectLocation = firstLocation
+			}
+
+			lastLocation = selectLocation
 		} else {
 			continue
 		}

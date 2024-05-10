@@ -322,6 +322,31 @@ func (lr *LocationRepo) GetLocationLastByNum(ctx context.Context) (*biz.Location
 	}, nil
 }
 
+// GetLocationFirst .
+func (lr *LocationRepo) GetLocationFirst(ctx context.Context) (*biz.LocationNew, error) {
+	var location LocationNew
+	if err := lr.data.db.Table("location_new").Order("id  asc").First(&location).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+
+		return nil, errors.New(500, "LOCATION ERROR", err.Error())
+	}
+
+	return &biz.LocationNew{
+		ID:         location.ID,
+		UserId:     location.UserId,
+		Status:     location.Status,
+		Current:    location.Current,
+		CurrentMax: location.CurrentMax,
+		StopDate:   location.StopDate,
+		Num:        location.Num,
+		Top:        location.Top,
+		TopNum:     location.TopNum,
+		Count:      location.Count,
+	}, nil
+}
+
 // GetMyStopLocationLast .
 func (lr *LocationRepo) GetMyStopLocationLast(ctx context.Context, userId int64) (*biz.Location, error) {
 	var location Location
