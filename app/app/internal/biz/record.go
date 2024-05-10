@@ -210,7 +210,9 @@ func (ruc *RecordUseCase) EthUserRecordHandle(ctx context.Context, ethUserRecord
 		//recommendBase  = int64(100)
 	)
 	// 配置
-	configs, _ = ruc.configRepo.GetConfigByKeys(ctx, "buy_one", "buy_two", "buy_three", "buy_four", "buy_five", "b_price", "b_price_base", "recommend_rate_1", "recommend_rate_2", "recommend_rate_3", "recommend_rate_4", "recommend_rate_5", "recommend_rate_6", "recommend_rate_7", "recommend_rate_8")
+	configs, _ = ruc.configRepo.GetConfigByKeys(ctx,
+		"area_one", "area_two", "area_three", "area_four", "area_five",
+		"buy_one", "buy_two", "buy_three", "buy_four", "buy_five", "b_price", "b_price_base", "recommend_rate_1", "recommend_rate_2", "recommend_rate_3", "recommend_rate_4", "recommend_rate_5", "recommend_rate_6", "recommend_rate_7", "recommend_rate_8")
 	if nil != configs {
 		for _, vConfig := range configs {
 			if "buy_one" == vConfig.KeyName {
