@@ -2425,6 +2425,7 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 
 					tmpCurrentReward = vUserLocations.CurrentMax - vUserLocations.Current
 					bLocationRewardAmount = tmpCurrentReward / bPrice * bPriceBase
+					stopLocationIds[vUserLocations.ID] = vUserLocations.ID
 				}
 
 				if 0 < tmpCurrentReward && 0 < bLocationRewardAmount {
@@ -2467,10 +2468,6 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 					}
 				}
 
-				if vUserLocations.Current+tmpCurrentReward >= vUserLocations.CurrentMax { // 占位分红人分满停止
-					stopLocationIds[vUserLocations.ID] = vUserLocations.ID
-				}
-
 				return nil
 			}); nil != err {
 				fmt.Println("err reward daily", err, vUserLocations)
@@ -2480,6 +2477,10 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 	}
 
 	// 发放推荐奖励
+	userLocations, err = uuc.locationRepo.GetRunningLocations(ctx)
+	if nil != err {
+		return &v1.AdminDailyLocationRewardReply{}, nil
+	}
 	for _, vUserLocations := range userLocations {
 		var (
 			userRecommend       *UserRecommend
@@ -2564,6 +2565,7 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 
 									tmpMyRecommendAmount = tmpMyTopUserRecommendUserLocationLast.CurrentMax - tmpMyTopUserRecommendUserLocationLast.Current
 									bAmount = tmpMyRecommendAmount / bPrice * bPriceBase
+									stopLocationIds[vUserLocations.ID] = vUserLocations.ID
 								}
 
 								if 0 < tmpMyRecommendAmount && 0 < bAmount {
@@ -2606,10 +2608,6 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 											}
 										}
 
-										if tmpMyTopUserRecommendUserLocationLast.Current+tmpMyRecommendAmount >= tmpMyTopUserRecommendUserLocationLast.CurrentMax { // 占位分红人分满停止
-											stopLocationIds[vUserLocations.ID] = vUserLocations.ID
-										}
-
 										return nil
 									}); nil != err {
 										fmt.Println("err reward daily recommend", err, myUserRecommendUserLocationsLast)
@@ -2633,6 +2631,10 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 	userLocationsThree := make([]*LocationNew, 0)
 	userLocationsFour := make([]*LocationNew, 0)
 	userLocationsFive := make([]*LocationNew, 0)
+	userLocations, err = uuc.locationRepo.GetRunningLocations(ctx)
+	if nil != err {
+		return &v1.AdminDailyLocationRewardReply{}, nil
+	}
 	for _, vUserLocations := range userLocations {
 		if _, ok := stopLocationIds[vUserLocations.ID]; ok { // 上一轮已经停止了
 			continue
@@ -2728,6 +2730,7 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 
 							tmpCurrentReward = vUserLocationsItem.CurrentMax - vUserLocationsItem.Current
 							bLocationRewardAmount = tmpCurrentReward / bPrice * bPriceBase
+							stopLocationIds[vUserLocationsItem.ID] = vUserLocationsItem.ID
 						}
 
 						if 0 < tmpCurrentReward && 0 < bLocationRewardAmount {
@@ -2770,10 +2773,6 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 							}
 						}
 
-						if vUserLocationsItem.Current+tmpCurrentReward >= vUserLocationsItem.CurrentMax { // 占位分红人分满停止
-							stopLocationIds[vUserLocationsItem.ID] = vUserLocationsItem.ID
-						}
-
 						return nil
 					}); nil != err {
 						fmt.Println("err reward daily three", err, vUserLocationsItem)
@@ -2804,6 +2803,7 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 
 							tmpCurrentReward = vUserLocationsItem.CurrentMax - vUserLocationsItem.Current
 							bLocationRewardAmount = tmpCurrentReward / bPrice * bPriceBase
+							stopLocationIds[vUserLocationsItem.ID] = vUserLocationsItem.ID
 						}
 
 						if 0 < tmpCurrentReward && 0 < bLocationRewardAmount {
@@ -2844,10 +2844,6 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 
 								break
 							}
-						}
-
-						if vUserLocationsItem.Current+tmpCurrentReward >= vUserLocationsItem.CurrentMax { // 占位分红人分满停止
-							stopLocationIds[vUserLocationsItem.ID] = vUserLocationsItem.ID
 						}
 
 						return nil
@@ -2956,6 +2952,7 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 
 							tmpCurrentReward = vUserLocationsItem.CurrentMax - vUserLocationsItem.Current
 							bLocationRewardAmount = tmpCurrentReward / bPrice * bPriceBase
+							stopLocationIds[vUserLocationsItem.ID] = vUserLocationsItem.ID
 						}
 
 						if 0 < tmpCurrentReward && 0 < bLocationRewardAmount {
@@ -2998,10 +2995,6 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 							}
 						}
 
-						if vUserLocationsItem.Current+tmpCurrentReward >= vUserLocationsItem.CurrentMax { // 占位分红人分满停止
-							stopLocationIds[vUserLocationsItem.ID] = vUserLocationsItem.ID
-						}
-
 						return nil
 					}); nil != err {
 						fmt.Println("err reward daily three", err, vUserLocationsItem)
@@ -3032,6 +3025,7 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 
 							tmpCurrentReward = vUserLocationsItem.CurrentMax - vUserLocationsItem.Current
 							bLocationRewardAmount = tmpCurrentReward / bPrice * bPriceBase
+							stopLocationIds[vUserLocationsItem.ID] = vUserLocationsItem.ID
 						}
 
 						if 0 < tmpCurrentReward && 0 < bLocationRewardAmount {
@@ -3072,10 +3066,6 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 
 								break
 							}
-						}
-
-						if vUserLocationsItem.Current+tmpCurrentReward >= vUserLocationsItem.CurrentMax { // 占位分红人分满停止
-							stopLocationIds[vUserLocationsItem.ID] = vUserLocationsItem.ID
 						}
 
 						return nil
