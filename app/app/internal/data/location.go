@@ -650,7 +650,6 @@ func (lr *LocationRepo) GetLocationsNewByUserId(ctx context.Context, userId int6
 	res := make([]*biz.LocationNew, 0)
 	if err := lr.data.DB(ctx).Table("location_new").
 		Where("user_id=?", userId).
-		Where("status=?", "running").
 		Order("id desc").Find(&locations).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return res, errors.NotFound("LOCATION_NOT_FOUND", "location not found")
