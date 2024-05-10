@@ -2645,51 +2645,51 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 
 		// 1大区
 		if vUserLocations.Total >= vUserLocations.TotalTwo && vUserLocations.Total >= vUserLocations.TotalThree {
-			if areaOne <= vUserLocations.TotalTwo+vUserLocations.TotalThree {
+			if areaOne <= vUserLocations.TotalTwo+vUserLocations.TotalThree || 1 <= vUserLocations.LastLevel {
 				userLocationsOne = append(userLocationsOne, vUserLocations)
 			}
-			if areaTwo <= vUserLocations.TotalTwo+vUserLocations.TotalThree {
+			if areaTwo <= vUserLocations.TotalTwo+vUserLocations.TotalThree || 2 <= vUserLocations.LastLevel {
 				userLocationsTwo = append(userLocationsTwo, vUserLocations)
 			}
-			if areaThree <= vUserLocations.TotalTwo+vUserLocations.TotalThree {
+			if areaThree <= vUserLocations.TotalTwo+vUserLocations.TotalThree || 3 <= vUserLocations.LastLevel {
 				userLocationsThree = append(userLocationsThree, vUserLocations)
 			}
-			if areaFour <= vUserLocations.TotalTwo+vUserLocations.TotalThree {
+			if areaFour <= vUserLocations.TotalTwo+vUserLocations.TotalThree || 4 <= vUserLocations.LastLevel {
 				userLocationsFour = append(userLocationsFour, vUserLocations)
 			}
-			if areaFive <= vUserLocations.TotalTwo+vUserLocations.TotalThree {
+			if areaFive <= vUserLocations.TotalTwo+vUserLocations.TotalThree || 5 <= vUserLocations.LastLevel {
 				userLocationsFive = append(userLocationsFive, vUserLocations)
 			}
 		} else if vUserLocations.TotalTwo >= vUserLocations.Total && vUserLocations.TotalTwo >= vUserLocations.TotalThree {
-			if areaOne <= vUserLocations.Total+vUserLocations.TotalThree {
+			if areaOne <= vUserLocations.Total+vUserLocations.TotalThree || 1 <= vUserLocations.LastLevel {
 				userLocationsOne = append(userLocationsOne, vUserLocations)
 			}
-			if areaTwo <= vUserLocations.Total+vUserLocations.TotalThree {
+			if areaTwo <= vUserLocations.Total+vUserLocations.TotalThree || 2 <= vUserLocations.LastLevel {
 				userLocationsTwo = append(userLocationsTwo, vUserLocations)
 			}
-			if areaThree <= vUserLocations.Total+vUserLocations.TotalThree {
+			if areaThree <= vUserLocations.Total+vUserLocations.TotalThree || 3 <= vUserLocations.LastLevel {
 				userLocationsThree = append(userLocationsThree, vUserLocations)
 			}
-			if areaFour <= vUserLocations.Total+vUserLocations.TotalThree {
+			if areaFour <= vUserLocations.Total+vUserLocations.TotalThree || 4 <= vUserLocations.LastLevel {
 				userLocationsFour = append(userLocationsFour, vUserLocations)
 			}
-			if areaFive <= vUserLocations.Total+vUserLocations.TotalThree {
+			if areaFive <= vUserLocations.Total+vUserLocations.TotalThree || 5 <= vUserLocations.LastLevel {
 				userLocationsFive = append(userLocationsFive, vUserLocations)
 			}
 		} else if vUserLocations.TotalThree >= vUserLocations.Total && vUserLocations.TotalThree >= vUserLocations.TotalTwo {
-			if areaOne <= vUserLocations.TotalTwo+vUserLocations.Total {
+			if areaOne <= vUserLocations.TotalTwo+vUserLocations.Total || 1 <= vUserLocations.LastLevel {
 				userLocationsOne = append(userLocationsOne, vUserLocations)
 			}
-			if areaTwo <= vUserLocations.TotalTwo+vUserLocations.Total {
+			if areaTwo <= vUserLocations.TotalTwo+vUserLocations.Total || 2 <= vUserLocations.LastLevel {
 				userLocationsTwo = append(userLocationsTwo, vUserLocations)
 			}
-			if areaThree <= vUserLocations.TotalTwo+vUserLocations.Total {
+			if areaThree <= vUserLocations.TotalTwo+vUserLocations.Total || 3 <= vUserLocations.LastLevel {
 				userLocationsThree = append(userLocationsThree, vUserLocations)
 			}
-			if areaFour <= vUserLocations.TotalTwo+vUserLocations.Total {
+			if areaFour <= vUserLocations.TotalTwo+vUserLocations.Total || 4 <= vUserLocations.LastLevel {
 				userLocationsFour = append(userLocationsFour, vUserLocations)
 			}
-			if areaFive <= vUserLocations.TotalTwo+vUserLocations.Total {
+			if areaFive <= vUserLocations.TotalTwo+vUserLocations.Total || 5 <= vUserLocations.LastLevel {
 				userLocationsFive = append(userLocationsFive, vUserLocations)
 			}
 		}

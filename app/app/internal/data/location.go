@@ -44,6 +44,7 @@ type LocationNew struct {
 	TotalThree        int64     `gorm:"type:bigint;not null"`
 	Biw               int64     `gorm:"type:bigint;not null"`
 	StopCoin          int64     `gorm:"type:bigint;not null"`
+	LastLevel         int64     `gorm:"type:bigint;not null"`
 	StopDate          time.Time `gorm:"type:datetime;not null"`
 	CreatedAt         time.Time `gorm:"type:datetime;not null"`
 	UpdatedAt         time.Time `gorm:"type:datetime;not null"`
@@ -143,6 +144,7 @@ func (lr *LocationRepo) CreateLocationNew(ctx context.Context, rel *biz.Location
 	location.Usdt = amount
 	location.Top = rel.Top
 	location.TopNum = rel.TopNum
+	location.LastLevel = rel.LastLevel
 	res := lr.data.DB(ctx).Table("location_new").Create(&location)
 	if res.Error != nil {
 		return nil, errors.New(500, "CREATE_LOCATION_ERROR", "占位信息创建失败")
@@ -670,6 +672,7 @@ func (lr *LocationRepo) GetLocationsNewByUserId(ctx context.Context, userId int6
 			Biw:        location.Biw,
 			Top:        location.Top,
 			TopNum:     location.TopNum,
+			LastLevel:  location.LastLevel,
 		})
 	}
 
@@ -1061,6 +1064,7 @@ func (lr *LocationRepo) GetRunningLocations(ctx context.Context) ([]*biz.Locatio
 			Total:      location.Total,
 			TotalTwo:   location.TotalTwo,
 			TotalThree: location.TotalThree,
+			LastLevel:  location.LastLevel,
 		})
 	}
 

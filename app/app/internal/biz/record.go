@@ -56,6 +56,7 @@ type LocationNew struct {
 	TotalThree        int64
 	Biw               int64
 	TopNum            int64
+	LastLevel         int64
 	StopDate          time.Time
 	CreatedAt         time.Time
 }
@@ -185,12 +186,17 @@ func (ruc *RecordUseCase) GetGlobalLock(ctx context.Context) (*GlobalLock, error
 func (ruc *RecordUseCase) EthUserRecordHandle(ctx context.Context, ethUserRecord ...*EthUserRecord) (bool, error) {
 
 	var (
-		configs  []*Config
-		buyOne   int64
-		buyTwo   int64
-		buyThree int64
-		buyFour  int64
-		buyFive  int64
+		configs   []*Config
+		buyOne    int64
+		buyTwo    int64
+		buyThree  int64
+		buyFour   int64
+		buyFive   int64
+		areaOne   int64
+		areaTwo   int64
+		areaThree int64
+		areaFour  int64
+		areaFive  int64
 		//bPrice         int64
 		//bPriceBase     int64
 		//recommendRate1 int64
@@ -221,6 +227,22 @@ func (ruc *RecordUseCase) EthUserRecordHandle(ctx context.Context, ethUserRecord
 			}
 			if "buy_five" == vConfig.KeyName {
 				buyFive, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			}
+
+			if "area_one" == vConfig.KeyName {
+				areaOne, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			}
+			if "area_two" == vConfig.KeyName {
+				areaTwo, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			}
+			if "area_three" == vConfig.KeyName {
+				areaThree, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			}
+			if "area_four" == vConfig.KeyName {
+				areaFour, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			}
+			if "area_five" == vConfig.KeyName {
+				areaFive, _ = strconv.ParseInt(vConfig.Value, 10, 64)
 			}
 
 			//		if "b_price_base" == vConfig.KeyName {
@@ -258,6 +280,7 @@ func (ruc *RecordUseCase) EthUserRecordHandle(ctx context.Context, ethUserRecord
 			allLocations   []*LocationNew
 			myLocations    []*LocationNew
 			myLastLocation *LocationNew
+			lastLevel      int64
 			err            error
 		)
 
@@ -311,6 +334,61 @@ func (ruc *RecordUseCase) EthUserRecordHandle(ctx context.Context, ethUserRecord
 				}
 
 				myLastLocation = vMyLocations // 遍历到最后一个
+				var tmpLastLevel int64
+				// 1大区
+				if vMyLocations.Total >= vMyLocations.TotalTwo && vMyLocations.Total >= vMyLocations.TotalThree {
+					if areaOne <= vMyLocations.TotalTwo+vMyLocations.TotalThree {
+						tmpLastLevel = 1
+					}
+					if areaTwo <= vMyLocations.TotalTwo+vMyLocations.TotalThree {
+						tmpLastLevel = 2
+					}
+					if areaThree <= vMyLocations.TotalTwo+vMyLocations.TotalThree {
+						tmpLastLevel = 3
+					}
+					if areaFour <= vMyLocations.TotalTwo+vMyLocations.TotalThree {
+						tmpLastLevel = 4
+					}
+					if areaFive <= vMyLocations.TotalTwo+vMyLocations.TotalThree {
+						tmpLastLevel = 5
+					}
+				} else if vMyLocations.TotalTwo >= vMyLocations.Total && vMyLocations.TotalTwo >= vMyLocations.TotalThree {
+					if areaOne <= vMyLocations.Total+vMyLocations.TotalThree {
+						tmpLastLevel = 1
+					}
+					if areaTwo <= vMyLocations.Total+vMyLocations.TotalThree {
+						tmpLastLevel = 2
+					}
+					if areaThree <= vMyLocations.Total+vMyLocations.TotalThree {
+						tmpLastLevel = 3
+					}
+					if areaFour <= vMyLocations.Total+vMyLocations.TotalThree {
+						tmpLastLevel = 4
+					}
+					if areaFive <= vMyLocations.Total+vMyLocations.TotalThree {
+						tmpLastLevel = 5
+					}
+				} else if vMyLocations.TotalThree >= vMyLocations.Total && vMyLocations.TotalThree >= vMyLocations.TotalTwo {
+					if areaOne <= vMyLocations.TotalTwo+vMyLocations.Total {
+						tmpLastLevel = 1
+					}
+					if areaTwo <= vMyLocations.TotalTwo+vMyLocations.Total {
+						tmpLastLevel = 2
+					}
+					if areaThree <= vMyLocations.TotalTwo+vMyLocations.Total {
+						tmpLastLevel = 3
+					}
+					if areaFour <= vMyLocations.TotalTwo+vMyLocations.Total {
+						tmpLastLevel = 4
+					}
+					if areaFive <= vMyLocations.TotalTwo+vMyLocations.Total {
+						tmpLastLevel = 5
+					}
+				}
+
+				if tmpLastLevel > lastLevel {
+					lastLevel = tmpLastLevel
+				}
 			}
 
 			if stop {
@@ -371,7 +449,7 @@ func (ruc *RecordUseCase) EthUserRecordHandle(ctx context.Context, ethUserRecord
 						break
 					}
 
-					/// 没数据
+					// 没数据没数据, 正常最少三个
 					if 0 >= len(topLocations) {
 						tmpSopFor = true
 						break
@@ -426,7 +504,7 @@ func (ruc *RecordUseCase) EthUserRecordHandle(ctx context.Context, ethUserRecord
 							break
 						}
 
-						/// 没数据
+						// 没数据, 正常最少三个
 						if 0 >= len(topLocations) {
 							tmpSopFor = true
 							break
@@ -512,6 +590,7 @@ func (ruc *RecordUseCase) EthUserRecordHandle(ctx context.Context, ethUserRecord
 				Num:        1,
 				Top:        tmpTop,
 				TopNum:     tmpNum,
+				LastLevel:  lastLevel,
 			}, v.RelAmount)
 
 			if nil != err {
