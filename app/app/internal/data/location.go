@@ -674,6 +674,9 @@ func (lr *LocationRepo) GetLocationsNewByUserId(ctx context.Context, userId int6
 			Top:        location.Top,
 			TopNum:     location.TopNum,
 			LastLevel:  location.LastLevel,
+			Total:      location.Total,
+			TotalTwo:   location.TotalTwo,
+			TotalThree: location.TotalThree,
 		})
 	}
 
