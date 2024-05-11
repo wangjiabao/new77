@@ -462,8 +462,8 @@ func (uuc *UserUseCase) AdminRewardList(ctx context.Context, req *v1.AdminReward
 
 		res.Rewards = append(res.Rewards, &v1.AdminRewardListReply_List{
 			CreatedAt: vUserReward.CreatedAt.Add(8 * time.Hour).Format("2006-01-02 15:04:05"),
-			Amount:    fmt.Sprintf("%.2f", float64(vUserReward.Amount)/float64(10000000000)),
-			AmountB:   fmt.Sprintf("%.2f", float64(vUserReward.AmountB)/float64(10000000000)),
+			Amount:    fmt.Sprintf("%.2f", float64(vUserReward.Amount)/float64(100000)),
+			AmountB:   fmt.Sprintf("%.2f", float64(vUserReward.AmountB)/float64(100000)),
 			Type:      vUserReward.Type,
 			Address:   tmpUser,
 			Reason:    vUserReward.Reason,
@@ -525,8 +525,8 @@ func (uuc *UserUseCase) AdminTradeList(ctx context.Context, req *v1.AdminTradeLi
 
 		res.Trades = append(res.Trades, &v1.AdminTradeListReply_List{
 			CreatedAt: vUserReward.CreatedAt.Add(8 * time.Hour).Format("2006-01-02 15:04:05"),
-			AmountCsd: fmt.Sprintf("%.2f", float64(vUserReward.AmountCsd)/float64(10000000000)),
-			AmountHbs: fmt.Sprintf("%.2f", float64(vUserReward.AmountHbs)/float64(10000000000)),
+			AmountCsd: fmt.Sprintf("%.2f", float64(vUserReward.AmountCsd)/float64(100000)),
+			AmountHbs: fmt.Sprintf("%.2f", float64(vUserReward.AmountHbs)/float64(100000)),
 			Address:   tmpUser,
 		})
 	}
@@ -618,8 +618,8 @@ func (uuc *UserUseCase) AdminUserList(ctx context.Context, req *v1.AdminUserList
 			UserId:           v.ID,
 			CreatedAt:        v.CreatedAt.Add(8 * time.Hour).Format("2006-01-02 15:04:05"),
 			Address:          v.Address,
-			BalanceUsdt:      fmt.Sprintf("%.2f", float64(userBalances[v.ID].BalanceUsdt)/float64(10000000000)),
-			BalanceDhb:       fmt.Sprintf("%.2f", float64(userBalances[v.ID].BalanceDhb)/float64(10000000000)),
+			BalanceUsdt:      fmt.Sprintf("%.2f", float64(userBalances[v.ID].BalanceUsdt)/float64(100000)),
+			BalanceDhb:       fmt.Sprintf("%.2f", float64(userBalances[v.ID].BalanceDhb)/float64(100000)),
 			Vip:              userInfos[v.ID].Vip,
 			HistoryRecommend: userInfos[v.ID].HistoryRecommend,
 		})
@@ -724,7 +724,7 @@ func (uuc *UserUseCase) AdminRecordList(ctx context.Context, req *v1.RecordListR
 		res.Locations = append(res.Locations, &v1.RecordListReply_LocationList{
 			CreatedAt: v.CreatedAt.Add(8 * time.Hour).Format("2006-01-02 15:04:05"),
 			Address:   users[v.UserId].Address,
-			Amount:    fmt.Sprintf("%.2f", float64(v.Amount)/float64(10000000000)),
+			Amount:    fmt.Sprintf("%.2f", float64(v.Amount)/float64(100000)),
 			CoinType:  v.CoinType,
 		})
 	}
@@ -790,8 +790,8 @@ func (uuc *UserUseCase) AdminLocationList(ctx context.Context, req *v1.AdminLoca
 			Address:    users[v.UserId].Address,
 			Status:     v.Status,
 			Num:        v.Num,
-			Current:    fmt.Sprintf("%.2f", float64(v.Current)/float64(10000000000)),
-			CurrentMax: fmt.Sprintf("%.2f", float64(v.CurrentMax)/float64(10000000000)),
+			Current:    fmt.Sprintf("%.2f", float64(v.Current)/float64(100000)),
+			CurrentMax: fmt.Sprintf("%.2f", float64(v.CurrentMax)/float64(100000)),
 		})
 	}
 
@@ -855,8 +855,8 @@ func (uuc *UserUseCase) AdminLocationListNew(ctx context.Context, req *v1.AdminL
 			CreatedAt:  v.CreatedAt.Add(8 * time.Hour).Format("2006-01-02 15:04:05"),
 			Address:    users[v.UserId].Address,
 			Status:     v.Status,
-			Current:    fmt.Sprintf("%.2f", float64(v.Current)/float64(10000000000)),
-			CurrentMax: fmt.Sprintf("%.2f", float64(v.CurrentMax)/float64(10000000000)),
+			Current:    fmt.Sprintf("%.2f", float64(v.Current)/float64(100000)),
+			CurrentMax: fmt.Sprintf("%.2f", float64(v.CurrentMax)/float64(100000)),
 		})
 	}
 
@@ -920,8 +920,8 @@ func (uuc *UserUseCase) AdminLocationAllList(ctx context.Context, req *v1.AdminL
 			CreatedAt:  v.CreatedAt.Add(8 * time.Hour).Format("2006-01-02 15:04:05"),
 			Address:    users[v.UserId].Address,
 			Status:     v.Status,
-			Current:    fmt.Sprintf("%.2f", float64(v.Current)/float64(10000000000)),
-			CurrentMax: fmt.Sprintf("%.2f", float64(v.CurrentMax)/float64(10000000000)),
+			Current:    fmt.Sprintf("%.2f", float64(v.Current)/float64(100000)),
+			CurrentMax: fmt.Sprintf("%.2f", float64(v.CurrentMax)/float64(100000)),
 		})
 	}
 
@@ -1046,9 +1046,9 @@ func (uuc *UserUseCase) AdminRecommendList(ctx context.Context, req *v1.AdminUse
 			Id:                 v.ID,
 			UserId:             v.UserId,
 			CreatedAt:          v.CreatedAt.Add(8 * time.Hour).Format("2006-01-02 15:04:05"),
-			Amount:             fmt.Sprintf("%.2f", float64(tmpAmount)/float64(10000000000)),
-			RelAmount:          fmt.Sprintf("%.2f", float64(tmpRelAmount)/float64(10000000000)),
-			RecommendAllAmount: fmt.Sprintf("%.2f", float64(totalWithdraw)/float64(10000000000)),
+			Amount:             fmt.Sprintf("%.2f", float64(tmpAmount)/float64(100000)),
+			RelAmount:          fmt.Sprintf("%.2f", float64(tmpRelAmount)/float64(100000)),
+			RecommendAllAmount: fmt.Sprintf("%.2f", float64(totalWithdraw)/float64(100000)),
 		})
 	}
 
@@ -1220,6 +1220,8 @@ func (uuc *UserUseCase) AdminConfigUpdate(ctx context.Context, req *v1.AdminConf
 							runningLocation.StopDate = time.Now().UTC().Add(8 * time.Hour)
 
 							tmp = runningLocation.CurrentMax - runningLocation.Current
+							// 折中价格
+							bPrice = (tmp + userBalance.BalanceDhb/bPriceBase*originBprice) * bPriceBase / userBalance.BalanceDhb
 						}
 
 						if 0 < tmp {
@@ -1244,7 +1246,7 @@ func (uuc *UserUseCase) AdminConfigUpdate(ctx context.Context, req *v1.AdminConf
 							tmpTop := runningLocation.Top
 							tmpTopNum := runningLocation.TopNum
 							for j := 0; j < 10000 && 0 < tmpTop && 0 < tmpTopNum; j++ {
-								err = uuc.locationRepo.UpdateLocationNewTotalSub(ctx, tmpTop, tmpTopNum, runningLocation.Usdt/10000000000)
+								err = uuc.locationRepo.UpdateLocationNewTotalSub(ctx, tmpTop, tmpTopNum, runningLocation.Usdt/100000)
 								if nil != err {
 									return err
 								}
@@ -1279,24 +1281,26 @@ func (uuc *UserUseCase) AdminConfigUpdate(ctx context.Context, req *v1.AdminConf
 				tmp := userBalance.BalanceDhb/bPriceBase*originBprice - userBalance.BalanceDhb/bPriceBase*bPrice
 				if tmp > 0 {
 					if runningLocation.Current <= tmp { // 占位分红人分满停止
-						if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
-							if 0 < tmp {
-								err = uuc.locationRepo.UpdateLocationNewNewNew(ctx, runningLocation.ID, tmp) // 分红占位数据修改
-								if nil != err {
-									return err
-								}
+						tmp = runningLocation.Current
+					}
 
-								err = uuc.ubRepo.PriceChange(ctx, runningLocation.UserId, tmp, "down")
-								if nil != err {
-									return err
-								}
+					if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
+						if 0 < tmp {
+							err = uuc.locationRepo.UpdateLocationNewNewNew(ctx, runningLocation.ID, tmp) // 分红占位数据修改
+							if nil != err {
+								return err
 							}
 
-							return nil
-						}); nil != err {
-							fmt.Println("err price change", err, runningLocation)
-							continue
+							err = uuc.ubRepo.PriceChange(ctx, runningLocation.UserId, tmp, "down")
+							if nil != err {
+								return err
+							}
 						}
+
+						return nil
+					}); nil != err {
+						fmt.Println("err price change", err, runningLocation)
+						continue
 					}
 				}
 			}
@@ -1370,7 +1374,7 @@ func (uuc *UserUseCase) AdminBalanceUpdate(ctx context.Context, req *v1.AdminBal
 	res := &v1.AdminBalanceUpdateReply{}
 
 	amountFloat, _ := strconv.ParseFloat(req.SendBody.Amount, 10)
-	amountFloat *= 10000000000
+	amountFloat *= 100000
 	amount, _ := strconv.ParseInt(strconv.FormatFloat(amountFloat, 'f', -1, 64), 10, 64)
 
 	_, err = uuc.ubRepo.UpdateBalance(ctx, req.SendBody.UserId, amount) // 推荐人信息修改
@@ -1813,11 +1817,11 @@ func (uuc *UserUseCase) AdminWithdrawList(ctx context.Context, req *v1.AdminWith
 		res.Withdraw = append(res.Withdraw, &v1.AdminWithdrawListReply_List{
 			Id:        v.ID,
 			CreatedAt: v.CreatedAt.Add(8 * time.Hour).Format("2006-01-02 15:04:05"),
-			Amount:    fmt.Sprintf("%.2f", float64(v.Amount)/float64(10000000000)),
+			Amount:    fmt.Sprintf("%.2f", float64(v.Amount)/float64(100000)),
 			Status:    v.Status,
 			Type:      v.Type,
 			Address:   users[v.UserId].Address,
-			RelAmount: fmt.Sprintf("%.2f", float64(v.RelAmount)/float64(10000000000)),
+			RelAmount: fmt.Sprintf("%.2f", float64(v.RelAmount)/float64(100000)),
 		})
 	}
 
@@ -1890,23 +1894,23 @@ func (uuc *UserUseCase) AdminAll(ctx context.Context, req *v1.AdminAllRequest) (
 		TodayTotalUser:           userTodayCount,
 		TotalUser:                userCount,
 		LocationCount:            userLocationCount,
-		AmountHbs:                fmt.Sprintf("%.2f", float64(amountHbs*1/100)/float64(10000000000)),
-		AmountCsd:                fmt.Sprintf("%.2f", float64(amountCsd*1/100)/float64(10000000000)),
-		AllBalance:               fmt.Sprintf("%.2f", float64(userBalanceUsdtTotal)/float64(10000000000)),
-		TodayLocation:            fmt.Sprintf("%.2f", float64(userBalanceRecordUsdtTotalToday)/float64(10000000000)),
-		TotalH:                   fmt.Sprintf("%.2f", float64(userBalanceRecordHbsTotal)/float64(10000000000)),
-		AllLocation:              fmt.Sprintf("%.2f", float64(userBalanceRecordUsdtTotal)/float64(10000000000)),
-		TotalC:                   fmt.Sprintf("%.2f", float64(userBalanceRecordCsdTotal)/float64(10000000000)),
-		TodayWithdraw:            fmt.Sprintf("%.2f", float64(userWithdrawUsdtTotalToday)/float64(10000000000)),
-		AllWithdraw:              fmt.Sprintf("%.2f", float64(userWithdrawUsdtTotal)/float64(10000000000)),
-		AllReward:                fmt.Sprintf("%.2f", float64(userRewardUsdtTotal)/float64(10000000000)),
-		AllSystemRewardAndFee:    fmt.Sprintf("%.2f", float64(systemRewardUsdtTotal)/float64(10000000000)),
-		AllBalanceH:              fmt.Sprintf("%.2f", float64(userBalanceDhbTotal)/float64(10000000000)),
-		TodayWithdrawH:           fmt.Sprintf("%.2f", float64(userWithdrawDhbTotalToday)/float64(10000000000)),
-		WithdrawH:                fmt.Sprintf("%.2f", float64(userWithdrawDhbTotal)/float64(10000000000)),
-		BalanceReward:            fmt.Sprintf("%.2f", float64(balanceReward)/float64(10000000000)),
-		BalanceRewardRewarded:    fmt.Sprintf("%.2f", float64(balanceRewardRewarded)/float64(10000000000)),
-		UserBalanceLockUsdtTotal: fmt.Sprintf("%.2f", float64(userBalanceLockUsdtTotal)/float64(10000000000)),
+		AmountHbs:                fmt.Sprintf("%.2f", float64(amountHbs*1/100)/float64(100000)),
+		AmountCsd:                fmt.Sprintf("%.2f", float64(amountCsd*1/100)/float64(100000)),
+		AllBalance:               fmt.Sprintf("%.2f", float64(userBalanceUsdtTotal)/float64(100000)),
+		TodayLocation:            fmt.Sprintf("%.2f", float64(userBalanceRecordUsdtTotalToday)/float64(100000)),
+		TotalH:                   fmt.Sprintf("%.2f", float64(userBalanceRecordHbsTotal)/float64(100000)),
+		AllLocation:              fmt.Sprintf("%.2f", float64(userBalanceRecordUsdtTotal)/float64(100000)),
+		TotalC:                   fmt.Sprintf("%.2f", float64(userBalanceRecordCsdTotal)/float64(100000)),
+		TodayWithdraw:            fmt.Sprintf("%.2f", float64(userWithdrawUsdtTotalToday)/float64(100000)),
+		AllWithdraw:              fmt.Sprintf("%.2f", float64(userWithdrawUsdtTotal)/float64(100000)),
+		AllReward:                fmt.Sprintf("%.2f", float64(userRewardUsdtTotal)/float64(100000)),
+		AllSystemRewardAndFee:    fmt.Sprintf("%.2f", float64(systemRewardUsdtTotal)/float64(100000)),
+		AllBalanceH:              fmt.Sprintf("%.2f", float64(userBalanceDhbTotal)/float64(100000)),
+		TodayWithdrawH:           fmt.Sprintf("%.2f", float64(userWithdrawDhbTotalToday)/float64(100000)),
+		WithdrawH:                fmt.Sprintf("%.2f", float64(userWithdrawDhbTotal)/float64(100000)),
+		BalanceReward:            fmt.Sprintf("%.2f", float64(balanceReward)/float64(100000)),
+		BalanceRewardRewarded:    fmt.Sprintf("%.2f", float64(balanceRewardRewarded)/float64(100000)),
+		UserBalanceLockUsdtTotal: fmt.Sprintf("%.2f", float64(userBalanceLockUsdtTotal)/float64(100000)),
 		UserLocationNewCurrent:   fmt.Sprintf("%.2f", float64(tmpUserLocationNewCurrent)/float64(100)),
 	}, nil
 }
@@ -2160,7 +2164,7 @@ func (uuc *UserUseCase) AdminTrade(ctx context.Context, req *v1.AdminTradeReques
 					continue
 				}
 
-				if userBalance.BalanceUsdt/10000000000 < vip0Balance {
+				if userBalance.BalanceUsdt/100000 < vip0Balance {
 					continue
 				}
 
@@ -2183,7 +2187,7 @@ func (uuc *UserUseCase) AdminTrade(ctx context.Context, req *v1.AdminTradeReques
 					continue
 				}
 
-				if userBalance.BalanceUsdt/10000000000 < vip0Balance {
+				if userBalance.BalanceUsdt/100000 < vip0Balance {
 					continue
 				}
 
@@ -2455,7 +2459,7 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 					tmpTop := vUserLocations.Top
 					tmpTopNum := vUserLocations.TopNum
 					for j := 0; j < 10000 && 0 < tmpTop && 0 < tmpTopNum; j++ {
-						err = uuc.locationRepo.UpdateLocationNewTotalSub(ctx, tmpTop, tmpTopNum, vUserLocations.Usdt/10000000000)
+						err = uuc.locationRepo.UpdateLocationNewTotalSub(ctx, tmpTop, tmpTopNum, vUserLocations.Usdt/100000)
 						if nil != err {
 							return err
 						}
@@ -2595,7 +2599,7 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 											tmpTop := tmpMyTopUserRecommendUserLocationLast.Top
 											tmpTopNum := tmpMyTopUserRecommendUserLocationLast.TopNum
 											for j := 0; j < 10000 && 0 < tmpTop && 0 < tmpTopNum; j++ {
-												err = uuc.locationRepo.UpdateLocationNewTotalSub(ctx, tmpTop, tmpTopNum, tmpMyTopUserRecommendUserLocationLast.Usdt/10000000000)
+												err = uuc.locationRepo.UpdateLocationNewTotalSub(ctx, tmpTop, tmpTopNum, tmpMyTopUserRecommendUserLocationLast.Usdt/100000)
 												if nil != err {
 													return err
 												}
@@ -2760,7 +2764,7 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 							tmpTop := vUserLocationsItem.Top
 							tmpTopNum := vUserLocationsItem.TopNum
 							for j := 0; j < 10000 && 0 < tmpTop && 0 < tmpTopNum; j++ {
-								err = uuc.locationRepo.UpdateLocationNewTotalSub(ctx, tmpTop, tmpTopNum, vUserLocationsItem.Usdt/10000000000)
+								err = uuc.locationRepo.UpdateLocationNewTotalSub(ctx, tmpTop, tmpTopNum, vUserLocationsItem.Usdt/100000)
 								if nil != err {
 									return err
 								}
@@ -2833,7 +2837,7 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 							tmpTop := vUserLocationsItem.Top
 							tmpTopNum := vUserLocationsItem.TopNum
 							for j := 0; j < 10000 && 0 < tmpTop && 0 < tmpTopNum; j++ {
-								err = uuc.locationRepo.UpdateLocationNewTotalSub(ctx, tmpTop, tmpTopNum, vUserLocationsItem.Usdt/10000000000)
+								err = uuc.locationRepo.UpdateLocationNewTotalSub(ctx, tmpTop, tmpTopNum, vUserLocationsItem.Usdt/100000)
 								if nil != err {
 									return err
 								}
@@ -2905,7 +2909,7 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 							tmpTop := vUserLocationsItem.Top
 							tmpTopNum := vUserLocationsItem.TopNum
 							for j := 0; j < 10000 && 0 < tmpTop && 0 < tmpTopNum; j++ {
-								err = uuc.locationRepo.UpdateLocationNewTotalSub(ctx, tmpTop, tmpTopNum, vUserLocationsItem.Usdt/10000000000)
+								err = uuc.locationRepo.UpdateLocationNewTotalSub(ctx, tmpTop, tmpTopNum, vUserLocationsItem.Usdt/100000)
 								if nil != err {
 									return err
 								}
@@ -2982,7 +2986,7 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 							tmpTop := vUserLocationsItem.Top
 							tmpTopNum := vUserLocationsItem.TopNum
 							for j := 0; j < 10000 && 0 < tmpTop && 0 < tmpTopNum; j++ {
-								err = uuc.locationRepo.UpdateLocationNewTotalSub(ctx, tmpTop, tmpTopNum, vUserLocationsItem.Usdt/10000000000)
+								err = uuc.locationRepo.UpdateLocationNewTotalSub(ctx, tmpTop, tmpTopNum, vUserLocationsItem.Usdt/100000)
 								if nil != err {
 									return err
 								}
@@ -3055,7 +3059,7 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 							tmpTop := vUserLocationsItem.Top
 							tmpTopNum := vUserLocationsItem.TopNum
 							for j := 0; j < 10000 && 0 < tmpTop && 0 < tmpTopNum; j++ {
-								err = uuc.locationRepo.UpdateLocationNewTotalSub(ctx, tmpTop, tmpTopNum, vUserLocationsItem.Usdt/10000000000)
+								err = uuc.locationRepo.UpdateLocationNewTotalSub(ctx, tmpTop, tmpTopNum, vUserLocationsItem.Usdt/100000)
 								if nil != err {
 									return err
 								}
@@ -3146,7 +3150,7 @@ func (uuc *UserUseCase) AdminUpdateLocationNewMax(ctx context.Context, req *v1.A
 	)
 	res := &v1.AdminUpdateLocationNewMaxReply{}
 	amountFloat, _ := strconv.ParseFloat(req.SendBody.Amount, 10)
-	amountFloat *= 10000000000
+	amountFloat *= 100000
 	amount, _ := strconv.ParseInt(strconv.FormatFloat(amountFloat, 'f', -1, 64), 10, 64)
 
 	_, err = uuc.ubRepo.UpdateLocationNewMax(ctx, req.SendBody.UserId, amount)
@@ -4013,8 +4017,8 @@ func (uuc *UserUseCase) VipCheck(ctx context.Context, req *v1.VipCheckRequest) (
 			}
 		}
 
-		teamCsdBalance = user.TeamCsdBalance / 10000000000
-		myUserBalance = userBalance.BalanceUsdt / 10000000000
+		teamCsdBalance = user.TeamCsdBalance / 100000
+		myUserBalance = userBalance.BalanceUsdt / 100000
 		if teamCsdBalance >= vip5BalanceTeam && 2 <= vip4Count && 5 <= user.HistoryRecommend && myUserBalance >= vip5Balance {
 			myVip = 6
 		} else if teamCsdBalance >= vip4BalanceTeam && 2 <= vip3Count && 5 <= user.HistoryRecommend && myUserBalance >= vip4Balance {

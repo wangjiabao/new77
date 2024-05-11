@@ -56,11 +56,11 @@ func (a *AppService) Deposit(ctx context.Context, req *v1.DepositRequest) (*v1.D
 	//if nil != configs {
 	//	for _, vConfig := range configs {
 	//		if "level1Dhb" == vConfig.KeyName {
-	//			level1Dhb = vConfig.Value + "0000000000000000"
+	//			level1Dhb = vConfig.Value + "00000000000"
 	//		} else if "level2Dhb" == vConfig.KeyName {
-	//			level2Dhb = vConfig.Value + "0000000000000000"
+	//			level2Dhb = vConfig.Value + "00000000000"
 	//		} else if "level3Dhb" == vConfig.KeyName {
-	//			level3Dhb = vConfig.Value + "0000000000000000"
+	//			level3Dhb = vConfig.Value + "00000000000"
 	//		}
 	//	}
 	//}
@@ -133,24 +133,24 @@ func (a *AppService) Deposit(ctx context.Context, req *v1.DepositRequest) (*v1.D
 				}
 
 				var (
-					tmpValue = int64(3000000000000)
-					strValue = "300000000000000000000"
+					tmpValue = int64(30000000)
+					strValue = "3000000000000000"
 				)
 
 				if 1 == v {
 
 				} else if 2 == v {
-					tmpValue = int64(10000000000000)
-					strValue = "10000000000000000000000"
+					tmpValue = int64(100000000)
+					strValue = "100000000000000000"
 				} else if 3 == v {
-					tmpValue = int64(30000000000000)
-					strValue = "30000000000000000000000"
+					tmpValue = int64(300000000)
+					strValue = "300000000000000000"
 				} else if 4 == v {
-					tmpValue = int64(50000000000000)
-					strValue = "5000000000000000000000"
+					tmpValue = int64(500000000)
+					strValue = "50000000000000000"
 				} else if 5 == v {
-					tmpValue = int64(100000000000000)
-					strValue = "10000000000000000000000"
+					tmpValue = int64(1000000000)
+					strValue = "100000000000000000"
 				} else {
 					return &v1.DepositReply{}, nil
 				}
@@ -198,11 +198,11 @@ func (a *AppService) Deposit5(ctx context.Context, req *v1.DepositRequest) (*v1.
 	//if nil != configs {
 	//	for _, vConfig := range configs {
 	//		if "level1Dhb" == vConfig.KeyName {
-	//			level1Dhb = vConfig.Value + "0000000000000000"
+	//			level1Dhb = vConfig.Value + "00000000000"
 	//		} else if "level2Dhb" == vConfig.KeyName {
-	//			level2Dhb = vConfig.Value + "0000000000000000"
+	//			level2Dhb = vConfig.Value + "00000000000"
 	//		} else if "level3Dhb" == vConfig.KeyName {
-	//			level3Dhb = vConfig.Value + "0000000000000000"
+	//			level3Dhb = vConfig.Value + "00000000000"
 	//		}
 	//	}
 	//}
@@ -269,13 +269,13 @@ func (a *AppService) Deposit5(ctx context.Context, req *v1.DepositRequest) (*v1.
 				)
 
 				if 1 == amount {
-					tmpValue = 1000000000000
+					tmpValue = 10000000
 					strValue = "100000000000000000000"
 				} else if 2 == amount {
-					tmpValue = 3000000000000
+					tmpValue = 30000000
 					strValue = "300000000000000000000"
 				} else if 3 == amount {
-					tmpValue = 5000000000000
+					tmpValue = 50000000
 					strValue = "500000000000000000000"
 				}
 
@@ -1093,7 +1093,7 @@ func (a *AppService) AdminWithdrawEth(ctx context.Context, req *v1.AdminWithdraw
 			continue
 		}
 
-		withDrawAmount := strconv.FormatInt(withdraw.Amount, 10) + "000000" // 补八个0.系统基础1是10个0
+		withDrawAmount := strconv.FormatInt(withdraw.Amount, 10) + "0000000000000" // 补八个0.系统基础1是10个0
 		tmpUrl1 := "https://bsc-dataseed4.binance.org/"
 		for i := 0; i <= 5; i++ {
 			//fmt.Println(11111, user.ToAddress, v.Amount, balanceInt)

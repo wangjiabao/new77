@@ -297,15 +297,15 @@ func (ruc *RecordUseCase) EthUserRecordHandle(ctx context.Context, ethUserRecord
 			continue
 		}
 
-		if 3000000000000 == v.RelAmount && int64(len(allLocations)) < buyOne {
+		if 30000000 == v.RelAmount && int64(len(allLocations)) < buyOne {
 
-		} else if 10000000000000 == v.RelAmount && int64(len(allLocations)) < buyTwo {
+		} else if 100000000 == v.RelAmount && int64(len(allLocations)) < buyTwo {
 
-		} else if 30000000000000 == v.RelAmount && int64(len(allLocations)) < buyThree {
+		} else if 300000000 == v.RelAmount && int64(len(allLocations)) < buyThree {
 
-		} else if 50000000000000 == v.RelAmount && int64(len(allLocations)) < buyFour {
+		} else if 500000000 == v.RelAmount && int64(len(allLocations)) < buyFour {
 
-		} else if 100000000000000 == v.RelAmount && int64(len(allLocations)) < buyFive {
+		} else if 1000000000 == v.RelAmount && int64(len(allLocations)) < buyFive {
 
 		} else {
 			fmt.Println(v, "1234")
@@ -548,7 +548,7 @@ func (ruc *RecordUseCase) EthUserRecordHandle(ctx context.Context, ethUserRecord
 
 			// 顺位
 			if nil != lastLocation {
-				err = ruc.locationRepo.UpdateLocationNewCount(ctx, lastLocation.ID, lastLocation.Count+1, v.RelAmount/10000000000)
+				err = ruc.locationRepo.UpdateLocationNewCount(ctx, lastLocation.ID, lastLocation.Count+1, v.RelAmount/100000)
 				if nil != err {
 					return err
 				}
@@ -561,7 +561,7 @@ func (ruc *RecordUseCase) EthUserRecordHandle(ctx context.Context, ethUserRecord
 				)
 				// 大小区业绩
 				for j := 0; j < 10000 && 0 < currentTop && 0 < currentTopNum; j++ {
-					err = ruc.locationRepo.UpdateLocationNewTotal(ctx, currentTop, currentTopNum, v.RelAmount/10000000000)
+					err = ruc.locationRepo.UpdateLocationNewTotal(ctx, currentTop, currentTopNum, v.RelAmount/100000)
 					if nil != err {
 						return err
 					}
@@ -615,7 +615,7 @@ func (ruc *RecordUseCase) EthUserRecordHandle(ctx context.Context, ethUserRecord
 			}
 
 			if 0 < myUserRecommendUserId {
-				err = ruc.userRecommendRepo.UpdateUserRecommendTotal(ctx, myUserRecommendUserId, v.RelAmount/10000000000)
+				err = ruc.userRecommendRepo.UpdateUserRecommendTotal(ctx, myUserRecommendUserId, v.RelAmount/100000)
 				if nil != err {
 					return err
 				}
@@ -814,9 +814,9 @@ func (ruc *RecordUseCase) EthUserRecordHandle5(ctx context.Context, ethUserRecor
 
 		// 修改用户推荐人区数据，修改自身区数据
 		myVip := int64(1)
-		if 3000000000000 == v.RelAmount {
+		if 30000000 == v.RelAmount {
 			myVip = 2
-		} else if 5000000000000 == v.RelAmount {
+		} else if 50000000 == v.RelAmount {
 			myVip = 3
 		}
 
@@ -979,14 +979,14 @@ func (ruc *RecordUseCase) EthUserRecordHandle2(ctx context.Context, ethUserRecor
 		//	}
 		//}
 
-		//if v.RelAmount >= level1Price*10000000000 && v.RelAmount < level2Price*10000000000 {
-		//	locationCurrentMax = level1Price * 10000000000 * csdPrice / 1000
-		//} else if v.RelAmount >= level2Price*10000000000 && v.RelAmount < level3Price*10000000000 {
-		//	locationCurrentMax = level2Price * 10000000000 * csdPrice / 1000
-		//} else if v.RelAmount >= level3Price*10000000000 && v.RelAmount < level4Price*10000000000 {
-		//	locationCurrentMax = level3Price * 10000000000 * csdPrice / 1000
-		//} else if v.RelAmount >= level4Price*10000000000 {
-		//	locationCurrentMax = level4Price * 10000000000 * csdPrice / 1000
+		//if v.RelAmount >= level1Price*100000 && v.RelAmount < level2Price*100000 {
+		//	locationCurrentMax = level1Price * 100000 * csdPrice / 1000
+		//} else if v.RelAmount >= level2Price*100000 && v.RelAmount < level3Price*100000 {
+		//	locationCurrentMax = level2Price * 100000 * csdPrice / 1000
+		//} else if v.RelAmount >= level3Price*100000 && v.RelAmount < level4Price*100000 {
+		//	locationCurrentMax = level3Price * 100000 * csdPrice / 1000
+		//} else if v.RelAmount >= level4Price*100000 {
+		//	locationCurrentMax = level4Price * 100000 * csdPrice / 1000
 		//	vip1 = true
 		//}
 
@@ -1321,7 +1321,7 @@ func (ruc *RecordUseCase) AdminLocationInsert(ctx context.Context, userId int64,
 	//if err = ruc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
 	//	tmpLocationStatus := "running"
 	//	var tmpStopDate time.Time
-	//	if locationCurrent >= amount*10000000000*outRate {
+	//	if locationCurrent >= amount*100000*outRate {
 	//		tmpLocationStatus = "stop"
 	//		tmpStopDate = time.Now().UTC().Add(8 * time.Hour)
 	//	}
@@ -1332,7 +1332,7 @@ func (ruc *RecordUseCase) AdminLocationInsert(ctx context.Context, userId int64,
 	//		Current:    locationCurrent,
 	//		OutRate:    outRate,
 	//		StopDate:   tmpStopDate,
-	//		CurrentMax: amount * 10000000000 * outRate,
+	//		CurrentMax: amount * 100000 * outRate,
 	//	})
 	//	if nil != err {
 	//		return err
@@ -1360,8 +1360,8 @@ func (ruc *RecordUseCase) AdminLocationInsert(ctx context.Context, userId int64,
 	//		}
 	//		if 0 < locationCurrent {
 	//			var tmpCurrentAmount int64
-	//			if locationCurrent > amount*10000000000*outRate {
-	//				tmpCurrentAmount = amount * 10000000000 * outRate
+	//			if locationCurrent > amount*100000*outRate {
+	//				tmpCurrentAmount = amount * 100000 * outRate
 	//			} else {
 	//				tmpCurrentAmount = locationCurrent
 	//			}
