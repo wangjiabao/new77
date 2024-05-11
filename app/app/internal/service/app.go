@@ -134,23 +134,23 @@ func (a *AppService) Deposit(ctx context.Context, req *v1.DepositRequest) (*v1.D
 
 				var (
 					tmpValue = int64(30000000)
-					strValue = "3000000000000000"
+					strValue = "300000000000000000000"
 				)
 
 				if 1 == v {
 
 				} else if 2 == v {
 					tmpValue = int64(100000000)
-					strValue = "100000000000000000"
+					strValue = "1000000000000000000000"
 				} else if 3 == v {
 					tmpValue = int64(300000000)
-					strValue = "300000000000000000"
+					strValue = "3000000000000000000000"
 				} else if 4 == v {
 					tmpValue = int64(500000000)
-					strValue = "50000000000000000"
+					strValue = "5000000000000000000000"
 				} else if 5 == v {
 					tmpValue = int64(1000000000)
-					strValue = "100000000000000000"
+					strValue = "10000000000000000000000"
 				} else {
 					return &v1.DepositReply{}, nil
 				}
