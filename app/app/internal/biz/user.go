@@ -1181,6 +1181,12 @@ func (uuc *UserUseCase) AdminConfigUpdate(ctx context.Context, req *v1.AdminConf
 		}
 
 		users, err = uuc.repo.GetAllUsers(ctx)
+		if nil != err {
+			return nil, err
+		}
+		if nil == users {
+			return nil, nil
+		}
 		for _, v := range users {
 			var (
 				runningLocation *LocationNew
@@ -1189,6 +1195,10 @@ func (uuc *UserUseCase) AdminConfigUpdate(ctx context.Context, req *v1.AdminConf
 			runningLocation, err = uuc.locationRepo.GetMyLocationLastRunning(ctx, v.ID)
 			if nil != err {
 				fmt.Println(err)
+				continue
+			}
+
+			if nil == runningLocation {
 				continue
 			}
 
