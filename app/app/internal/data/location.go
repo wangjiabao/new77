@@ -160,6 +160,19 @@ func (lr *LocationRepo) CreateLocationNew(ctx context.Context, rel *biz.Location
 	if res.Error != nil {
 		return nil, errors.New(500, "CREATE_LOCATION_ERROR", "占位信息创建失败")
 	}
+	var (
+		err    error
+		reward *Reward
+	)
+	reward.UserId = rel.UserId
+	reward.Amount = amount
+	reward.Type = "buy" // 本次分红的行为类型
+	reward.TypeRecordId = userBalanceRecode.ID
+	reward.Reason = "buy" // 给我分红的理由
+	err = lr.data.DB(ctx).Table("reward").Create(&reward).Error
+	if err != nil {
+		return nil, errors.New(500, "CREATE_LOCATION_ERROR", "占位信息创建失败")
+	}
 
 	return &biz.LocationNew{
 		ID:         location.ID,

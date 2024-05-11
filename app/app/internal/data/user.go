@@ -2180,7 +2180,7 @@ func (ub *UserBalanceRepo) ExchangeBiw(ctx context.Context, userId int64, price 
 	reward.AmountB = tmp
 	reward.Type = "exchange_system" // 本次分红的行为类型
 	reward.TypeRecordId = userBalanceRecode.ID
-	reward.Reason = "exchange" // 给我分红的理由
+	reward.Reason = "exchange_2" // 给我分红的理由
 	err = ub.data.DB(ctx).Table("reward").Create(&reward).Error
 	if err != nil {
 		return 0, nil
@@ -2234,7 +2234,7 @@ func (ub *UserBalanceRepo) RecommendRewardBiw(ctx context.Context, userId int64,
 			reward.AmountB = tmp
 			reward.Type = "exchange_system" // 本次分红的行为类型
 			reward.TypeRecordId = userBalanceRecode.ID
-			reward.Reason = "exchange" // 给我分红的理由
+			reward.Reason = "exchange_2" // 给我分红的理由
 			err = ub.data.DB(ctx).Table("reward").Create(&reward).Error
 			if err != nil {
 				return 0, nil
@@ -2313,7 +2313,7 @@ func (ub *UserBalanceRepo) LocationRewardBiw(ctx context.Context, userId int64, 
 			reward.AmountB = tmp
 			reward.Type = "exchange_system" // 本次分红的行为类型
 			reward.TypeRecordId = userBalanceRecode.ID
-			reward.Reason = "exchange" // 给我分红的理由
+			reward.Reason = "exchange_2" // 给我分红的理由
 			err = ub.data.DB(ctx).Table("reward").Create(&reward).Error
 			if err != nil {
 				return 0, nil
@@ -2408,7 +2408,7 @@ func (ub *UserBalanceRepo) AreaRewardBiw(ctx context.Context, userId int64, rewa
 			reward.AmountB = tmp
 			reward.Type = "exchange_system" // 本次分红的行为类型
 			reward.TypeRecordId = userBalanceRecode.ID
-			reward.Reason = "exchange" // 给我分红的理由
+			reward.Reason = "exchange_2" // 给我分红的理由
 			err = ub.data.DB(ctx).Table("reward").Create(&reward).Error
 			if err != nil {
 				return 0, nil
