@@ -162,7 +162,7 @@ func (lr *LocationRepo) CreateLocationNew(ctx context.Context, rel *biz.Location
 	}
 	var (
 		err    error
-		reward *Reward
+		reward Reward
 	)
 	reward.UserId = rel.UserId
 	reward.Amount = amount
