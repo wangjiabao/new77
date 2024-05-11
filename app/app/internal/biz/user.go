@@ -1223,7 +1223,11 @@ func (uuc *UserUseCase) AdminConfigUpdate(ctx context.Context, req *v1.AdminConf
 						}
 
 						if 0 < tmp {
-							err = uuc.locationRepo.UpdateLocationNewNew(ctx, runningLocation.ID, runningLocation.Status, tmp, 0, runningLocation.StopDate) // 分红占位数据修改
+							var tmpMaxNew int64
+							if runningLocation.CurrentMax >= runningLocation.CurrentMaxNew {
+								tmpMaxNew = runningLocation.CurrentMax - runningLocation.CurrentMaxNew
+							}
+							err = uuc.locationRepo.UpdateLocationNewNew(ctx, runningLocation.ID, runningLocation.Status, tmp, tmpMaxNew, 0, runningLocation.StopDate) // 分红占位数据修改
 							if nil != err {
 								return err
 							}
@@ -2442,15 +2446,14 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 					stopLocationIds[vUserLocations.ID] = vUserLocations.ID
 				}
 
+				var tmpMaxNew int64
+				if vUserLocations.CurrentMaxNew < vUserLocations.CurrentMax {
+					tmpMaxNew = vUserLocations.CurrentMax - vUserLocations.CurrentMaxNew
+				}
 				if 0 < tmpCurrentReward && 0 < bLocationRewardAmount {
-					err = uuc.locationRepo.UpdateLocationNewNew(ctx, vUserLocations.ID, vUserLocations.Status, tmpCurrentReward, bLocationRewardAmount, vUserLocations.StopDate) // 分红占位数据修改
+					err = uuc.locationRepo.UpdateLocationNewNew(ctx, vUserLocations.ID, vUserLocations.Status, tmpCurrentReward, tmpMaxNew, bLocationRewardAmount, vUserLocations.StopDate) // 分红占位数据修改
 					if nil != err {
 						return err
-					}
-
-					var tmpMaxNew int64
-					if vUserLocations.CurrentMaxNew < vUserLocations.CurrentMax {
-						tmpMaxNew = vUserLocations.CurrentMax - vUserLocations.CurrentMaxNew
 					}
 
 					_, err = uuc.ubRepo.LocationRewardBiw(ctx, vUserLocations.UserId, bLocationRewardAmount, vUserLocations.Status, tmpMaxNew, feeRate)
@@ -2588,15 +2591,15 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 								}
 
 								if 0 < tmpMyRecommendAmount && 0 < bAmount {
+									var tmpMaxNew int64
+									if tmpMyTopUserRecommendUserLocationLast.CurrentMaxNew < tmpMyTopUserRecommendUserLocationLast.CurrentMax {
+										tmpMaxNew = tmpMyTopUserRecommendUserLocationLast.CurrentMax - tmpMyTopUserRecommendUserLocationLast.CurrentMaxNew
+									}
+
 									if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
-										err = uuc.locationRepo.UpdateLocationNewNew(ctx, tmpMyTopUserRecommendUserLocationLast.ID, tmpMyTopUserRecommendUserLocationLast.Status, tmpMyRecommendAmount, bAmount, tmpMyTopUserRecommendUserLocationLast.StopDate) // 分红占位数据修改
+										err = uuc.locationRepo.UpdateLocationNewNew(ctx, tmpMyTopUserRecommendUserLocationLast.ID, tmpMyTopUserRecommendUserLocationLast.Status, tmpMyRecommendAmount, tmpMaxNew, bAmount, tmpMyTopUserRecommendUserLocationLast.StopDate) // 分红占位数据修改
 										if nil != err {
 											return err
-										}
-
-										var tmpMaxNew int64
-										if tmpMyTopUserRecommendUserLocationLast.CurrentMaxNew < tmpMyTopUserRecommendUserLocationLast.CurrentMax {
-											tmpMaxNew = tmpMyTopUserRecommendUserLocationLast.CurrentMax - tmpMyTopUserRecommendUserLocationLast.CurrentMaxNew
 										}
 
 										_, err = uuc.ubRepo.RecommendRewardBiw(ctx, tmpMyTopUserRecommendUserId, bAmount, int64(i+1), tmpMyTopUserRecommendUserLocationLast.Status, tmpMaxNew, feeRate) // 推荐人奖励
@@ -2757,14 +2760,15 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 							stopLocationIds[vUserLocationsItem.ID] = vUserLocationsItem.ID
 						}
 
+						var tmpMaxNew int64
+						if vUserLocationsItem.CurrentMaxNew < vUserLocationsItem.CurrentMax {
+							tmpMaxNew = vUserLocationsItem.CurrentMax - vUserLocationsItem.CurrentMaxNew
+						}
+
 						if 0 < tmpCurrentReward && 0 < bLocationRewardAmount {
-							err = uuc.locationRepo.UpdateLocationNewNew(ctx, vUserLocationsItem.ID, vUserLocationsItem.Status, tmpCurrentReward, bLocationRewardAmount, vUserLocationsItem.StopDate) // 分红占位数据修改
+							err = uuc.locationRepo.UpdateLocationNewNew(ctx, vUserLocationsItem.ID, vUserLocationsItem.Status, tmpCurrentReward, tmpMaxNew, bLocationRewardAmount, vUserLocationsItem.StopDate) // 分红占位数据修改
 							if nil != err {
 								return err
-							}
-							var tmpMaxNew int64
-							if vUserLocationsItem.CurrentMaxNew < vUserLocationsItem.CurrentMax {
-								tmpMaxNew = vUserLocationsItem.CurrentMax - vUserLocationsItem.CurrentMaxNew
 							}
 
 							_, err = uuc.ubRepo.AreaRewardBiw(ctx, vUserLocationsItem.UserId, bLocationRewardAmount, 1, vUserLocationsItem.Status, tmpMaxNew, feeRate)
@@ -2834,15 +2838,15 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 							stopLocationIds[vUserLocationsItem.ID] = vUserLocationsItem.ID
 						}
 
+						var tmpMaxNew int64
+						if vUserLocationsItem.CurrentMaxNew < vUserLocationsItem.CurrentMax {
+							tmpMaxNew = vUserLocationsItem.CurrentMax - vUserLocationsItem.CurrentMaxNew
+						}
+
 						if 0 < tmpCurrentReward && 0 < bLocationRewardAmount {
-							err = uuc.locationRepo.UpdateLocationNewNew(ctx, vUserLocationsItem.ID, vUserLocationsItem.Status, tmpCurrentReward, bLocationRewardAmount, vUserLocationsItem.StopDate) // 分红占位数据修改
+							err = uuc.locationRepo.UpdateLocationNewNew(ctx, vUserLocationsItem.ID, vUserLocationsItem.Status, tmpCurrentReward, tmpMaxNew, bLocationRewardAmount, vUserLocationsItem.StopDate) // 分红占位数据修改
 							if nil != err {
 								return err
-							}
-
-							var tmpMaxNew int64
-							if vUserLocationsItem.CurrentMaxNew < vUserLocationsItem.CurrentMax {
-								tmpMaxNew = vUserLocationsItem.CurrentMax - vUserLocationsItem.CurrentMaxNew
 							}
 
 							_, err = uuc.ubRepo.AreaRewardBiw(ctx, vUserLocationsItem.UserId, bLocationRewardAmount, 2, vUserLocationsItem.Status, tmpMaxNew, feeRate)
@@ -2911,15 +2915,15 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 							bLocationRewardAmount = tmpCurrentReward / bPrice * bPriceBase
 						}
 
+						var tmpMaxNew int64
+						if vUserLocationsItem.CurrentMaxNew < vUserLocationsItem.CurrentMax {
+							tmpMaxNew = vUserLocationsItem.CurrentMax - vUserLocationsItem.CurrentMaxNew
+						}
+
 						if 0 < tmpCurrentReward && 0 < bLocationRewardAmount {
-							err = uuc.locationRepo.UpdateLocationNewNew(ctx, vUserLocationsItem.ID, vUserLocationsItem.Status, tmpCurrentReward, bLocationRewardAmount, vUserLocationsItem.StopDate) // 分红占位数据修改
+							err = uuc.locationRepo.UpdateLocationNewNew(ctx, vUserLocationsItem.ID, vUserLocationsItem.Status, tmpCurrentReward, tmpMaxNew, bLocationRewardAmount, vUserLocationsItem.StopDate) // 分红占位数据修改
 							if nil != err {
 								return err
-							}
-
-							var tmpMaxNew int64
-							if vUserLocationsItem.CurrentMaxNew < vUserLocationsItem.CurrentMax {
-								tmpMaxNew = vUserLocationsItem.CurrentMax - vUserLocationsItem.CurrentMaxNew
 							}
 
 							_, err = uuc.ubRepo.AreaRewardBiw(ctx, vUserLocationsItem.UserId, bLocationRewardAmount, 3, vUserLocationsItem.Status, tmpMaxNew, feeRate)
@@ -2993,15 +2997,15 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 							stopLocationIds[vUserLocationsItem.ID] = vUserLocationsItem.ID
 						}
 
+						var tmpMaxNew int64
+						if vUserLocationsItem.CurrentMaxNew < vUserLocationsItem.CurrentMax {
+							tmpMaxNew = vUserLocationsItem.CurrentMax - vUserLocationsItem.CurrentMaxNew
+						}
+
 						if 0 < tmpCurrentReward && 0 < bLocationRewardAmount {
-							err = uuc.locationRepo.UpdateLocationNewNew(ctx, vUserLocationsItem.ID, vUserLocationsItem.Status, tmpCurrentReward, bLocationRewardAmount, vUserLocationsItem.StopDate) // 分红占位数据修改
+							err = uuc.locationRepo.UpdateLocationNewNew(ctx, vUserLocationsItem.ID, vUserLocationsItem.Status, tmpCurrentReward, tmpMaxNew, bLocationRewardAmount, vUserLocationsItem.StopDate) // 分红占位数据修改
 							if nil != err {
 								return err
-							}
-
-							var tmpMaxNew int64
-							if vUserLocationsItem.CurrentMaxNew < vUserLocationsItem.CurrentMax {
-								tmpMaxNew = vUserLocationsItem.CurrentMax - vUserLocationsItem.CurrentMaxNew
 							}
 
 							_, err = uuc.ubRepo.AreaRewardBiw(ctx, vUserLocationsItem.UserId, bLocationRewardAmount, 4, vUserLocationsItem.Status, tmpMaxNew, feeRate)
@@ -3071,15 +3075,15 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 							stopLocationIds[vUserLocationsItem.ID] = vUserLocationsItem.ID
 						}
 
+						var tmpMaxNew int64
+						if vUserLocationsItem.CurrentMaxNew < vUserLocationsItem.CurrentMax {
+							tmpMaxNew = vUserLocationsItem.CurrentMax - vUserLocationsItem.CurrentMaxNew
+						}
+
 						if 0 < tmpCurrentReward && 0 < bLocationRewardAmount {
-							err = uuc.locationRepo.UpdateLocationNewNew(ctx, vUserLocationsItem.ID, vUserLocationsItem.Status, tmpCurrentReward, bLocationRewardAmount, vUserLocationsItem.StopDate) // 分红占位数据修改
+							err = uuc.locationRepo.UpdateLocationNewNew(ctx, vUserLocationsItem.ID, vUserLocationsItem.Status, tmpCurrentReward, tmpMaxNew, bLocationRewardAmount, vUserLocationsItem.StopDate) // 分红占位数据修改
 							if nil != err {
 								return err
-							}
-
-							var tmpMaxNew int64
-							if vUserLocationsItem.CurrentMaxNew < vUserLocationsItem.CurrentMax {
-								tmpMaxNew = vUserLocationsItem.CurrentMax - vUserLocationsItem.CurrentMaxNew
 							}
 
 							_, err = uuc.ubRepo.AreaRewardBiw(ctx, vUserLocationsItem.UserId, bLocationRewardAmount, 5, vUserLocationsItem.Status, tmpMaxNew, feeRate)
