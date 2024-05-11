@@ -184,12 +184,12 @@ type UserBalanceRepo interface {
 	WithdrawReward(ctx context.Context, userId int64, amount int64, locationId int64, myLocationId int64, locationType string, status string) (int64, error)
 	RecommendReward(ctx context.Context, userId int64, amount int64, locationId int64, status string) (int64, error)
 	RecommendTeamReward(ctx context.Context, userId int64, rewardAmount int64, amount int64, amountDhb int64, locationId int64, recommendNum int64, status string) (int64, error)
-	RecommendRewardBiw(ctx context.Context, userId int64, rewardAmount int64, recommendNum int64, stop string, price int64, priceBase int64, feeRate int64) (int64, error)
-	LocationRewardBiw(ctx context.Context, userId int64, rewardAmount int64, stop string, price int64, priceBase int64, feeRate int64) (int64, error)
+	RecommendRewardBiw(ctx context.Context, userId int64, rewardAmount int64, recommendNum int64, stop string, tmpMaxNew int64, feeRate int64) (int64, error)
+	LocationRewardBiw(ctx context.Context, userId int64, rewardAmount int64, stop string, currentMaxNew int64, feeRate int64) (int64, error)
 	PriceChange(ctx context.Context, userId int64, rewardAmount int64, up string) error
-	AreaRewardBiw(ctx context.Context, userId int64, rewardAmount int64, areaType int64, stop string, price int64, priceBase int64, feeRate int64) (int64, error)
+	AreaRewardBiw(ctx context.Context, userId int64, rewardAmount int64, areaType int64, stop string, tmpMaxNew int64, feeRate int64) (int64, error)
 	FourRewardBiw(ctx context.Context, userId int64, rewardAmount int64, num int64) (int64, error)
-	ExchangeBiw(ctx context.Context, userId int64, price int64, priceBase int64, feeRate int64) (int64, error)
+	ExchangeBiw(ctx context.Context, userId int64, currentMaxNew int64, feeRate int64) (int64, error)
 	SystemWithdrawReward(ctx context.Context, amount int64, locationId int64) error
 	SystemReward(ctx context.Context, amount int64, locationId int64) error
 	SystemDailyReward(ctx context.Context, amount int64, locationId int64) error
@@ -1220,8 +1220,6 @@ func (uuc *UserUseCase) AdminConfigUpdate(ctx context.Context, req *v1.AdminConf
 							runningLocation.StopDate = time.Now().UTC().Add(8 * time.Hour)
 
 							tmp = runningLocation.CurrentMax - runningLocation.Current
-							// 折中价格
-							bPrice = (tmp + userBalance.BalanceDhb/bPriceBase*originBprice) * bPriceBase / userBalance.BalanceDhb
 						}
 
 						if 0 < tmp {
@@ -1238,9 +1236,11 @@ func (uuc *UserUseCase) AdminConfigUpdate(ctx context.Context, req *v1.AdminConf
 
 						// 业绩减掉
 						if "stop" == runningLocation.Status {
-							_, err = uuc.ubRepo.ExchangeBiw(ctx, v.ID, bPrice, bPriceBase, feeRate)
-							if nil != err {
-								return err
+							if runningLocation.CurrentMax >= runningLocation.CurrentMaxNew {
+								_, err = uuc.ubRepo.ExchangeBiw(ctx, v.ID, runningLocation.CurrentMax-runningLocation.CurrentMaxNew, feeRate)
+								if nil != err {
+									return err
+								}
 							}
 
 							tmpTop := runningLocation.Top
@@ -2448,7 +2448,12 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 						return err
 					}
 
-					_, err = uuc.ubRepo.LocationRewardBiw(ctx, vUserLocations.UserId, bLocationRewardAmount, vUserLocations.Status, bPrice, bPriceBase, feeRate)
+					var tmpMaxNew int64
+					if vUserLocations.CurrentMaxNew < vUserLocations.CurrentMax {
+						tmpMaxNew = vUserLocations.CurrentMax - vUserLocations.CurrentMaxNew
+					}
+
+					_, err = uuc.ubRepo.LocationRewardBiw(ctx, vUserLocations.UserId, bLocationRewardAmount, vUserLocations.Status, tmpMaxNew, feeRate)
 					if nil != err {
 						return err
 					}
@@ -2589,7 +2594,12 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 											return err
 										}
 
-										_, err = uuc.ubRepo.RecommendRewardBiw(ctx, tmpMyTopUserRecommendUserId, bAmount, int64(i+1), tmpMyTopUserRecommendUserLocationLast.Status, bPrice, bPriceBase, feeRate) // 推荐人奖励
+										var tmpMaxNew int64
+										if tmpMyTopUserRecommendUserLocationLast.CurrentMaxNew < tmpMyTopUserRecommendUserLocationLast.CurrentMax {
+											tmpMaxNew = tmpMyTopUserRecommendUserLocationLast.CurrentMax - tmpMyTopUserRecommendUserLocationLast.CurrentMaxNew
+										}
+
+										_, err = uuc.ubRepo.RecommendRewardBiw(ctx, tmpMyTopUserRecommendUserId, bAmount, int64(i+1), tmpMyTopUserRecommendUserLocationLast.Status, tmpMaxNew, feeRate) // 推荐人奖励
 										if nil != err {
 											return err
 										}
@@ -2752,8 +2762,12 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 							if nil != err {
 								return err
 							}
+							var tmpMaxNew int64
+							if vUserLocationsItem.CurrentMaxNew < vUserLocationsItem.CurrentMax {
+								tmpMaxNew = vUserLocationsItem.CurrentMax - vUserLocationsItem.CurrentMaxNew
+							}
 
-							_, err = uuc.ubRepo.AreaRewardBiw(ctx, vUserLocationsItem.UserId, bLocationRewardAmount, 1, vUserLocationsItem.Status, bPrice, bPriceBase, feeRate)
+							_, err = uuc.ubRepo.AreaRewardBiw(ctx, vUserLocationsItem.UserId, bLocationRewardAmount, 1, vUserLocationsItem.Status, tmpMaxNew, feeRate)
 							if nil != err {
 								return err
 							}
@@ -2826,7 +2840,12 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 								return err
 							}
 
-							_, err = uuc.ubRepo.AreaRewardBiw(ctx, vUserLocationsItem.UserId, bLocationRewardAmount, 2, vUserLocationsItem.Status, bPrice, bPriceBase, feeRate)
+							var tmpMaxNew int64
+							if vUserLocationsItem.CurrentMaxNew < vUserLocationsItem.CurrentMax {
+								tmpMaxNew = vUserLocationsItem.CurrentMax - vUserLocationsItem.CurrentMaxNew
+							}
+
+							_, err = uuc.ubRepo.AreaRewardBiw(ctx, vUserLocationsItem.UserId, bLocationRewardAmount, 2, vUserLocationsItem.Status, tmpMaxNew, feeRate)
 							if nil != err {
 								return err
 							}
@@ -2898,7 +2917,12 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 								return err
 							}
 
-							_, err = uuc.ubRepo.AreaRewardBiw(ctx, vUserLocationsItem.UserId, bLocationRewardAmount, 3, vUserLocationsItem.Status, bPrice, bPriceBase, feeRate)
+							var tmpMaxNew int64
+							if vUserLocationsItem.CurrentMaxNew < vUserLocationsItem.CurrentMax {
+								tmpMaxNew = vUserLocationsItem.CurrentMax - vUserLocationsItem.CurrentMaxNew
+							}
+
+							_, err = uuc.ubRepo.AreaRewardBiw(ctx, vUserLocationsItem.UserId, bLocationRewardAmount, 3, vUserLocationsItem.Status, tmpMaxNew, feeRate)
 							if nil != err {
 								return err
 							}
@@ -2975,7 +2999,12 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 								return err
 							}
 
-							_, err = uuc.ubRepo.AreaRewardBiw(ctx, vUserLocationsItem.UserId, bLocationRewardAmount, 4, vUserLocationsItem.Status, bPrice, bPriceBase, feeRate)
+							var tmpMaxNew int64
+							if vUserLocationsItem.CurrentMaxNew < vUserLocationsItem.CurrentMax {
+								tmpMaxNew = vUserLocationsItem.CurrentMax - vUserLocationsItem.CurrentMaxNew
+							}
+
+							_, err = uuc.ubRepo.AreaRewardBiw(ctx, vUserLocationsItem.UserId, bLocationRewardAmount, 4, vUserLocationsItem.Status, tmpMaxNew, feeRate)
 							if nil != err {
 								return err
 							}
@@ -3048,7 +3077,12 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 								return err
 							}
 
-							_, err = uuc.ubRepo.AreaRewardBiw(ctx, vUserLocationsItem.UserId, bLocationRewardAmount, 5, vUserLocationsItem.Status, bPrice, bPriceBase, feeRate)
+							var tmpMaxNew int64
+							if vUserLocationsItem.CurrentMaxNew < vUserLocationsItem.CurrentMax {
+								tmpMaxNew = vUserLocationsItem.CurrentMax - vUserLocationsItem.CurrentMaxNew
+							}
+
+							_, err = uuc.ubRepo.AreaRewardBiw(ctx, vUserLocationsItem.UserId, bLocationRewardAmount, 5, vUserLocationsItem.Status, tmpMaxNew, feeRate)
 							if nil != err {
 								return err
 							}

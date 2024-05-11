@@ -278,17 +278,18 @@ func (lr *LocationRepo) GetMyLocationLastRunning(ctx context.Context, userId int
 	}
 
 	return &biz.LocationNew{
-		ID:         location.ID,
-		UserId:     location.UserId,
-		Status:     location.Status,
-		Current:    location.Current,
-		CurrentMax: location.CurrentMax,
-		StopDate:   location.StopDate,
-		Top:        location.Top,
-		Num:        location.Num,
-		Count:      location.Count,
-		TopNum:     location.TopNum,
-		Usdt:       location.Usdt,
+		ID:            location.ID,
+		UserId:        location.UserId,
+		Status:        location.Status,
+		Current:       location.Current,
+		CurrentMax:    location.CurrentMax,
+		CurrentMaxNew: location.CurrentMaxNew,
+		StopDate:      location.StopDate,
+		Top:           location.Top,
+		Num:           location.Num,
+		Count:         location.Count,
+		TopNum:        location.TopNum,
+		Usdt:          location.Usdt,
 	}, nil
 }
 
@@ -673,22 +674,23 @@ func (lr *LocationRepo) GetLocationsNewByUserId(ctx context.Context, userId int6
 
 	for _, location := range locations {
 		res = append(res, &biz.LocationNew{
-			ID:         location.ID,
-			UserId:     location.UserId,
-			Status:     location.Status,
-			Current:    location.Current,
-			CurrentMax: location.CurrentMax,
-			OutRate:    location.OutRate,
-			Num:        location.Num,
-			StopDate:   location.StopDate,
-			Usdt:       location.Usdt,
-			Biw:        location.Biw,
-			Top:        location.Top,
-			TopNum:     location.TopNum,
-			LastLevel:  location.LastLevel,
-			Total:      location.Total,
-			TotalTwo:   location.TotalTwo,
-			TotalThree: location.TotalThree,
+			ID:            location.ID,
+			UserId:        location.UserId,
+			Status:        location.Status,
+			Current:       location.Current,
+			CurrentMax:    location.CurrentMax,
+			CurrentMaxNew: location.CurrentMaxNew,
+			OutRate:       location.OutRate,
+			Num:           location.Num,
+			StopDate:      location.StopDate,
+			Usdt:          location.Usdt,
+			Biw:           location.Biw,
+			Top:           location.Top,
+			TopNum:        location.TopNum,
+			LastLevel:     location.LastLevel,
+			Total:         location.Total,
+			TotalTwo:      location.TotalTwo,
+			TotalThree:    location.TotalThree,
 		})
 	}
 
@@ -1067,20 +1069,21 @@ func (lr *LocationRepo) GetRunningLocations(ctx context.Context) ([]*biz.Locatio
 
 	for _, location := range locations {
 		res = append(res, &biz.LocationNew{
-			ID:         location.ID,
-			UserId:     location.UserId,
-			Status:     location.Status,
-			Current:    location.Current,
-			CurrentMax: location.CurrentMax,
-			CreatedAt:  location.CreatedAt,
-			OutRate:    location.OutRate,
-			Usdt:       location.Usdt,
-			Top:        location.Top,
-			TopNum:     location.TopNum,
-			Total:      location.Total,
-			TotalTwo:   location.TotalTwo,
-			TotalThree: location.TotalThree,
-			LastLevel:  location.LastLevel,
+			ID:            location.ID,
+			UserId:        location.UserId,
+			Status:        location.Status,
+			Current:       location.Current,
+			CurrentMax:    location.CurrentMax,
+			CurrentMaxNew: location.CurrentMaxNew,
+			CreatedAt:     location.CreatedAt,
+			OutRate:       location.OutRate,
+			Usdt:          location.Usdt,
+			Top:           location.Top,
+			TopNum:        location.TopNum,
+			Total:         location.Total,
+			TotalTwo:      location.TotalTwo,
+			TotalThree:    location.TotalThree,
+			LastLevel:     location.LastLevel,
 		})
 	}
 
