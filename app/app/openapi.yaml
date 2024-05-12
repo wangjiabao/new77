@@ -309,6 +309,29 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /api/admin_dhb/daily_area_reward:
+        get:
+            tags:
+                - App
+            operationId: App_AdminDailyAreaReward
+            parameters:
+                - name: date
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/AdminDailyLocationRewardReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/admin_dhb/daily_balance_reward:
         get:
             tags:
@@ -608,6 +631,33 @@ paths:
             tags:
                 - App
             operationId: App_AdminLocationList
+            parameters:
+                - name: page
+                  in: query
+                  schema:
+                    type: string
+                - name: address
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/AdminLocationListReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/admin_dhb/location_list_2:
+        get:
+            tags:
+                - App
+            operationId: App_AdminLocationListNew
             parameters:
                 - name: page
                   in: query
@@ -1441,6 +1491,8 @@ components:
                 address:
                     type: string
                 status:
+                    type: string
+                num:
                     type: string
                 currentLevel:
                     type: string

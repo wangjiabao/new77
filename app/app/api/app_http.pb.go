@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-http v2.7.1
 // - protoc             v3.21.7
-// source: app/app/api/app.proto
+// source: api/app.proto
 
 package api
 
@@ -26,6 +26,7 @@ const OperationAppAdminChangePassword = "/api.App/AdminChangePassword"
 const OperationAppAdminConfig = "/api.App/AdminConfig"
 const OperationAppAdminConfigUpdate = "/api.App/AdminConfigUpdate"
 const OperationAppAdminCreateAccount = "/api.App/AdminCreateAccount"
+const OperationAppAdminDailyAreaReward = "/api.App/AdminDailyAreaReward"
 const OperationAppAdminDailyBalanceReward = "/api.App/AdminDailyBalanceReward"
 const OperationAppAdminDailyFee = "/api.App/AdminDailyFee"
 const OperationAppAdminDailyLocationReward = "/api.App/AdminDailyLocationReward"
@@ -84,6 +85,7 @@ type AppHTTPServer interface {
 	AdminConfig(context.Context, *AdminConfigRequest) (*AdminConfigReply, error)
 	AdminConfigUpdate(context.Context, *AdminConfigUpdateRequest) (*AdminConfigUpdateReply, error)
 	AdminCreateAccount(context.Context, *AdminCreateAccountRequest) (*AdminCreateAccountReply, error)
+	AdminDailyAreaReward(context.Context, *AdminDailyLocationRewardRequest) (*AdminDailyLocationRewardReply, error)
 	AdminDailyBalanceReward(context.Context, *AdminDailyBalanceRewardRequest) (*AdminDailyBalanceRewardReply, error)
 	AdminDailyFee(context.Context, *AdminDailyFeeRequest) (*AdminDailyFeeReply, error)
 	AdminDailyLocationReward(context.Context, *AdminDailyLocationRewardRequest) (*AdminDailyLocationRewardReply, error)
@@ -192,6 +194,7 @@ func RegisterAppHTTPServer(s *http.Server, srv AppHTTPServer) {
 	r.GET("/api/admin_dhb/daily_recommend_reward", _App_AdminDailyRecommendReward0_HTTP_Handler(srv))
 	r.GET("/api/admin_dhb/daily_balance_reward", _App_AdminDailyBalanceReward0_HTTP_Handler(srv))
 	r.GET("/api/admin_dhb/daily_location_reward", _App_AdminDailyLocationReward0_HTTP_Handler(srv))
+	r.GET("/api/admin_dhb/daily_area_reward", _App_AdminDailyAreaReward0_HTTP_Handler(srv))
 	r.GET("/api/admin_dhb/daily_location_reward_new", _App_AdminDailyLocationRewardNew0_HTTP_Handler(srv))
 }
 
@@ -1285,6 +1288,25 @@ func _App_AdminDailyLocationReward0_HTTP_Handler(srv AppHTTPServer) func(ctx htt
 	}
 }
 
+func _App_AdminDailyAreaReward0_HTTP_Handler(srv AppHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in AdminDailyLocationRewardRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationAppAdminDailyAreaReward)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.AdminDailyAreaReward(ctx, req.(*AdminDailyLocationRewardRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*AdminDailyLocationRewardReply)
+		return ctx.Result(200, reply)
+	}
+}
+
 func _App_AdminDailyLocationRewardNew0_HTTP_Handler(srv AppHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in AdminDailyLocationRewardNewRequest
@@ -1312,6 +1334,7 @@ type AppHTTPClient interface {
 	AdminConfig(ctx context.Context, req *AdminConfigRequest, opts ...http.CallOption) (rsp *AdminConfigReply, err error)
 	AdminConfigUpdate(ctx context.Context, req *AdminConfigUpdateRequest, opts ...http.CallOption) (rsp *AdminConfigUpdateReply, err error)
 	AdminCreateAccount(ctx context.Context, req *AdminCreateAccountRequest, opts ...http.CallOption) (rsp *AdminCreateAccountReply, err error)
+	AdminDailyAreaReward(ctx context.Context, req *AdminDailyLocationRewardRequest, opts ...http.CallOption) (rsp *AdminDailyLocationRewardReply, err error)
 	AdminDailyBalanceReward(ctx context.Context, req *AdminDailyBalanceRewardRequest, opts ...http.CallOption) (rsp *AdminDailyBalanceRewardReply, err error)
 	AdminDailyFee(ctx context.Context, req *AdminDailyFeeRequest, opts ...http.CallOption) (rsp *AdminDailyFeeReply, err error)
 	AdminDailyLocationReward(ctx context.Context, req *AdminDailyLocationRewardRequest, opts ...http.CallOption) (rsp *AdminDailyLocationRewardReply, err error)
@@ -1456,6 +1479,19 @@ func (c *AppHTTPClientImpl) AdminCreateAccount(ctx context.Context, in *AdminCre
 	opts = append(opts, http.Operation(OperationAppAdminCreateAccount))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in.SendBody, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *AppHTTPClientImpl) AdminDailyAreaReward(ctx context.Context, in *AdminDailyLocationRewardRequest, opts ...http.CallOption) (*AdminDailyLocationRewardReply, error) {
+	var out AdminDailyLocationRewardReply
+	pattern := "/api/admin_dhb/daily_area_reward"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationAppAdminDailyAreaReward))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

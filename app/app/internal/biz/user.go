@@ -2315,7 +2315,6 @@ func (uuc *UserUseCase) AdminDailyBalanceReward(ctx context.Context, req *v1.Adm
 }
 
 func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.AdminDailyLocationRewardRequest) (*v1.AdminDailyLocationRewardReply, error) {
-
 	var (
 		userLocations      []*LocationNew
 		configs            []*Config
@@ -2330,21 +2329,6 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 		recommendSixRate   int64
 		recommendSevenRate int64
 		recommendEightRate int64
-		areaOne            int64
-		areaTwo            int64
-		areaThree          int64
-		areaFour           int64
-		areaFive           int64
-		areaNumOne         int64
-		areaNumTwo         int64
-		areaNumThree       int64
-		areaNumFour        int64
-		areaNumFive        int64
-		one                int64
-		two                int64
-		three              int64
-		four               int64
-		total              int64
 		feeRate            int64
 		err                error
 	)
@@ -2382,36 +2366,6 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 				recommendSevenRate, _ = strconv.ParseInt(vConfig.Value, 10, 64)
 			} else if "recommend_eight_rate" == vConfig.KeyName {
 				recommendEightRate, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-			} else if "area_one" == vConfig.KeyName {
-				areaOne, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-			} else if "area_two" == vConfig.KeyName {
-				areaTwo, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-			} else if "area_three" == vConfig.KeyName {
-				areaThree, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-			} else if "area_four" == vConfig.KeyName {
-				areaFour, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-			} else if "area_five" == vConfig.KeyName {
-				areaFive, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-			} else if "area_num_one" == vConfig.KeyName {
-				areaNumOne, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-			} else if "area_num_two" == vConfig.KeyName {
-				areaNumTwo, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-			} else if "area_num_three" == vConfig.KeyName {
-				areaNumThree, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-			} else if "area_num_four" == vConfig.KeyName {
-				areaNumFour, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-			} else if "area_num_five" == vConfig.KeyName {
-				areaNumFive, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-			} else if "one" == vConfig.KeyName {
-				one, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-			} else if "two" == vConfig.KeyName {
-				two, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-			} else if "three" == vConfig.KeyName {
-				three, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-			} else if "four" == vConfig.KeyName {
-				four, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-			} else if "total" == vConfig.KeyName {
-				total, _ = strconv.ParseInt(vConfig.Value, 10, 64)
 			} else if "exchange_rate" == vConfig.KeyName {
 				feeRate, _ = strconv.ParseInt(vConfig.Value, 10, 64)
 			}
@@ -2498,11 +2452,6 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 		}
 	}
 
-	// 发放推荐奖励
-	userLocations, err = uuc.locationRepo.GetRunningLocations(ctx)
-	if nil != err {
-		return &v1.AdminDailyLocationRewardReply{}, nil
-	}
 	for _, vUserLocations := range userLocations {
 		var (
 			userRecommend       *UserRecommend
@@ -2651,6 +2600,91 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 
 		}
 	}
+
+	return nil, err
+}
+
+func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminDailyLocationRewardRequest) (*v1.AdminDailyLocationRewardReply, error) {
+	var (
+		userLocations []*LocationNew
+		configs       []*Config
+		bPrice        int64
+		bPriceBase    int64
+		areaOne       int64
+		areaTwo       int64
+		areaThree     int64
+		areaFour      int64
+		areaFive      int64
+		areaNumOne    int64
+		areaNumTwo    int64
+		areaNumThree  int64
+		areaNumFour   int64
+		areaNumFive   int64
+		one           int64
+		two           int64
+		three         int64
+		four          int64
+		total         int64
+		feeRate       int64
+		err           error
+	)
+
+	configs, _ = uuc.configRepo.GetConfigByKeys(ctx,
+		"location_reward_rate", "b_price", "b_price_base", "exchange_rate",
+		"recommend_one_rate", "recommend_two_rate",
+		"recommend_three_rate", "recommend_four_rate",
+		"recommend_five_rate", "recommend_six_rate",
+		"recommend_seven_rate", "recommend_eight_rate",
+		"area_one", "area_two", "area_three", "area_four", "area_five",
+		"area_num_one", "area_num_two", "area_num_three", "area_num_four", "area_num_five", "one", "two", "three", "four", "total",
+	)
+	if nil != configs {
+		for _, vConfig := range configs {
+			if "b_price" == vConfig.KeyName {
+				bPrice, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			} else if "b_price_base" == vConfig.KeyName {
+				bPriceBase, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			} else if "area_one" == vConfig.KeyName {
+				areaOne, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			} else if "area_two" == vConfig.KeyName {
+				areaTwo, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			} else if "area_three" == vConfig.KeyName {
+				areaThree, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			} else if "area_four" == vConfig.KeyName {
+				areaFour, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			} else if "area_five" == vConfig.KeyName {
+				areaFive, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			} else if "area_num_one" == vConfig.KeyName {
+				areaNumOne, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			} else if "area_num_two" == vConfig.KeyName {
+				areaNumTwo, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			} else if "area_num_three" == vConfig.KeyName {
+				areaNumThree, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			} else if "area_num_four" == vConfig.KeyName {
+				areaNumFour, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			} else if "area_num_five" == vConfig.KeyName {
+				areaNumFive, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			} else if "one" == vConfig.KeyName {
+				one, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			} else if "two" == vConfig.KeyName {
+				two, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			} else if "three" == vConfig.KeyName {
+				three, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			} else if "four" == vConfig.KeyName {
+				four, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			} else if "total" == vConfig.KeyName {
+				total, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			} else if "exchange_rate" == vConfig.KeyName {
+				feeRate, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			}
+		}
+	}
+
+	var (
+		stopLocationIds map[int64]int64
+	)
+
+	stopLocationIds = make(map[int64]int64, 0)
 
 	// 团队奖励
 	userLocationsOne := make([]*LocationNew, 0)

@@ -363,6 +363,12 @@ service App {
 		};
 	};
 
+	rpc AdminDailyAreaReward (AdminDailyLocationRewardRequest) returns (AdminDailyLocationRewardReply) {
+		option (google.api.http) = {
+			get: "/api/admin_dhb/daily_area_reward"
+		};
+	};
+
 	rpc AdminDailyLocationRewardNew (AdminDailyLocationRewardNewRequest) returns (AdminDailyLocationRewardNewReply) {
 		option (google.api.http) = {
 			get: "/api/admin_dhb/daily_location_reward_new"

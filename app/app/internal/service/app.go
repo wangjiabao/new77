@@ -87,6 +87,7 @@ func (a *AppService) Deposit(ctx context.Context, req *v1.DepositRequest) (*v1.D
 			continue
 		}
 
+		//0xa4b5409745f467014D23ccB7ea5c62a4E6828BF4
 		userLength, err = getUserLength("0x0299e92df88c034F6425e78b6f6A367e84160B45")
 		if nil != err {
 			fmt.Println(err)
@@ -104,6 +105,7 @@ func (a *AppService) Deposit(ctx context.Context, req *v1.DepositRequest) (*v1.D
 			break
 		}
 
+		//0xa4b5409745f467014D23ccB7ea5c62a4E6828BF4
 		depositUsdtResult, err = getUserInfo(last, userLength-1, "0x0299e92df88c034F6425e78b6f6A367e84160B45")
 		if nil != err {
 			break
@@ -1017,6 +1019,10 @@ func (a *AppService) CheckAndInsertRecommendArea(ctx context.Context, req *v1.Ch
 
 func (a *AppService) AdminDailyLocationReward(ctx context.Context, req *v1.AdminDailyLocationRewardRequest) (*v1.AdminDailyLocationRewardReply, error) {
 	return a.uuc.AdminDailyLocationReward(ctx, req)
+}
+
+func (a *AppService) AdminDailyAreaReward(ctx context.Context, req *v1.AdminDailyLocationRewardRequest) (*v1.AdminDailyLocationRewardReply, error) {
+	return a.uuc.AdminDailyAreaReward(ctx, req)
 }
 
 func (a *AppService) AdminDailyLocationRewardNew(ctx context.Context, req *v1.AdminDailyLocationRewardNewRequest) (*v1.AdminDailyLocationRewardNewReply, error) {
