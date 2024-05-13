@@ -197,6 +197,7 @@ func (ruc *RecordUseCase) EthUserRecordHandle(ctx context.Context, ethUserRecord
 		buyThree  int64
 		buyFour   int64
 		buyFive   int64
+		buySix    int64
 		areaOne   int64
 		areaTwo   int64
 		areaThree int64
@@ -217,7 +218,7 @@ func (ruc *RecordUseCase) EthUserRecordHandle(ctx context.Context, ethUserRecord
 	// 配置
 	configs, _ = ruc.configRepo.GetConfigByKeys(ctx,
 		"area_one", "area_two", "area_three", "area_four", "area_five",
-		"buy_one", "buy_two", "buy_three", "buy_four", "buy_five", "b_price", "b_price_base", "recommend_rate_1", "recommend_rate_2", "recommend_rate_3", "recommend_rate_4", "recommend_rate_5", "recommend_rate_6", "recommend_rate_7", "recommend_rate_8")
+		"buy_one", "buy_two", "buy_six", "buy_three", "buy_four", "buy_five", "b_price", "b_price_base", "recommend_rate_1", "recommend_rate_2", "recommend_rate_3", "recommend_rate_4", "recommend_rate_5", "recommend_rate_6", "recommend_rate_7", "recommend_rate_8")
 	if nil != configs {
 		for _, vConfig := range configs {
 			if "buy_one" == vConfig.KeyName {
@@ -234,6 +235,10 @@ func (ruc *RecordUseCase) EthUserRecordHandle(ctx context.Context, ethUserRecord
 			}
 			if "buy_five" == vConfig.KeyName {
 				buyFive, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			}
+
+			if "buy_six" == vConfig.KeyName {
+				buySix, _ = strconv.ParseInt(vConfig.Value, 10, 64)
 			}
 
 			if "area_one" == vConfig.KeyName {
@@ -302,7 +307,9 @@ func (ruc *RecordUseCase) EthUserRecordHandle(ctx context.Context, ethUserRecord
 			continue
 		}
 
-		if 30000000 == v.RelAmount && int64(len(allLocations)) < buyOne {
+		if 10000000 == v.RelAmount && int64(len(allLocations)) < buySix {
+
+		} else if 30000000 == v.RelAmount && int64(len(allLocations)) < buyOne {
 
 		} else if 100000000 == v.RelAmount && int64(len(allLocations)) < buyTwo {
 
