@@ -2470,10 +2470,11 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 
 		if 0 < tmpCurrentReward && 0 < bLocationRewardAmount {
 			if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
-				vUserLocations.Status = "running"
+				tmpStatus := vUserLocations.Status
+				tmpStopDate := time.Now().UTC().Add(8 * time.Hour)
 				if vUserLocations.Current+tmpCurrentReward >= vUserLocations.CurrentMax { // 占位分红人分满停止
-					vUserLocations.Status = "stop"
-					vUserLocations.StopDate = time.Now().UTC().Add(8 * time.Hour)
+					tmpStatus = "stop"
+					tmpStopDate = time.Now().UTC().Add(8 * time.Hour)
 
 					tmpCurrentReward = vUserLocations.CurrentMax - vUserLocations.Current
 					bLocationRewardAmount = tmpCurrentReward / bPrice * bPriceBase
@@ -2485,19 +2486,19 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 					tmpMaxNew = vUserLocations.CurrentMax - vUserLocations.CurrentMaxNew
 				}
 				if 0 < tmpCurrentReward && 0 < bLocationRewardAmount {
-					err = uuc.locationRepo.UpdateLocationNewNew(ctx, vUserLocations.ID, vUserLocations.Status, tmpCurrentReward, tmpMaxNew, bLocationRewardAmount, vUserLocations.StopDate) // 分红占位数据修改
+					err = uuc.locationRepo.UpdateLocationNewNew(ctx, vUserLocations.ID, tmpStatus, tmpCurrentReward, tmpMaxNew, bLocationRewardAmount, tmpStopDate) // 分红占位数据修改
 					if nil != err {
 						return err
 					}
 
-					_, err = uuc.ubRepo.LocationRewardBiw(ctx, vUserLocations.UserId, bLocationRewardAmount, vUserLocations.Status, tmpMaxNew, feeRate)
+					_, err = uuc.ubRepo.LocationRewardBiw(ctx, vUserLocations.UserId, bLocationRewardAmount, tmpStatus, tmpMaxNew, feeRate)
 					if nil != err {
 						return err
 					}
 				}
 
 				// 业绩减掉
-				if "stop" == vUserLocations.Status {
+				if "stop" == tmpStatus {
 					tmpTop := vUserLocations.Top
 					tmpTopNum := vUserLocations.TopNum
 					for j := 0; j < 10000 && 0 < tmpTop && 0 < tmpTopNum; j++ {
@@ -2607,12 +2608,12 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 
 							if 0 < tmpMyRecommendAmount { // 扣除推荐人分红
 								bAmount := tmpMyRecommendAmount / bPrice * bPriceBase
-								tmpMyTopUserRecommendUserLocationLast.Status = "running"
-
+								tmpStatus := tmpMyTopUserRecommendUserLocationLast.Status
+								tmpStopDate := time.Now().UTC().Add(8 * time.Hour)
 								// 过了
 								if tmpMyTopUserRecommendUserLocationLast.Current+tmpMyRecommendAmount >= tmpMyTopUserRecommendUserLocationLast.CurrentMax { // 占位分红人分满停止
-									tmpMyTopUserRecommendUserLocationLast.Status = "stop"
-									tmpMyTopUserRecommendUserLocationLast.StopDate = time.Now().UTC().Add(8 * time.Hour)
+									tmpStatus = "stop"
+									tmpStopDate = time.Now().UTC().Add(8 * time.Hour)
 
 									tmpMyRecommendAmount = tmpMyTopUserRecommendUserLocationLast.CurrentMax - tmpMyTopUserRecommendUserLocationLast.Current
 									bAmount = tmpMyRecommendAmount / bPrice * bPriceBase
@@ -2626,18 +2627,18 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 									}
 
 									if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
-										err = uuc.locationRepo.UpdateLocationNewNew(ctx, tmpMyTopUserRecommendUserLocationLast.ID, tmpMyTopUserRecommendUserLocationLast.Status, tmpMyRecommendAmount, tmpMaxNew, bAmount, tmpMyTopUserRecommendUserLocationLast.StopDate) // 分红占位数据修改
+										err = uuc.locationRepo.UpdateLocationNewNew(ctx, tmpMyTopUserRecommendUserLocationLast.ID, tmpStatus, tmpMyRecommendAmount, tmpMaxNew, bAmount, tmpStopDate) // 分红占位数据修改
 										if nil != err {
 											return err
 										}
 
-										_, err = uuc.ubRepo.RecommendRewardBiw(ctx, tmpMyTopUserRecommendUserId, bAmount, int64(i+1), tmpMyTopUserRecommendUserLocationLast.Status, tmpMaxNew, feeRate) // 推荐人奖励
+										_, err = uuc.ubRepo.RecommendRewardBiw(ctx, tmpMyTopUserRecommendUserId, bAmount, int64(i+1), tmpStatus, tmpMaxNew, feeRate) // 推荐人奖励
 										if nil != err {
 											return err
 										}
 
 										// 业绩减掉
-										if "stop" == tmpMyTopUserRecommendUserLocationLast.Status {
+										if "stop" == tmpStatus {
 											tmpTop := tmpMyTopUserRecommendUserLocationLast.Top
 											tmpTopNum := tmpMyTopUserRecommendUserLocationLast.TopNum
 											for j := 0; j < 10000 && 0 < tmpTop && 0 < tmpTopNum; j++ {
