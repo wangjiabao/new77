@@ -625,10 +625,6 @@ func (u *UserRepo) GetUsers(ctx context.Context, b *biz.Pagination, address stri
 		instance = instance.Joins("inner join location_new on user.id = location_new.user_id").Group("user.id")
 	}
 
-	if 0 < vip {
-		instance = instance.Joins("inner join user_info on user.id = user_info.user_id and user_info.vip=?", vip)
-	}
-
 	instance = instance.Count(&count)
 	if err := instance.Scopes(Paginate(b.PageNum, b.PageSize)).Order("id desc").Find(&users).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -4050,6 +4046,37 @@ func (ub UserBalanceRepo) GetUserBalanceRecordHbsTotal(ctx context.Context) (int
 		}
 
 		return total.Total, errors.New(500, "USER BALANCE RECORD ERROR", err.Error())
+	}
+
+	return total.Total, nil
+}
+
+// GetUserRewardLocationTotalToday .
+func (ub UserBalanceRepo) GetUserRewardLocationTotalToday(ctx context.Context, reason string) (int64, error) {
+	var total UserBalanceTotal
+
+	now := time.Now().UTC()
+	var startDate time.Time
+	var endDate time.Time
+	if 16 <= now.Hour() {
+		startDate = now
+		endDate = now.AddDate(0, 0, 1)
+	} else {
+		startDate = now.AddDate(0, 0, -1)
+		endDate = now
+	}
+	todayStart := time.Date(startDate.Year(), startDate.Month(), startDate.Day(), 16, 0, 0, 0, time.UTC)
+	todayEnd := time.Date(endDate.Year(), endDate.Month(), endDate.Day(), 16, 0, 0, 0, time.UTC)
+
+	if err := ub.data.db.Table("reward").
+		Where("reason=?", reason).
+		Where("created_at>=?", todayStart).Where("created_at<?", todayEnd).
+		Select("sum(amount) as total").Take(&total).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return total.Total, nil
+		}
+
+		return total.Total, errors.New(500, "REWARD RECORD ERROR", err.Error())
 	}
 
 	return total.Total, nil

@@ -523,11 +523,9 @@ message AdminRewardListReply {
 	repeated List rewards = 1;
 	message List {
 		string created_at = 1; // 时间
-		string amount = 2; // 分红数量
-		string amountB = 3;
-		string type = 4;
+		string amount = 2; // 数量
 		string address = 5; // 地址
-		string reason = 6; // 理由：1 recommend_token （vip直推代币） 2 reward_withdraw vipusdt每日分红 3 recommend 直推 4 location 代数奖励
+		string reason = 6; // 原因 每一条替换文案 认购reason=buy，提现reason=withdraw，兑换reason=exchange，前四名reason=four，挖矿reason=location，矩阵reason=area，直推reason=recommend
 	}
 	 int64 count = 2;
 }
@@ -574,7 +572,6 @@ message CheckAndInsertLocationsRecommendUserReply {
 message AdminUserListRequest {
 	int64 page = 1;
 	string address = 2;
-	bool isLocation = 3;
 	int64 vip = 4;
 }
 
@@ -584,13 +581,14 @@ message AdminUserListReply { // 用户信息
 		int64 user_id = 8;
 		string created_at = 1; // 创建时间
 		string address = 2; // 地址
-		string balanceUsdt = 3; // 可提usdt
-		string balanceDhb = 4; //
-		string balanceUsdtLock = 7;
-		string balanceDhbLock = 9;
-		int64 vip = 5; // 等级
-		int64 historyRecommend = 6; // 直推人数
-		string TeamCsdBalance = 10;
+		string balanceUsdt = 3; // 可提usdt数量
+		string balanceDhb = 4; // isps数量
+		int64 out = 7; // 出局次数
+		int64 areaTotal = 9; // 总业绩
+		int64 areaMin = 10; // 小区
+		int64 areaMax = 11; // 大区
+		int64 vip = 5; // 会员等级
+		int64 historyRecommend = 6; // 历史推荐人数
 	}
 
 	int64 count = 2;
@@ -599,7 +597,6 @@ message AdminUserListReply { // 用户信息
 message RecordListRequest {
 	int64 page = 1;
 	string address = 2;
-	string coinType = 3;
 }
 
 message RecordListReply { // 投资列表
@@ -608,8 +605,8 @@ message RecordListReply { // 投资列表
 		string created_at = 1; // 时间
 		string address = 2; // 地址
 		string amount = 5;
-		string coin_type = 4;
 	}
+
 	int64 count = 2;
 }
 
@@ -619,14 +616,10 @@ message AdminLocationListRequest {
 	string address = 2;
 }
 
-message AdminLocationListReply { // 投资列表
+message AdminLocationListReply { // 出局列表
 	repeated LocationList locations = 1;
 	message  LocationList {
-		string created_at = 1; // 时间
 		string address = 2; // 地址
-		string status = 5; // 状态 running运行，stop停止
-		int64 num = 9; // 代数 locationnew那个接口不用展示这个字段
-		int64 currentLevel = 6;
 		string current = 7; // 当前收益
 		string currentMax = 8; // 最大收益
 	}
@@ -717,30 +710,17 @@ message AdminAllRequest {
 }
 
 message AdminAllReply {
-	int64 todayTotalUser = 1; // 今日注册人数
-	int64 locationCount = 10; // 投资人数
-	int64 totalUser = 2; // 总人数
-	string allBalance = 3; // 全网可提CSD余额
-	string allBalanceBtc = 13;
-	string todayLocation = 4; // 今日投资金额
-	string allLocation = 5; // 总投资金额
-	string todayWithdraw = 6; // 今日提币CSD金额
-	string allWithdraw = 7; // 总提币CSD金额
-	string totalH = 18; // 充值hbs数量
-	string allBalanceH = 17; // 全网可提hbs余额
-	string todayWithdrawH = 16; // 今日提币hbs金额
-	string withdrawH = 19; // hbs总提
-	string totalC = 20; // csd充值
-	string amountCsd = 21; // csd的销毁
-	string amountHbs = 22; // hbs的销毁
-	string allWithdrawBtc = 12;
-	string todayWithdrawBtc = 11;
-	string allReward = 8; //
-	string allSystemRewardAndFee = 9;
-	string balanceReward = 14;
-	string balanceRewardRewarded = 15;
-	string userBalanceLockUsdtTotal = 25;
-	string userLocationNewCurrent = 26;
+	int64 totalUser = 2; // 激活人数
+	string todayLocation = 4; // 今日入金u数量
+	string allLocation = 5; // 总入金u数量
+	string todayLocationReward = 1; // 今日静态释放
+	string todayRecommendReward = 3; // 今日动态释放
+	string todayAreaReward = 16; // 今日矩阵释放
+	string todayFourReward = 15; // 今日前四名分红u数量
+	string totalIsps= 6; // 全网ISPS数量
+	string totalUsdt = 7; // 全网可提U数量
+	string todayWithdrawUsdt = 18; // 今日提U数量
+	string totalWithdrawUsdt = 19; // 总提U数量
 }
 
 message AdminUserRecommendRequest {

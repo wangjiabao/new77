@@ -805,10 +805,6 @@ paths:
                   in: query
                   schema:
                     type: string
-                - name: coinType
-                  in: query
-                  schema:
-                    type: string
             responses:
                 "200":
                     description: OK
@@ -959,10 +955,6 @@ paths:
                   in: query
                   schema:
                     type: string
-                - name: isLocation
-                  in: query
-                  schema:
-                    type: boolean
                 - name: vip
                   in: query
                   schema:
@@ -1292,53 +1284,27 @@ components:
         AdminAllReply:
             type: object
             properties:
-                todayTotalUser:
-                    type: string
-                locationCount:
-                    type: string
                 totalUser:
-                    type: string
-                allBalance:
-                    type: string
-                allBalanceBtc:
                     type: string
                 todayLocation:
                     type: string
                 allLocation:
                     type: string
-                todayWithdraw:
+                todayLocationReward:
                     type: string
-                allWithdraw:
+                todayRecommendReward:
                     type: string
-                totalH:
+                todayAreaReward:
                     type: string
-                allBalanceH:
+                todayFourReward:
                     type: string
-                todayWithdrawH:
+                totalIsps:
                     type: string
-                withdrawH:
+                totalUsdt:
                     type: string
-                totalC:
+                todayWithdrawUsdt:
                     type: string
-                amountCsd:
-                    type: string
-                amountHbs:
-                    type: string
-                allWithdrawBtc:
-                    type: string
-                todayWithdrawBtc:
-                    type: string
-                allReward:
-                    type: string
-                allSystemRewardAndFee:
-                    type: string
-                balanceReward:
-                    type: string
-                balanceRewardRewarded:
-                    type: string
-                userBalanceLockUsdtTotal:
-                    type: string
-                userLocationNewCurrent:
+                totalWithdrawUsdt:
                     type: string
         AdminAreaLevelUpdateReply:
             type: object
@@ -1486,15 +1452,7 @@ components:
         AdminLocationListReply_LocationList:
             type: object
             properties:
-                createdAt:
-                    type: string
                 address:
-                    type: string
-                status:
-                    type: string
-                num:
-                    type: string
-                currentLevel:
                     type: string
                 current:
                     type: string
@@ -1557,10 +1515,6 @@ components:
                 createdAt:
                     type: string
                 amount:
-                    type: string
-                amountB:
-                    type: string
-                type:
                     type: string
                 address:
                     type: string
@@ -1631,15 +1585,17 @@ components:
                     type: string
                 balanceDhb:
                     type: string
-                balanceUsdtLock:
+                out:
                     type: string
-                balanceDhbLock:
+                areaTotal:
+                    type: string
+                areaMin:
+                    type: string
+                areaMax:
                     type: string
                 vip:
                     type: string
                 historyRecommend:
-                    type: string
-                TeamCsdBalance:
                     type: string
         AdminUserRecommendReply:
             type: object
@@ -1855,8 +1811,6 @@ components:
                 address:
                     type: string
                 amount:
-                    type: string
-                coinType:
                     type: string
         RewardListReply:
             type: object

@@ -33,6 +33,10 @@ type Location struct {
 	Row           int64
 	Col           int64
 	Count         int64
+	Total         int64
+	TotalTwo      int64
+	TotalThree    int64
+	LastLevel     int64
 	StopDate      time.Time
 	CreatedAt     time.Time
 }
@@ -100,6 +104,7 @@ type LocationRepo interface {
 	GetRewardLocationByRowOrCol(ctx context.Context, row int64, col int64, locationRowConfig int64) ([]*Location, error)
 	GetRewardLocationByIds(ctx context.Context, ids ...int64) (map[int64]*Location, error)
 	UpdateLocation(ctx context.Context, id int64, status string, current int64, stopDate time.Time) error
+	UpdateLocationLastLevel(ctx context.Context, id int64, lastLevel int64) error
 	GetLocations(ctx context.Context, b *Pagination, userId int64) ([]*LocationNew, error, int64)
 	GetLocations2(ctx context.Context, b *Pagination, userId int64) ([]*LocationNew, error, int64)
 	GetUserBalanceRecords(ctx context.Context, b *Pagination, userId int64, coinType string) ([]*UserBalanceRecord, error, int64)

@@ -23,6 +23,10 @@ type Location struct {
 	StopDate      time.Time `gorm:"type:datetime;not null"`
 	CreatedAt     time.Time `gorm:"type:datetime;not null"`
 	UpdatedAt     time.Time `gorm:"type:datetime;not null"`
+	Total         int64     `gorm:"type:int"`
+	TotalTwo      int64     `gorm:"type:int"`
+	TotalThree    int64     `gorm:"type:int"`
+	LastLevel     int64     `gorm:"type:bigint;not null"`
 	Num           int64     `gorm:"type:int;not null"`
 }
 type LocationNew struct {
@@ -652,6 +656,10 @@ func (lr *LocationRepo) GetLocationsByUserId(ctx context.Context, userId int64) 
 			CurrentMaxNew: location.CurrentMaxNew,
 			Row:           location.Row,
 			Col:           location.Col,
+			LastLevel:     location.LastLevel,
+			Total:         location.Total,
+			TotalTwo:      location.TotalTwo,
+			TotalThree:    location.TotalThree,
 		})
 	}
 
@@ -844,6 +852,19 @@ func (lr *LocationRepo) UpdateLocation(ctx context.Context, id int64, status str
 		if 0 == res.RowsAffected || res.Error != nil {
 			return res.Error
 		}
+	}
+
+	return nil
+}
+
+// UpdateLocationLastLevel .
+func (lr *LocationRepo) UpdateLocationLastLevel(ctx context.Context, id int64, lastLevel int64) error {
+
+	res := lr.data.db.Table("location").
+		Where("id=?", id).
+		Updates(map[string]interface{}{"last_level": lastLevel})
+	if 0 == res.RowsAffected || res.Error != nil {
+		return res.Error
 	}
 
 	return nil
@@ -1238,7 +1259,7 @@ func (lr *LocationRepo) GetLocations(ctx context.Context, b *biz.Pagination, use
 		locations []*Location
 		count     int64
 	)
-	instance := lr.data.db.Table("location_new").Where("status=?", "running")
+	instance := lr.data.db.Table("location_new").Where("status=?", "stop")
 
 	if 0 < userId {
 		instance = instance.Where("user_id=?", userId)

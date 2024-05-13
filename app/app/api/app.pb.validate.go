@@ -3482,8 +3482,6 @@ func (m *AdminUserListRequest) validate(all bool) error {
 
 	// no validation rules for Address
 
-	// no validation rules for IsLocation
-
 	// no validation rules for Vip
 
 	if len(errors) > 0 {
@@ -3729,8 +3727,6 @@ func (m *RecordListRequest) validate(all bool) error {
 	// no validation rules for Page
 
 	// no validation rules for Address
-
-	// no validation rules for CoinType
 
 	if len(errors) > 0 {
 		return RecordListRequestMultiError(errors)
@@ -6054,53 +6050,27 @@ func (m *AdminAllReply) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for TodayTotalUser
-
-	// no validation rules for LocationCount
-
 	// no validation rules for TotalUser
-
-	// no validation rules for AllBalance
-
-	// no validation rules for AllBalanceBtc
 
 	// no validation rules for TodayLocation
 
 	// no validation rules for AllLocation
 
-	// no validation rules for TodayWithdraw
+	// no validation rules for TodayLocationReward
 
-	// no validation rules for AllWithdraw
+	// no validation rules for TodayRecommendReward
 
-	// no validation rules for TotalH
+	// no validation rules for TodayAreaReward
 
-	// no validation rules for AllBalanceH
+	// no validation rules for TodayFourReward
 
-	// no validation rules for TodayWithdrawH
+	// no validation rules for TotalIsps
 
-	// no validation rules for WithdrawH
+	// no validation rules for TotalUsdt
 
-	// no validation rules for TotalC
+	// no validation rules for TodayWithdrawUsdt
 
-	// no validation rules for AmountCsd
-
-	// no validation rules for AmountHbs
-
-	// no validation rules for AllWithdrawBtc
-
-	// no validation rules for TodayWithdrawBtc
-
-	// no validation rules for AllReward
-
-	// no validation rules for AllSystemRewardAndFee
-
-	// no validation rules for BalanceReward
-
-	// no validation rules for BalanceRewardRewarded
-
-	// no validation rules for UserBalanceLockUsdtTotal
-
-	// no validation rules for UserLocationNewCurrent
+	// no validation rules for TotalWithdrawUsdt
 
 	if len(errors) > 0 {
 		return AdminAllReplyMultiError(errors)
@@ -12716,10 +12686,6 @@ func (m *AdminRewardListReply_List) validate(all bool) error {
 
 	// no validation rules for Amount
 
-	// no validation rules for AmountB
-
-	// no validation rules for Type
-
 	// no validation rules for Address
 
 	// no validation rules for Reason
@@ -12946,15 +12912,17 @@ func (m *AdminUserListReply_UserList) validate(all bool) error {
 
 	// no validation rules for BalanceDhb
 
-	// no validation rules for BalanceUsdtLock
+	// no validation rules for Out
 
-	// no validation rules for BalanceDhbLock
+	// no validation rules for AreaTotal
+
+	// no validation rules for AreaMin
+
+	// no validation rules for AreaMax
 
 	// no validation rules for Vip
 
 	// no validation rules for HistoryRecommend
-
-	// no validation rules for TeamCsdBalance
 
 	if len(errors) > 0 {
 		return AdminUserListReply_UserListMultiError(errors)
@@ -13065,8 +13033,6 @@ func (m *RecordListReply_LocationList) validate(all bool) error {
 
 	// no validation rules for Amount
 
-	// no validation rules for CoinType
-
 	if len(errors) > 0 {
 		return RecordListReply_LocationListMultiError(errors)
 	}
@@ -13171,15 +13137,7 @@ func (m *AdminLocationListReply_LocationList) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for CreatedAt
-
 	// no validation rules for Address
-
-	// no validation rules for Status
-
-	// no validation rules for Num
-
-	// no validation rules for CurrentLevel
 
 	// no validation rules for Current
 
