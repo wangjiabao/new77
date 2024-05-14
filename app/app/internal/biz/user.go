@@ -2880,7 +2880,7 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 	}
 
 	if 0 < len(userLocationsOne) {
-		rewardLocationYesOne := rewardLocationYes / 100 * areaNumOne / int64(len(userLocationsOne))
+		rewardLocationYesOne := rewardLocationYes / 1000 * areaNumOne / int64(len(userLocationsOne))
 		if 0 < rewardLocationYesOne {
 			for _, vUserLocationsItem := range userLocationsOne {
 				if _, ok := stopLocationIds[vUserLocationsItem.ID]; ok { // 上一轮已经停止了
@@ -2958,7 +2958,7 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 	}
 
 	if 0 < len(userLocationsTwo) {
-		rewardLocationYesTwo := rewardLocationYes / 100 * areaNumTwo / int64(len(userLocationsTwo))
+		rewardLocationYesTwo := rewardLocationYes / 1000 * areaNumTwo / int64(len(userLocationsTwo))
 		if 0 < rewardLocationYesTwo {
 			for _, vUserLocationsItem := range userLocationsTwo {
 				if _, ok := stopLocationIds[vUserLocationsItem.ID]; ok { // 上一轮已经停止了
@@ -3036,7 +3036,7 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 	}
 
 	if 0 < len(userLocationsThree) {
-		rewardLocationYesThree := rewardLocationYes / 100 * areaNumThree / int64(len(userLocationsThree))
+		rewardLocationYesThree := rewardLocationYes / 1000 * areaNumThree / int64(len(userLocationsThree))
 		if 0 < rewardLocationYesThree {
 			for _, vUserLocationsItem := range userLocationsThree {
 				if _, ok := stopLocationIds[vUserLocationsItem.ID]; ok { // 上一轮已经停止了
@@ -3117,7 +3117,7 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 	}
 
 	if 0 < len(userLocationsFour) {
-		rewardLocationYesFour := rewardLocationYes / 100 * areaNumFour / int64(len(userLocationsFour))
+		rewardLocationYesFour := rewardLocationYes / 1000 * areaNumFour / int64(len(userLocationsFour))
 		if 0 < rewardLocationYesFour {
 			for _, vUserLocationsItem := range userLocationsFour {
 				if _, ok := stopLocationIds[vUserLocationsItem.ID]; ok { // 上一轮已经停止了
@@ -3195,7 +3195,7 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 	}
 
 	if 0 < len(userLocationsFive) {
-		rewardLocationYesFive := rewardLocationYes / 100 * areaNumFive / int64(len(userLocationsFive))
+		rewardLocationYesFive := rewardLocationYes / 1000 * areaNumFive / int64(len(userLocationsFive))
 		if 0 < rewardLocationYesFive {
 			for _, vUserLocationsItem := range userLocationsFive {
 				if _, ok := stopLocationIds[vUserLocationsItem.ID]; ok { // 上一轮已经停止了
