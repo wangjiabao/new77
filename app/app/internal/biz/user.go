@@ -461,11 +461,16 @@ func (uuc *UserUseCase) AdminRewardList(ctx context.Context, req *v1.AdminReward
 			}
 		}
 
+		tmpReason := vUserReward.Reason
+		if "exchange_2" == tmpReason {
+			tmpReason = "exchange"
+		}
+
 		res.Rewards = append(res.Rewards, &v1.AdminRewardListReply_List{
 			CreatedAt: vUserReward.CreatedAt.Add(8 * time.Hour).Format("2006-01-02 15:04:05"),
 			Amount:    fmt.Sprintf("%.2f", float64(vUserReward.Amount)/float64(100000)),
 			Address:   tmpUser,
-			Reason:    vUserReward.Reason,
+			Reason:    tmpReason,
 		})
 	}
 
