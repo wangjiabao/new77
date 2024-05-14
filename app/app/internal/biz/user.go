@@ -2507,7 +2507,7 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 	for _, vUserLocations := range userLocations {
 		// 奖励
 		tmpCurrentReward := vUserLocations.Usdt / 1000 * locationRewardRate
-		bLocationRewardAmount := tmpCurrentReward / bPrice * bPriceBase
+		bLocationRewardAmount := tmpCurrentReward * bPriceBase / bPrice
 
 		if 0 < tmpCurrentReward && 0 < bLocationRewardAmount {
 			if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
@@ -2518,7 +2518,7 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 					tmpStopDate = time.Now().UTC().Add(8 * time.Hour)
 
 					tmpCurrentReward = vUserLocations.CurrentMax - vUserLocations.Current
-					bLocationRewardAmount = tmpCurrentReward / bPrice * bPriceBase
+					bLocationRewardAmount = tmpCurrentReward * bPriceBase / bPrice
 					stopLocationIds[vUserLocations.ID] = vUserLocations.ID
 				}
 
@@ -2648,7 +2648,7 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 							}
 
 							if 0 < tmpMyRecommendAmount { // 扣除推荐人分红
-								bAmount := tmpMyRecommendAmount / bPrice * bPriceBase
+								bAmount := tmpMyRecommendAmount * bPriceBase / bPrice
 								tmpStatus := tmpMyTopUserRecommendUserLocationLast.Status
 								tmpStopDate := time.Now().UTC().Add(8 * time.Hour)
 								// 过了
@@ -2657,7 +2657,7 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 									tmpStopDate = time.Now().UTC().Add(8 * time.Hour)
 
 									tmpMyRecommendAmount = tmpMyTopUserRecommendUserLocationLast.CurrentMax - tmpMyTopUserRecommendUserLocationLast.Current
-									bAmount = tmpMyRecommendAmount / bPrice * bPriceBase
+									bAmount = tmpMyRecommendAmount * bPriceBase / bPrice
 									stopLocationIds[vUserLocations.ID] = vUserLocations.ID
 								}
 
@@ -2902,7 +2902,7 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 				}
 				// 奖励
 				tmpCurrentReward := rewardLocationYesOne
-				bLocationRewardAmount := tmpCurrentReward / bPrice * bPriceBase
+				bLocationRewardAmount := tmpCurrentReward * bPriceBase / bPrice
 
 				if 0 < tmpCurrentReward && 0 < bLocationRewardAmount {
 					if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
@@ -2912,7 +2912,7 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 							vUserLocationsItem.StopDate = time.Now().UTC().Add(8 * time.Hour)
 
 							tmpCurrentReward = vUserLocationsItem.CurrentMax - vUserLocationsItem.Current
-							bLocationRewardAmount = tmpCurrentReward / bPrice * bPriceBase
+							bLocationRewardAmount = tmpCurrentReward * bPriceBase / bPrice
 							stopLocationIds[vUserLocationsItem.ID] = vUserLocationsItem.ID
 						}
 
@@ -2980,7 +2980,7 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 				}
 				// 奖励
 				tmpCurrentReward := rewardLocationYesTwo
-				bLocationRewardAmount := tmpCurrentReward / bPrice * bPriceBase
+				bLocationRewardAmount := tmpCurrentReward * bPriceBase / bPrice
 
 				if 0 < tmpCurrentReward && 0 < bLocationRewardAmount {
 					if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
@@ -2990,7 +2990,7 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 							vUserLocationsItem.StopDate = time.Now().UTC().Add(8 * time.Hour)
 
 							tmpCurrentReward = vUserLocationsItem.CurrentMax - vUserLocationsItem.Current
-							bLocationRewardAmount = tmpCurrentReward / bPrice * bPriceBase
+							bLocationRewardAmount = tmpCurrentReward * bPriceBase / bPrice
 							stopLocationIds[vUserLocationsItem.ID] = vUserLocationsItem.ID
 						}
 
@@ -3058,7 +3058,7 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 				}
 				// 奖励
 				tmpCurrentReward := rewardLocationYesThree
-				bLocationRewardAmount := tmpCurrentReward / bPrice * bPriceBase
+				bLocationRewardAmount := tmpCurrentReward * bPriceBase / bPrice
 
 				if 0 < tmpCurrentReward && 0 < bLocationRewardAmount {
 					if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
@@ -3068,7 +3068,7 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 							vUserLocationsItem.StopDate = time.Now().UTC().Add(8 * time.Hour)
 
 							tmpCurrentReward = vUserLocationsItem.CurrentMax - vUserLocationsItem.Current
-							bLocationRewardAmount = tmpCurrentReward / bPrice * bPriceBase
+							bLocationRewardAmount = tmpCurrentReward * bPriceBase / bPrice
 						}
 
 						var tmpMaxNew int64
@@ -3139,7 +3139,7 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 				}
 				// 奖励
 				tmpCurrentReward := rewardLocationYesFour
-				bLocationRewardAmount := tmpCurrentReward / bPrice * bPriceBase
+				bLocationRewardAmount := tmpCurrentReward * bPriceBase / bPrice
 
 				if 0 < tmpCurrentReward && 0 < bLocationRewardAmount {
 					if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
@@ -3149,7 +3149,7 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 							vUserLocationsItem.StopDate = time.Now().UTC().Add(8 * time.Hour)
 
 							tmpCurrentReward = vUserLocationsItem.CurrentMax - vUserLocationsItem.Current
-							bLocationRewardAmount = tmpCurrentReward / bPrice * bPriceBase
+							bLocationRewardAmount = tmpCurrentReward * bPriceBase / bPrice
 							stopLocationIds[vUserLocationsItem.ID] = vUserLocationsItem.ID
 						}
 
@@ -3217,7 +3217,7 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 				}
 				// 奖励
 				tmpCurrentReward := rewardLocationYesFive
-				bLocationRewardAmount := tmpCurrentReward / bPrice * bPriceBase
+				bLocationRewardAmount := tmpCurrentReward * bPriceBase / bPrice
 
 				if 0 < tmpCurrentReward && 0 < bLocationRewardAmount {
 					if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
@@ -3227,7 +3227,7 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 							vUserLocationsItem.StopDate = time.Now().UTC().Add(8 * time.Hour)
 
 							tmpCurrentReward = vUserLocationsItem.CurrentMax - vUserLocationsItem.Current
-							bLocationRewardAmount = tmpCurrentReward / bPrice * bPriceBase
+							bLocationRewardAmount = tmpCurrentReward * bPriceBase / bPrice
 							stopLocationIds[vUserLocationsItem.ID] = vUserLocationsItem.ID
 						}
 
