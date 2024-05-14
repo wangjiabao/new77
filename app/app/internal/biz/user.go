@@ -1331,7 +1331,8 @@ func (uuc *UserUseCase) AdminConfigUpdate(ctx context.Context, req *v1.AdminConf
 
 			if bPrice > originBprice {
 				// 涨价
-				tmp := userBalance.BalanceDhb/bPriceBase*bPrice - userBalance.BalanceDhb/bPriceBase*originBprice
+				tmp := userBalance.BalanceDhb*100/bPriceBase*bPrice - userBalance.BalanceDhb*100/bPriceBase*originBprice
+				tmp = tmp / 100
 				if tmp > 0 {
 
 					if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
@@ -1403,7 +1404,8 @@ func (uuc *UserUseCase) AdminConfigUpdate(ctx context.Context, req *v1.AdminConf
 
 			} else if bPrice < originBprice {
 				// 降价
-				tmp := userBalance.BalanceDhb/bPriceBase*originBprice - userBalance.BalanceDhb/bPriceBase*bPrice
+				tmp := userBalance.BalanceDhb*100/bPriceBase*originBprice - userBalance.BalanceDhb*100/bPriceBase*bPrice
+				tmp = tmp / 100
 				if tmp > 0 {
 					if runningLocation.Current <= tmp { // 占位分红人分满停止
 						tmp = runningLocation.Current
