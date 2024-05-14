@@ -707,7 +707,19 @@ func (uuc *UserUseCase) AdminUserList(ctx context.Context, req *v1.AdminUserList
 		if nil == err {
 			// 找直推
 			for _, vMyRecommendUsers := range myRecommendUsers {
-				myRecommendUserIds = append(myRecommendUserIds, vMyRecommendUsers.UserId)
+
+				var (
+					tmpMyRecommendLocations []*Location
+				)
+				tmpMyRecommendLocations, err = uuc.locationRepo.GetLocationsByUserId(ctx, vMyRecommendUsers.UserId)
+				if nil != err {
+					return nil, err
+				}
+
+				if 0 < len(tmpMyRecommendLocations) {
+					myRecommendUserIds = append(myRecommendUserIds, vMyRecommendUsers.UserId)
+				}
+
 			}
 		}
 
