@@ -3968,6 +3968,8 @@ func (m *AdminLocationListRequest) validate(all bool) error {
 
 	// no validation rules for Page
 
+	// no validation rules for Status
+
 	// no validation rules for Address
 
 	if len(errors) > 0 {
@@ -13142,6 +13144,12 @@ func (m *AdminLocationListReply_LocationList) validate(all bool) error {
 	// no validation rules for Current
 
 	// no validation rules for CurrentMax
+
+	// no validation rules for Usdt
+
+	// no validation rules for CurrentMaxSub
+
+	// no validation rules for Out
 
 	if len(errors) > 0 {
 		return AdminLocationListReply_LocationListMultiError(errors)

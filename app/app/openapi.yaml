@@ -636,6 +636,10 @@ paths:
                   in: query
                   schema:
                     type: string
+                - name: status
+                  in: query
+                  schema:
+                    type: string
                 - name: address
                   in: query
                   schema:
@@ -660,6 +664,10 @@ paths:
             operationId: App_AdminLocationListNew
             parameters:
                 - name: page
+                  in: query
+                  schema:
+                    type: string
+                - name: status
                   in: query
                   schema:
                     type: string
@@ -1457,6 +1465,12 @@ components:
                 current:
                     type: string
                 currentMax:
+                    type: string
+                usdt:
+                    type: string
+                currentMaxSub:
+                    type: string
+                out:
                     type: string
         AdminLoginReply:
             type: object

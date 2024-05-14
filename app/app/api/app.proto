@@ -613,6 +613,7 @@ message RecordListReply { // 投资列表
 
 message AdminLocationListRequest {
 	int64 page = 1;
+	string status = 3;
 	string address = 2;
 }
 
@@ -620,8 +621,11 @@ message AdminLocationListReply { // 出局列表
 	repeated LocationList locations = 1;
 	message  LocationList {
 		string address = 2; // 地址
-		string current = 7; // 当前收益
+		string current = 7; // 当前收益, 挖矿
 		string currentMax = 8; // 最大收益
+		int64 usdt = 9; // 节点
+		string currentMaxSub = 10; // 收益
+		int64 out = 11; // 出局
 	}
 	int64 count = 2;
 }

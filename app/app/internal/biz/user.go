@@ -862,10 +862,14 @@ func (uuc *UserUseCase) AdminLocationList(ctx context.Context, req *v1.AdminLoca
 		userId = userSearch.ID
 	}
 
+	status := "stop"
+	if "running" == req.Status {
+		status = "running"
+	}
 	locations, err, count = uuc.locationRepo.GetLocations(ctx, &Pagination{
 		PageNum:  int(req.Page),
 		PageSize: 10,
-	}, userId)
+	}, userId, status)
 	if nil != err {
 		return res, nil
 	}
@@ -889,10 +893,28 @@ func (uuc *UserUseCase) AdminLocationList(ctx context.Context, req *v1.AdminLoca
 			continue
 		}
 
+		var (
+			myAllLocations []*Location
+			out            int64
+		)
+		myAllLocations, err = uuc.locationRepo.GetLocationsByUserId(ctx, v.UserId)
+		if nil == myAllLocations {
+			return res, nil
+		}
+
+		for _, vMyAllLocations := range myAllLocations {
+			if "stop" == vMyAllLocations.Status {
+				out++
+			}
+		}
+
 		res.Locations = append(res.Locations, &v1.AdminLocationListReply_LocationList{
-			Address:    users[v.UserId].Address,
-			Current:    fmt.Sprintf("%.2f", float64(v.Current)/float64(100000)),
-			CurrentMax: fmt.Sprintf("%.2f", float64(v.CurrentMax)/float64(100000)),
+			Address:       users[v.UserId].Address,
+			Current:       fmt.Sprintf("%.2f", float64(v.Current)/float64(100000)),
+			CurrentMax:    fmt.Sprintf("%.2f", float64(v.CurrentMax)/float64(100000)),
+			Out:           out,
+			CurrentMaxSub: fmt.Sprintf("%.2f", float64(v.CurrentMax-v.Current)/float64(100000)),
+			Usdt:          v.Usdt,
 		})
 	}
 

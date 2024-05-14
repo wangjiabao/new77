@@ -860,7 +860,7 @@ func (lr *LocationRepo) UpdateLocation(ctx context.Context, id int64, status str
 // UpdateLocationLastLevel .
 func (lr *LocationRepo) UpdateLocationLastLevel(ctx context.Context, id int64, lastLevel int64) error {
 
-	res := lr.data.db.Table("location").
+	res := lr.data.db.Table("location_new").
 		Where("id=?", id).
 		Updates(map[string]interface{}{"last_level": lastLevel})
 	if 0 == res.RowsAffected || res.Error != nil {
@@ -1254,12 +1254,12 @@ func (lr *LocationRepo) GetRewardLocationByIds(ctx context.Context, ids ...int64
 }
 
 // GetLocations .
-func (lr *LocationRepo) GetLocations(ctx context.Context, b *biz.Pagination, userId int64) ([]*biz.LocationNew, error, int64) {
+func (lr *LocationRepo) GetLocations(ctx context.Context, b *biz.Pagination, userId int64, status string) ([]*biz.LocationNew, error, int64) {
 	var (
-		locations []*Location
+		locations []*LocationNew
 		count     int64
 	)
-	instance := lr.data.db.Table("location_new").Where("status=?", "stop")
+	instance := lr.data.db.Table("location_new").Where("status=?", status)
 
 	if 0 < userId {
 		instance = instance.Where("user_id=?", userId)
@@ -1284,6 +1284,7 @@ func (lr *LocationRepo) GetLocations(ctx context.Context, b *biz.Pagination, use
 			CurrentMax: location.CurrentMax,
 			CreatedAt:  location.CreatedAt,
 			Num:        location.Num,
+			Usdt:       location.Usdt,
 		})
 	}
 
