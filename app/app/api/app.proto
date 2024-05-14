@@ -623,7 +623,7 @@ message AdminLocationListReply { // 出局列表
 		string address = 2; // 地址
 		string current = 7; // 当前收益, 挖矿
 		string currentMax = 8; // 最大收益
-		int64 usdt = 9; // 节点
+		string usdt = 9; // 节点
 		string currentMaxSub = 10; // 收益
 		int64 out = 11; // 出局
 	}

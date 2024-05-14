@@ -914,7 +914,7 @@ func (uuc *UserUseCase) AdminLocationList(ctx context.Context, req *v1.AdminLoca
 			CurrentMax:    fmt.Sprintf("%.2f", float64(v.CurrentMax)/float64(100000)),
 			Out:           out,
 			CurrentMaxSub: fmt.Sprintf("%.2f", float64(v.CurrentMax-v.Current)/float64(100000)),
-			Usdt:          v.Usdt,
+			Usdt:          fmt.Sprintf("%.2f", float64(v.Usdt)/float64(100000)),
 		})
 	}
 
