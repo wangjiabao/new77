@@ -693,7 +693,7 @@ func (uuc *UserUseCase) AdminUserList(ctx context.Context, req *v1.AdminUserList
 				}
 
 				if v.LastLevel > lastLevel {
-					lastLevel = tmpLastLevel
+					lastLevel = v.LastLevel
 				}
 			}
 		}
