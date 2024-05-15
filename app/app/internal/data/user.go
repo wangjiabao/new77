@@ -3727,6 +3727,8 @@ func (ub *UserBalanceRepo) GetUserRewards(ctx context.Context, b *biz.Pagination
 		} else {
 			instance = instance.Where("reason=?", reason)
 		}
+	} else {
+		instance = instance.Where("reason != ?", "price_change")
 	}
 
 	instance = instance.Where("user_id<?", 999999999)
