@@ -2416,7 +2416,7 @@ func (c *ConfigRepo) UpdatePriceChangeStatus(ctx context.Context, id int64, stat
 }
 
 // AreaRewardBiw .
-func (ub *UserBalanceRepo) AreaRewardBiw(ctx context.Context, userId int64, rewardAmount int64, areaType int64, stop string, tmpMaxNew int64, feeRate int64) (int64, error) {
+func (ub *UserBalanceRepo) AreaRewardBiw(ctx context.Context, userId int64, rewardAmount int64, tmpCurrentReward int64, areaType int64, stop string, tmpMaxNew int64, feeRate int64) (int64, error) {
 	var err error
 	if err = ub.data.DB(ctx).Table("user_balance").
 		Where("user_id=?", userId).
@@ -2469,7 +2469,7 @@ func (ub *UserBalanceRepo) AreaRewardBiw(ctx context.Context, userId int64, rewa
 	}
 
 	var userBalanceRecode UserBalanceRecord
-	userBalanceRecode.Balance = userBalance.BalanceDhb
+	userBalanceRecode.Balance = tmpCurrentReward
 	userBalanceRecode.UserId = userBalance.UserId
 	userBalanceRecode.Type = "reward"
 	userBalanceRecode.CoinType = "dhb"
