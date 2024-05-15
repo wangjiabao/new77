@@ -2033,8 +2033,8 @@ func (uuc *UserUseCase) AdminAll(ctx context.Context, req *v1.AdminAllRequest) (
 		TodayRecommendReward: fmt.Sprintf("%.2f", float64(userRewardRecommendTotal)/float64(100000)),
 		TodayAreaReward:      fmt.Sprintf("%.2f", float64(userRewardAreaTotal)/float64(100000)),
 		TodayFourReward:      fmt.Sprintf("%.2f", float64(userRewardFourTotal)/float64(100000)),
-		TotalIsps:            fmt.Sprintf("%.2f", float64(userBalanceUsdtTotal)/float64(100000)),
-		TotalUsdt:            fmt.Sprintf("%.2f", float64(userBalanceDhbTotal)/float64(100000)),
+		TotalIsps:            fmt.Sprintf("%.2f", float64(userBalanceDhbTotal)/float64(100000)),
+		TotalUsdt:            fmt.Sprintf("%.2f", float64(userBalanceUsdtTotal)/float64(100000)),
 		TodayWithdrawUsdt:    fmt.Sprintf("%.2f", float64(userWithdrawUsdtTotalToday)/float64(100000)),
 		TotalWithdrawUsdt:    fmt.Sprintf("%.2f", float64(userWithdrawUsdtTotal)/float64(100000)),
 	}, nil
