@@ -67,6 +67,14 @@ type Config struct {
 	UpdatedAt time.Time `gorm:"type:datetime;not null"`
 }
 
+type PriceChange struct {
+	ID        int64     `gorm:"primarykey;type:int"`
+	Origin    int64     `gorm:"type:bigint"`
+	Price     int64     `gorm:"type:bigint"`
+	Status    int64     `gorm:"type:int;not null"`
+	CreatedAt time.Time `gorm:"type:datetime;not null"`
+}
+
 type UserBalance struct {
 	ID             int64     `gorm:"primarykey;type:int"`
 	UserId         int64     `gorm:"type:int"`
@@ -2357,6 +2365,54 @@ func (ub *UserBalanceRepo) PriceChange(ctx context.Context, userId int64, reward
 	}
 
 	return nil
+}
+
+// GetPriceChangeConfig .
+func (ub *UserBalanceRepo) GetPriceChangeConfig(ctx context.Context) (*biz.PriceChange, error) {
+	var priceChange PriceChange
+	if err := ub.data.DB(ctx).Table("price_change").Where("status=?", 0).Order("id asc").First(&priceChange).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+
+		return nil, errors.New(500, "PRICE CHANGE ERROR", err.Error())
+	}
+
+	return &biz.PriceChange{
+		ID:        priceChange.ID,
+		Origin:    priceChange.Origin,
+		Price:     priceChange.Price,
+		Status:    priceChange.Price,
+		CreatedAt: priceChange.CreatedAt,
+	}, nil
+}
+
+// CreatePriceChangeConfig .
+func (c *ConfigRepo) CreatePriceChangeConfig(ctx context.Context, origin int64, price int64) error {
+	var err error
+
+	var priceChange PriceChange
+	priceChange.Origin = origin
+	priceChange.Price = price
+	err = c.data.DB(ctx).Table("price_change").Create(&priceChange).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// UpdatePriceChangeStatus .
+func (c *ConfigRepo) UpdatePriceChangeStatus(ctx context.Context, id int64, status int64) (bool, error) {
+	var priceChange PriceChange
+	priceChange.Status = status
+
+	res := c.data.DB(ctx).Table("price_change").Where("id=?", id).Updates(&priceChange)
+	if res.Error != nil {
+		return false, errors.New(500, "UPDATE_PRICE_CHANGE_ERROR", "价格变更记录修改失败")
+	}
+
+	return true, nil
 }
 
 // AreaRewardBiw .
