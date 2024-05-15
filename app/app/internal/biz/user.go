@@ -2507,6 +2507,7 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 	for _, vUserLocations := range userLocations {
 		// 奖励
 		tmpCurrentReward := vUserLocations.Usdt / 1000 * locationRewardRate
+		tmpCurrentReward = tmpCurrentReward / 6
 		bLocationRewardAmount := tmpCurrentReward * bPriceBase / bPrice
 
 		if 0 < tmpCurrentReward && 0 < bLocationRewardAmount {
@@ -2647,6 +2648,7 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 								continue
 							}
 
+							tmpMyRecommendAmount = tmpMyRecommendAmount / 6
 							if 0 < tmpMyRecommendAmount { // 扣除推荐人分红
 								bAmount := tmpMyRecommendAmount * bPriceBase / bPrice
 								tmpStatus := tmpMyTopUserRecommendUserLocationLast.Status
