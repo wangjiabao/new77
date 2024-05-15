@@ -2953,13 +2953,13 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 		areaNumThree  int64
 		areaNumFour   int64
 		areaNumFive   int64
-		//one           int64
-		//two           int64
-		//three         int64
-		//four          int64
-		//total         int64
-		feeRate int64
-		err     error
+		one           int64
+		two           int64
+		three         int64
+		four          int64
+		total         int64
+		feeRate       int64
+		err           error
 	)
 
 	configs, _ = uuc.configRepo.GetConfigByKeys(ctx,
@@ -2997,6 +2997,16 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 				areaNumFour, _ = strconv.ParseInt(vConfig.Value, 10, 64)
 			} else if "area_num_five" == vConfig.KeyName {
 				areaNumFive, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			} else if "one" == vConfig.KeyName {
+				one, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			} else if "two" == vConfig.KeyName {
+				two, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			} else if "three" == vConfig.KeyName {
+				three, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			} else if "four" == vConfig.KeyName {
+				four, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			} else if "total" == vConfig.KeyName {
+				total, _ = strconv.ParseInt(vConfig.Value, 10, 64)
 			} else if "exchange_rate" == vConfig.KeyName {
 				feeRate, _ = strconv.ParseInt(vConfig.Value, 10, 64)
 			}
@@ -3005,11 +3015,11 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 
 	// 获取今日收益
 	var (
-		day              = -1
-		userLocationsYes []*LocationNew
-		//userLocationsBef  []*LocationNew
+		day               = -1
+		userLocationsYes  []*LocationNew
+		userLocationsBef  []*LocationNew
 		rewardLocationYes int64
-		//rewardLocationBef int64
+		rewardLocationBef int64
 	)
 	// 全网
 	userLocationsYes, err = uuc.locationRepo.GetLocationDailyYesterday(ctx, day)
@@ -3500,54 +3510,54 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 		}
 	}
 
-	//// 全网前天
-	//userLocationsBef, err = uuc.locationRepo.GetLocationDailyYesterday(ctx, day-1)
-	//for _, userLocationBef := range userLocationsBef {
-	//	rewardLocationBef += userLocationBef.Usdt
-	//}
-	//// 全球
-	//totalReward := rewardLocationYes/100/100*70*total + rewardLocationBef/100/100*30*total
-	//
-	//var (
-	//	userRecommends []*UserRecommend
-	//)
-	//userRecommends, err = uuc.urRepo.GetUserRecommendsFour(ctx)
-	//for k, userRecommend := range userRecommends {
-	//	if 0 >= userRecommend.Total {
-	//		continue
-	//	}
-	//
-	//	var (
-	//		tmpMyRecommendAmount int64
-	//	)
-	//	if 0 == k {
-	//		tmpMyRecommendAmount = totalReward / 100 * one
-	//	} else if 1 == k {
-	//		tmpMyRecommendAmount = totalReward / 100 * two
-	//	} else if 2 == k {
-	//		tmpMyRecommendAmount = totalReward / 100 * three
-	//	} else if 3 == k {
-	//		tmpMyRecommendAmount = totalReward / 100 * four
-	//	}
-	//
-	//	if 0 >= tmpMyRecommendAmount {
-	//		continue
-	//	}
-	//
-	//	if 0 < tmpMyRecommendAmount {
-	//		if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
-	//			_, err = uuc.ubRepo.FourRewardBiw(ctx, userRecommend.UserId, tmpMyRecommendAmount, int64(k+1)) // 推荐人奖励
-	//			if nil != err {
-	//				return err
-	//			}
-	//
-	//			return nil
-	//		}); nil != err {
-	//			fmt.Println("err reward daily four", err, userRecommend)
-	//			continue
-	//		}
-	//	}
-	//}
+	// 全网前天
+	userLocationsBef, err = uuc.locationRepo.GetLocationDailyYesterday(ctx, day-1)
+	for _, userLocationBef := range userLocationsBef {
+		rewardLocationBef += userLocationBef.Usdt
+	}
+	// 全球
+	totalReward := rewardLocationYes/100/100*70*total + rewardLocationBef/100/100*30*total
+
+	var (
+		userRecommends []*UserRecommend
+	)
+	userRecommends, err = uuc.urRepo.GetUserRecommendsFour(ctx)
+	for k, userRecommend := range userRecommends {
+		if 0 >= userRecommend.Total {
+			continue
+		}
+
+		var (
+			tmpMyRecommendAmount int64
+		)
+		if 0 == k {
+			tmpMyRecommendAmount = totalReward / 100 * one
+		} else if 1 == k {
+			tmpMyRecommendAmount = totalReward / 100 * two
+		} else if 2 == k {
+			tmpMyRecommendAmount = totalReward / 100 * three
+		} else if 3 == k {
+			tmpMyRecommendAmount = totalReward / 100 * four
+		}
+
+		if 0 >= tmpMyRecommendAmount {
+			continue
+		}
+
+		if 0 < tmpMyRecommendAmount {
+			if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
+				_, err = uuc.ubRepo.FourRewardBiw(ctx, userRecommend.UserId, tmpMyRecommendAmount, int64(k+1)) // 推荐人奖励
+				if nil != err {
+					return err
+				}
+
+				return nil
+			}); nil != err {
+				fmt.Println("err reward daily four", err, userRecommend)
+				continue
+			}
+		}
+	}
 
 	return &v1.AdminDailyLocationRewardReply{}, nil
 }
