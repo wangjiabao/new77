@@ -54,6 +54,7 @@ const (
 	App_AdminMonthRecommend_FullMethodName                  = "/api.App/AdminMonthRecommend"
 	App_AdminConfig_FullMethodName                          = "/api.App/AdminConfig"
 	App_AdminConfigUpdate_FullMethodName                    = "/api.App/AdminConfigUpdate"
+	App_AdminConfigUpdateListen_FullMethodName              = "/api.App/AdminConfigUpdateListen"
 	App_AdminUserPasswordUpdate_FullMethodName              = "/api.App/AdminUserPasswordUpdate"
 	App_AdminUpdateLocationNewMax_FullMethodName            = "/api.App/AdminUpdateLocationNewMax"
 	App_AdminVipUpdate_FullMethodName                       = "/api.App/AdminVipUpdate"
@@ -117,6 +118,7 @@ type AppClient interface {
 	AdminMonthRecommend(ctx context.Context, in *AdminMonthRecommendRequest, opts ...grpc.CallOption) (*AdminMonthRecommendReply, error)
 	AdminConfig(ctx context.Context, in *AdminConfigRequest, opts ...grpc.CallOption) (*AdminConfigReply, error)
 	AdminConfigUpdate(ctx context.Context, in *AdminConfigUpdateRequest, opts ...grpc.CallOption) (*AdminConfigUpdateReply, error)
+	AdminConfigUpdateListen(ctx context.Context, in *AdminConfigUpdateListenRequest, opts ...grpc.CallOption) (*AdminConfigUpdateListenReply, error)
 	AdminUserPasswordUpdate(ctx context.Context, in *AdminPasswordUpdateRequest, opts ...grpc.CallOption) (*AdminPasswordUpdateReply, error)
 	AdminUpdateLocationNewMax(ctx context.Context, in *AdminUpdateLocationNewMaxRequest, opts ...grpc.CallOption) (*AdminUpdateLocationNewMaxReply, error)
 	AdminVipUpdate(ctx context.Context, in *AdminVipUpdateRequest, opts ...grpc.CallOption) (*AdminVipUpdateReply, error)
@@ -464,6 +466,15 @@ func (c *appClient) AdminConfigUpdate(ctx context.Context, in *AdminConfigUpdate
 	return out, nil
 }
 
+func (c *appClient) AdminConfigUpdateListen(ctx context.Context, in *AdminConfigUpdateListenRequest, opts ...grpc.CallOption) (*AdminConfigUpdateListenReply, error) {
+	out := new(AdminConfigUpdateListenReply)
+	err := c.cc.Invoke(ctx, App_AdminConfigUpdateListen_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *appClient) AdminUserPasswordUpdate(ctx context.Context, in *AdminPasswordUpdateRequest, opts ...grpc.CallOption) (*AdminPasswordUpdateReply, error) {
 	out := new(AdminPasswordUpdateReply)
 	err := c.cc.Invoke(ctx, App_AdminUserPasswordUpdate_FullMethodName, in, out, opts...)
@@ -701,6 +712,7 @@ type AppServer interface {
 	AdminMonthRecommend(context.Context, *AdminMonthRecommendRequest) (*AdminMonthRecommendReply, error)
 	AdminConfig(context.Context, *AdminConfigRequest) (*AdminConfigReply, error)
 	AdminConfigUpdate(context.Context, *AdminConfigUpdateRequest) (*AdminConfigUpdateReply, error)
+	AdminConfigUpdateListen(context.Context, *AdminConfigUpdateListenRequest) (*AdminConfigUpdateListenReply, error)
 	AdminUserPasswordUpdate(context.Context, *AdminPasswordUpdateRequest) (*AdminPasswordUpdateReply, error)
 	AdminUpdateLocationNewMax(context.Context, *AdminUpdateLocationNewMaxRequest) (*AdminUpdateLocationNewMaxReply, error)
 	AdminVipUpdate(context.Context, *AdminVipUpdateRequest) (*AdminVipUpdateReply, error)
@@ -834,6 +846,9 @@ func (UnimplementedAppServer) AdminConfig(context.Context, *AdminConfigRequest) 
 }
 func (UnimplementedAppServer) AdminConfigUpdate(context.Context, *AdminConfigUpdateRequest) (*AdminConfigUpdateReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AdminConfigUpdate not implemented")
+}
+func (UnimplementedAppServer) AdminConfigUpdateListen(context.Context, *AdminConfigUpdateListenRequest) (*AdminConfigUpdateListenReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AdminConfigUpdateListen not implemented")
 }
 func (UnimplementedAppServer) AdminUserPasswordUpdate(context.Context, *AdminPasswordUpdateRequest) (*AdminPasswordUpdateReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AdminUserPasswordUpdate not implemented")
@@ -1544,6 +1559,24 @@ func _App_AdminConfigUpdate_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _App_AdminConfigUpdateListen_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AdminConfigUpdateListenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AppServer).AdminConfigUpdateListen(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: App_AdminConfigUpdateListen_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AppServer).AdminConfigUpdateListen(ctx, req.(*AdminConfigUpdateListenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _App_AdminUserPasswordUpdate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(AdminPasswordUpdateRequest)
 	if err := dec(in); err != nil {
@@ -2086,6 +2119,10 @@ var App_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AdminConfigUpdate",
 			Handler:    _App_AdminConfigUpdate_Handler,
+		},
+		{
+			MethodName: "AdminConfigUpdateListen",
+			Handler:    _App_AdminConfigUpdateListen_Handler,
 		},
 		{
 			MethodName: "AdminUserPasswordUpdate",

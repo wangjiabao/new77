@@ -285,6 +285,24 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /api/admin_dhb/config_update_listen:
+        get:
+            tags:
+                - App
+            operationId: App_AdminConfigUpdateListen
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/AdminConfigUpdateListenReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/admin_dhb/create_account:
         post:
             tags:
@@ -1362,6 +1380,9 @@ components:
                     type: string
                 value:
                     type: string
+        AdminConfigUpdateListenReply:
+            type: object
+            properties: {}
         AdminConfigUpdateReply:
             type: object
             properties: {}

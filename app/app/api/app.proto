@@ -231,6 +231,12 @@ service App {
 		};
 	};
 
+	rpc AdminConfigUpdateListen (AdminConfigUpdateListenRequest) returns (AdminConfigUpdateListenReply) {
+		option (google.api.http) = {
+			get: "/api/admin_dhb/config_update_listen"
+		};
+	};
+
 	rpc AdminUserPasswordUpdate (AdminPasswordUpdateRequest) returns (AdminPasswordUpdateReply) {
 		option (google.api.http) = {
 			post: "/api/admin_dhb/password_update"
@@ -835,6 +841,13 @@ message AdminConfigUpdateRequest {
 }
 
 message AdminConfigUpdateReply {
+
+}
+
+message AdminConfigUpdateListenRequest {
+}
+
+message AdminConfigUpdateListenReply {
 
 }
 

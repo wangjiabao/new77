@@ -946,6 +946,10 @@ func (a *AppService) AdminConfigUpdate(ctx context.Context, req *v1.AdminConfigU
 	return a.uuc.AdminConfigUpdate(ctx, req)
 }
 
+func (a *AppService) AdminConfigUpdateListen(ctx context.Context, req *v1.AdminConfigUpdateListenRequest) (*v1.AdminConfigUpdateListenReply, error) {
+	return a.uuc.AdminConfigUpdateListen(ctx, req)
+}
+
 func (a *AppService) AdminLogin(ctx context.Context, req *v1.AdminLoginRequest) (*v1.AdminLoginReply, error) {
 	return a.uuc.AdminLogin(ctx, req, a.ca.JwtKey)
 }

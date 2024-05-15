@@ -25,6 +25,7 @@ const OperationAppAdminBalanceUpdate = "/api.App/AdminBalanceUpdate"
 const OperationAppAdminChangePassword = "/api.App/AdminChangePassword"
 const OperationAppAdminConfig = "/api.App/AdminConfig"
 const OperationAppAdminConfigUpdate = "/api.App/AdminConfigUpdate"
+const OperationAppAdminConfigUpdateListen = "/api.App/AdminConfigUpdateListen"
 const OperationAppAdminCreateAccount = "/api.App/AdminCreateAccount"
 const OperationAppAdminDailyAreaReward = "/api.App/AdminDailyAreaReward"
 const OperationAppAdminDailyBalanceReward = "/api.App/AdminDailyBalanceReward"
@@ -84,6 +85,7 @@ type AppHTTPServer interface {
 	AdminChangePassword(context.Context, *AdminChangePasswordRequest) (*AdminChangePasswordReply, error)
 	AdminConfig(context.Context, *AdminConfigRequest) (*AdminConfigReply, error)
 	AdminConfigUpdate(context.Context, *AdminConfigUpdateRequest) (*AdminConfigUpdateReply, error)
+	AdminConfigUpdateListen(context.Context, *AdminConfigUpdateListenRequest) (*AdminConfigUpdateListenReply, error)
 	AdminCreateAccount(context.Context, *AdminCreateAccountRequest) (*AdminCreateAccountReply, error)
 	AdminDailyAreaReward(context.Context, *AdminDailyLocationRewardRequest) (*AdminDailyLocationRewardReply, error)
 	AdminDailyBalanceReward(context.Context, *AdminDailyBalanceRewardRequest) (*AdminDailyBalanceRewardReply, error)
@@ -174,6 +176,7 @@ func RegisterAppHTTPServer(s *http.Server, srv AppHTTPServer) {
 	r.GET("/api/admin_dhb/month_recommend", _App_AdminMonthRecommend0_HTTP_Handler(srv))
 	r.GET("/api/admin_dhb/config", _App_AdminConfig0_HTTP_Handler(srv))
 	r.POST("/api/admin_dhb/config_update", _App_AdminConfigUpdate0_HTTP_Handler(srv))
+	r.GET("/api/admin_dhb/config_update_listen", _App_AdminConfigUpdateListen0_HTTP_Handler(srv))
 	r.POST("/api/admin_dhb/password_update", _App_AdminUserPasswordUpdate0_HTTP_Handler(srv))
 	r.POST("/api/admin_dhb/admin_update_location_new_max", _App_AdminUpdateLocationNewMax0_HTTP_Handler(srv))
 	r.POST("/api/admin_dhb/vip_update", _App_AdminVipUpdate0_HTTP_Handler(srv))
@@ -872,6 +875,25 @@ func _App_AdminConfigUpdate0_HTTP_Handler(srv AppHTTPServer) func(ctx http.Conte
 	}
 }
 
+func _App_AdminConfigUpdateListen0_HTTP_Handler(srv AppHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in AdminConfigUpdateListenRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationAppAdminConfigUpdateListen)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.AdminConfigUpdateListen(ctx, req.(*AdminConfigUpdateListenRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*AdminConfigUpdateListenReply)
+		return ctx.Result(200, reply)
+	}
+}
+
 func _App_AdminUserPasswordUpdate0_HTTP_Handler(srv AppHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in AdminPasswordUpdateRequest
@@ -1333,6 +1355,7 @@ type AppHTTPClient interface {
 	AdminChangePassword(ctx context.Context, req *AdminChangePasswordRequest, opts ...http.CallOption) (rsp *AdminChangePasswordReply, err error)
 	AdminConfig(ctx context.Context, req *AdminConfigRequest, opts ...http.CallOption) (rsp *AdminConfigReply, err error)
 	AdminConfigUpdate(ctx context.Context, req *AdminConfigUpdateRequest, opts ...http.CallOption) (rsp *AdminConfigUpdateReply, err error)
+	AdminConfigUpdateListen(ctx context.Context, req *AdminConfigUpdateListenRequest, opts ...http.CallOption) (rsp *AdminConfigUpdateListenReply, err error)
 	AdminCreateAccount(ctx context.Context, req *AdminCreateAccountRequest, opts ...http.CallOption) (rsp *AdminCreateAccountReply, err error)
 	AdminDailyAreaReward(ctx context.Context, req *AdminDailyLocationRewardRequest, opts ...http.CallOption) (rsp *AdminDailyLocationRewardReply, err error)
 	AdminDailyBalanceReward(ctx context.Context, req *AdminDailyBalanceRewardRequest, opts ...http.CallOption) (rsp *AdminDailyBalanceRewardReply, err error)
@@ -1466,6 +1489,19 @@ func (c *AppHTTPClientImpl) AdminConfigUpdate(ctx context.Context, in *AdminConf
 	opts = append(opts, http.Operation(OperationAppAdminConfigUpdate))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in.SendBody, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *AppHTTPClientImpl) AdminConfigUpdateListen(ctx context.Context, in *AdminConfigUpdateListenRequest, opts ...http.CallOption) (*AdminConfigUpdateListenReply, error) {
+	var out AdminConfigUpdateListenReply
+	pattern := "/api/admin_dhb/config_update_listen"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationAppAdminConfigUpdateListen))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

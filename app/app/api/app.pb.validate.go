@@ -8059,6 +8059,212 @@ var _ interface {
 	ErrorName() string
 } = AdminConfigUpdateReplyValidationError{}
 
+// Validate checks the field values on AdminConfigUpdateListenRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *AdminConfigUpdateListenRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on AdminConfigUpdateListenRequest with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// AdminConfigUpdateListenRequestMultiError, or nil if none found.
+func (m *AdminConfigUpdateListenRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AdminConfigUpdateListenRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if len(errors) > 0 {
+		return AdminConfigUpdateListenRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// AdminConfigUpdateListenRequestMultiError is an error wrapping multiple
+// validation errors returned by AdminConfigUpdateListenRequest.ValidateAll()
+// if the designated constraints aren't met.
+type AdminConfigUpdateListenRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AdminConfigUpdateListenRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AdminConfigUpdateListenRequestMultiError) AllErrors() []error { return m }
+
+// AdminConfigUpdateListenRequestValidationError is the validation error
+// returned by AdminConfigUpdateListenRequest.Validate if the designated
+// constraints aren't met.
+type AdminConfigUpdateListenRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AdminConfigUpdateListenRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AdminConfigUpdateListenRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AdminConfigUpdateListenRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AdminConfigUpdateListenRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AdminConfigUpdateListenRequestValidationError) ErrorName() string {
+	return "AdminConfigUpdateListenRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AdminConfigUpdateListenRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAdminConfigUpdateListenRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AdminConfigUpdateListenRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AdminConfigUpdateListenRequestValidationError{}
+
+// Validate checks the field values on AdminConfigUpdateListenReply with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *AdminConfigUpdateListenReply) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on AdminConfigUpdateListenReply with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// AdminConfigUpdateListenReplyMultiError, or nil if none found.
+func (m *AdminConfigUpdateListenReply) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AdminConfigUpdateListenReply) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if len(errors) > 0 {
+		return AdminConfigUpdateListenReplyMultiError(errors)
+	}
+
+	return nil
+}
+
+// AdminConfigUpdateListenReplyMultiError is an error wrapping multiple
+// validation errors returned by AdminConfigUpdateListenReply.ValidateAll() if
+// the designated constraints aren't met.
+type AdminConfigUpdateListenReplyMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AdminConfigUpdateListenReplyMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AdminConfigUpdateListenReplyMultiError) AllErrors() []error { return m }
+
+// AdminConfigUpdateListenReplyValidationError is the validation error returned
+// by AdminConfigUpdateListenReply.Validate if the designated constraints
+// aren't met.
+type AdminConfigUpdateListenReplyValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AdminConfigUpdateListenReplyValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AdminConfigUpdateListenReplyValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AdminConfigUpdateListenReplyValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AdminConfigUpdateListenReplyValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AdminConfigUpdateListenReplyValidationError) ErrorName() string {
+	return "AdminConfigUpdateListenReplyValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AdminConfigUpdateListenReplyValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAdminConfigUpdateListenReply.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AdminConfigUpdateListenReplyValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AdminConfigUpdateListenReplyValidationError{}
+
 // Validate checks the field values on AdminPasswordUpdateRequest with the
 // rules defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.

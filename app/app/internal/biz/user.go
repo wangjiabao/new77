@@ -1288,13 +1288,13 @@ func (uuc *UserUseCase) AdminConfig(ctx context.Context, req *v1.AdminConfigRequ
 	return res, nil
 }
 
-func (uuc *UserUseCase) AdminConfigUpdateListen(ctx context.Context, req *v1.AdminConfigUpdateRequest) (*v1.AdminConfigUpdateReply, error) {
+func (uuc *UserUseCase) AdminConfigUpdateListen(ctx context.Context, req *v1.AdminConfigUpdateListenRequest) (*v1.AdminConfigUpdateListenReply, error) {
 	var (
 		err         error
 		priceChange *PriceChange
 	)
 
-	res := &v1.AdminConfigUpdateReply{}
+	res := &v1.AdminConfigUpdateListenReply{}
 	priceChange, err = uuc.ubRepo.GetPriceChangeConfig(ctx)
 	if nil != err {
 		return nil, err
