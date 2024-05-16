@@ -10,6 +10,7 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/auth/jwt"
 	jwt2 "github.com/golang-jwt/jwt/v4"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -3523,14 +3524,69 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 	totalReward := rewardLocationYes/100/100*70*total + rewardLocationBef/100/100*30*total
 
 	var (
-		userRecommends []*UserRecommend
+		fourUserRecommendTotal map[int64]int64
 	)
-	userRecommends, err = uuc.urRepo.GetUserRecommendsFour(ctx)
-	for k, userRecommend := range userRecommends {
-		if 0 >= userRecommend.Total {
+
+	fourUserRecommendTotal = make(map[int64]int64, 0)
+	for _, userLocationYes := range userLocationsYes {
+		// 获取直推
+
+		var (
+			fourUserRecommend         *UserRecommend
+			myFourUserRecommendUserId int64
+			//myFourRecommendUser *User
+		)
+		fourUserRecommend, err = uuc.urRepo.GetUserRecommendByUserId(ctx, userLocationYes.UserId)
+		if nil == fourUserRecommend {
 			continue
 		}
 
+		if "" != fourUserRecommend.RecommendCode {
+			tmpFourRecommendUserIds := strings.Split(fourUserRecommend.RecommendCode, "D")
+			if 2 <= len(tmpFourRecommendUserIds) {
+				myFourUserRecommendUserId, _ = strconv.ParseInt(tmpFourRecommendUserIds[len(tmpFourRecommendUserIds)-1], 10, 64) // 最后一位是直推人
+			}
+			//myFourRecommendUser, err = uuc.repo.GetUserById(ctx, myFourUserRecommendUserId)
+			//if nil != err {
+			//	return nil, err
+			//}
+
+			if _, ok := fourUserRecommendTotal[myFourUserRecommendUserId]; ok {
+				fourUserRecommendTotal[myFourUserRecommendUserId] += userLocationYes.Usdt
+			} else {
+				fourUserRecommendTotal[myFourUserRecommendUserId] = userLocationYes.Usdt
+			}
+		}
+	}
+
+	if 0 >= len(fourUserRecommendTotal) {
+		return &v1.AdminDailyLocationRewardReply{}, nil
+	}
+
+	// 前四名
+	type KeyValuePair struct {
+		Key   int64
+		Value int64
+	}
+	var keyValuePairs []KeyValuePair
+	for key, value := range fourUserRecommendTotal {
+		keyValuePairs = append(keyValuePairs, KeyValuePair{key, value})
+	}
+
+	// 按值排序切片
+	sort.Slice(keyValuePairs, func(i, j int) bool {
+		return keyValuePairs[i].Value > keyValuePairs[j].Value
+	})
+
+	// 获取前四项
+	var topFour []KeyValuePair
+	if 4 <= len(keyValuePairs) {
+		topFour = keyValuePairs[:4]
+	} else {
+		topFour = keyValuePairs[:len(keyValuePairs)]
+	}
+
+	for k, vTopFour := range topFour {
 		var (
 			tmpMyRecommendAmount int64
 		)
@@ -3550,14 +3606,14 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 
 		if 0 < tmpMyRecommendAmount {
 			if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
-				_, err = uuc.ubRepo.FourRewardBiw(ctx, userRecommend.UserId, tmpMyRecommendAmount, int64(k+1)) // 推荐人奖励
+				_, err = uuc.ubRepo.FourRewardBiw(ctx, vTopFour.Key, tmpMyRecommendAmount, int64(k+1)) // 推荐人奖励
 				if nil != err {
 					return err
 				}
 
 				return nil
 			}); nil != err {
-				fmt.Println("err reward daily four", err, userRecommend)
+				fmt.Println("err reward daily four", err, vTopFour)
 				continue
 			}
 		}
