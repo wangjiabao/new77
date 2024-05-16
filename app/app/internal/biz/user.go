@@ -554,18 +554,13 @@ func (uuc *UserUseCase) AdminUserList(ctx context.Context, req *v1.AdminUserList
 		users        []*User
 		userIds      []int64
 		userBalances map[int64]*UserBalance
-		out          int64
 		count        int64
-		lastLevel    int64 = -1
 		areaOne      int64
 		areaTwo      int64
 		areaThree    int64
 		areaFour     int64
 		areaFive     int64
 		configs      []*Config
-		areaAll      int64
-		areaMax      int64
-		areaMin      int64
 		err          error
 	)
 
@@ -623,6 +618,11 @@ func (uuc *UserUseCase) AdminUserList(ctx context.Context, req *v1.AdminUserList
 			myRecommendUsers   []*UserRecommend
 			myRecommendUserIds []int64
 			locations          []*Location
+			lastLevel          int64 = -1
+			out                int64
+			areaAll            int64
+			areaMax            int64
+			areaMin            int64
 		)
 		locations, err = uuc.locationRepo.GetLocationsByUserId(ctx, vUsers.ID)
 		if nil != locations && 0 < len(locations) {
