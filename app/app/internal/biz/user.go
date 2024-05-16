@@ -1323,6 +1323,10 @@ func (uuc *UserUseCase) AdminConfigUpdateListen(ctx context.Context, req *v1.Adm
 			if "b_price_base" == vConfig.KeyName {
 				bPriceBase, _ = strconv.ParseInt(vConfig.Value, 10, 64)
 			}
+
+			if "exchange_rate" == vConfig.KeyName {
+				feeRate, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			}
 		}
 	}
 
