@@ -191,20 +191,23 @@ func (ruc *RecordUseCase) GetGlobalLock(ctx context.Context) (*GlobalLock, error
 func (ruc *RecordUseCase) EthUserRecordHandle(ctx context.Context, ethUserRecord ...*EthUserRecord) (bool, error) {
 
 	var (
-		configs   []*Config
-		buyOne    int64
-		buyTwo    int64
-		buyThree  int64
-		buyFour   int64
-		buyFive   int64
-		buySix    int64
-		areaOne   int64
-		areaTwo   int64
-		areaThree int64
-		areaFour  int64
-		areaFive  int64
-		//bPrice         int64
-		//bPriceBase     int64
+		configs      []*Config
+		buyOne       int64
+		buyTwo       int64
+		buyThree     int64
+		buyFour      int64
+		buyFive      int64
+		buySix       int64
+		areaOne      int64
+		areaTwo      int64
+		areaThree    int64
+		areaFour     int64
+		areaFive     int64
+		recommendOne int64
+		recommendTwo int64
+		bPrice       int64
+		bPriceBase   int64
+		feeRate      int64
 		//recommendRate1 int64
 		//recommendRate2 int64
 		//recommendRate3 int64
@@ -217,7 +220,7 @@ func (ruc *RecordUseCase) EthUserRecordHandle(ctx context.Context, ethUserRecord
 	)
 	// 配置
 	configs, _ = ruc.configRepo.GetConfigByKeys(ctx,
-		"area_one", "area_two", "area_three", "area_four", "area_five",
+		"area_one", "area_two", "area_three", "area_four", "area_five", "recommend_new_one", "recommend_new_two", "exchange_rate",
 		"buy_one", "buy_two", "buy_six", "buy_three", "buy_four", "buy_five", "b_price", "b_price_base", "recommend_rate_1", "recommend_rate_2", "recommend_rate_3", "recommend_rate_4", "recommend_rate_5", "recommend_rate_6", "recommend_rate_7", "recommend_rate_8")
 	if nil != configs {
 		for _, vConfig := range configs {
@@ -255,6 +258,21 @@ func (ruc *RecordUseCase) EthUserRecordHandle(ctx context.Context, ethUserRecord
 			}
 			if "area_five" == vConfig.KeyName {
 				areaFive, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			}
+			if "recommend_new_one" == vConfig.KeyName {
+				recommendOne, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			}
+			if "recommend_new_two" == vConfig.KeyName {
+				recommendTwo, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			}
+			if "b_price" == vConfig.KeyName {
+				bPrice, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			}
+			if "b_price_base" == vConfig.KeyName {
+				bPriceBase, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			}
+			if "exchange_rate" == vConfig.KeyName {
+				feeRate, _ = strconv.ParseInt(vConfig.Value, 10, 64)
 			}
 
 			//		if "b_price_base" == vConfig.KeyName {
@@ -556,6 +574,126 @@ func (ruc *RecordUseCase) EthUserRecordHandle(ctx context.Context, ethUserRecord
 		}
 
 		if err = ruc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
+
+			// 推荐人
+			if 0 < len(tmpRecommendUserIds) {
+				lastKey := len(tmpRecommendUserIds) - 1 // 有直推len比>=2 ,key是0则是空格，1是直推，键位最后一个人
+				if 1 <= lastKey {
+					for i := 0; i <= 1; i++ { // 两代
+						// 有占位信息，推荐人推荐人的上一代
+						if lastKey-i <= 0 {
+							break
+						}
+
+						tmpMyTopUserRecommendUserId, _ := strconv.ParseInt(tmpRecommendUserIds[lastKey-i], 10, 64) // 最后一位是直推人
+						if 0 >= tmpMyTopUserRecommendUserId {
+							break
+						}
+
+						var myUserRecommendUserLocationsLast []*LocationNew
+						myUserRecommendUserLocationsLast, err = ruc.locationRepo.GetLocationsNewByUserId(ctx, tmpMyTopUserRecommendUserId)
+						if nil != myUserRecommendUserLocationsLast {
+
+							var tmpMyTopUserRecommendUserLocationLast *LocationNew
+							if 1 <= len(myUserRecommendUserLocationsLast) {
+								for _, vMyUserRecommendUserLocationLast := range myUserRecommendUserLocationsLast {
+									if "running" == vMyUserRecommendUserLocationLast.Status {
+										tmpMyTopUserRecommendUserLocationLast = vMyUserRecommendUserLocationLast
+										break
+									}
+								}
+
+								if nil == tmpMyTopUserRecommendUserLocationLast { // 无位
+									continue
+								}
+
+								tmpMinUsdt := tmpMyTopUserRecommendUserLocationLast.Usdt
+								if v.RelAmount < tmpMinUsdt {
+									tmpMinUsdt = v.RelAmount
+								}
+
+								var tmpMyRecommendAmount int64
+								if 0 == i { // 当前用户被此人直推
+									tmpMyRecommendAmount = tmpMinUsdt / 1000 * recommendOne
+								} else if 1 == i {
+									tmpMyRecommendAmount = tmpMinUsdt / 1000 * recommendTwo
+								} else {
+									continue
+								}
+
+								if 0 < tmpMyRecommendAmount { // 扣除推荐人分红
+									bAmount := tmpMyRecommendAmount * bPriceBase / bPrice
+									tmpStatus := tmpMyTopUserRecommendUserLocationLast.Status
+									tmpStopDate := time.Now().UTC().Add(8 * time.Hour)
+									// 过了
+									if tmpMyTopUserRecommendUserLocationLast.Current+tmpMyRecommendAmount >= tmpMyTopUserRecommendUserLocationLast.CurrentMax { // 占位分红人分满停止
+										tmpStatus = "stop"
+										tmpStopDate = time.Now().UTC().Add(8 * time.Hour)
+
+										tmpMyRecommendAmount = tmpMyTopUserRecommendUserLocationLast.CurrentMax - tmpMyTopUserRecommendUserLocationLast.Current
+										bAmount = tmpMyRecommendAmount * bPriceBase / bPrice
+									}
+
+									if 0 < tmpMyRecommendAmount && 0 < bAmount {
+										var tmpMaxNew int64
+										if tmpMyTopUserRecommendUserLocationLast.CurrentMaxNew < tmpMyTopUserRecommendUserLocationLast.CurrentMax {
+											tmpMaxNew = tmpMyTopUserRecommendUserLocationLast.CurrentMax - tmpMyTopUserRecommendUserLocationLast.CurrentMaxNew
+										}
+
+										if err = ruc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
+											err = ruc.locationRepo.UpdateLocationNewNew(ctx, tmpMyTopUserRecommendUserLocationLast.ID, tmpStatus, tmpMyRecommendAmount, tmpMaxNew, bAmount, tmpStopDate) // 分红占位数据修改
+											if nil != err {
+												return err
+											}
+
+											_, err = ruc.userBalanceRepo.RecommendLocationRewardBiw(ctx, tmpMyTopUserRecommendUserId, bAmount, int64(i+1), tmpStatus, tmpMaxNew, feeRate) // 推荐人奖励
+											if nil != err {
+												return err
+											}
+
+											// 业绩减掉
+											if "stop" == tmpStatus {
+												tmpTop := tmpMyTopUserRecommendUserLocationLast.Top
+												tmpTopNum := tmpMyTopUserRecommendUserLocationLast.TopNum
+												for j := 0; j < 10000 && 0 < tmpTop && 0 < tmpTopNum; j++ {
+													err = ruc.locationRepo.UpdateLocationNewTotalSub(ctx, tmpTop, tmpTopNum, tmpMyTopUserRecommendUserLocationLast.Usdt/100000)
+													if nil != err {
+														return err
+													}
+
+													var (
+														currentLocation *LocationNew
+													)
+													currentLocation, err = ruc.locationRepo.GetLocationById(ctx, tmpTop)
+													if nil != err {
+														return err
+													}
+
+													if nil != currentLocation && 0 < currentLocation.Top {
+														tmpTop = currentLocation.Top
+														tmpTopNum = currentLocation.TopNum
+														continue
+													}
+
+													break
+												}
+											}
+
+											return nil
+										}); nil != err {
+											fmt.Println("err reward daily recommend", err, myUserRecommendUserLocationsLast)
+											continue
+										}
+									}
+								}
+							}
+						}
+
+					}
+
+				}
+
+			}
 
 			var (
 				tmpTop int64

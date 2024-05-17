@@ -2193,6 +2193,85 @@ func (ub *UserBalanceRepo) ExchangeBiw(ctx context.Context, userId int64, curren
 	return 0, nil
 }
 
+// RecommendLocationRewardBiw .
+func (ub *UserBalanceRepo) RecommendLocationRewardBiw(ctx context.Context, userId int64, rewardAmount int64, recommendNum int64, stop string, tmpMaxNew int64, feeRate int64) (int64, error) {
+	var err error
+	if err = ub.data.DB(ctx).Table("user_balance").
+		Where("user_id=?", userId).
+		Updates(map[string]interface{}{"balance_dhb": gorm.Expr("balance_dhb + ?", rewardAmount), "recommend_total": gorm.Expr("recommend_location_total + ?", rewardAmount)}).Error; nil != err {
+		return 0, errors.NotFound("user balance err", "user balance not found")
+	}
+
+	var userBalance UserBalance
+	err = ub.data.DB(ctx).Where(&UserBalance{UserId: userId}).Table("user_balance").First(&userBalance).Error
+	if err != nil {
+		return 0, err
+	}
+
+	if "stop" == stop {
+		if 0 < userBalance.BalanceDhb {
+			tmp := tmpMaxNew
+			tmp -= tmp * feeRate / 1000
+			if err = ub.data.DB(ctx).Table("user_balance").
+				Where("user_id=?", userId).
+				Updates(map[string]interface{}{"balance_dhb": 0, "balance_usdt": gorm.Expr("balance_usdt + ?", tmp)}).Error; nil != err {
+				return 0, errors.NotFound("user balance err", "user balance not found")
+			}
+
+			var userBalanceRecode UserBalanceRecord
+			userBalanceRecode.Balance = userBalance.BalanceDhb
+			userBalanceRecode.UserId = userBalance.UserId
+			userBalanceRecode.Type = "exchange"
+			userBalanceRecode.CoinType = "dhb"
+			userBalanceRecode.Amount = tmp
+			err = ub.data.DB(ctx).Table("user_balance_record").Create(&userBalanceRecode).Error
+			if err != nil {
+				return 0, nil
+			}
+
+			var (
+				reward Reward
+			)
+
+			reward.UserId = userId
+			reward.Amount = userBalance.BalanceDhb
+			reward.AmountB = tmp
+			reward.Type = "exchange_system" // 本次分红的行为类型
+			reward.TypeRecordId = userBalanceRecode.ID
+			reward.Reason = "exchange_2" // 给我分红的理由
+			err = ub.data.DB(ctx).Table("reward").Create(&reward).Error
+			if err != nil {
+				return 0, nil
+			}
+		}
+	}
+
+	var userBalanceRecode UserBalanceRecord
+	userBalanceRecode.Balance = userBalance.BalanceDhb
+	userBalanceRecode.UserId = userBalance.UserId
+	userBalanceRecode.Type = "reward"
+	userBalanceRecode.CoinType = "dhb"
+	userBalanceRecode.Amount = rewardAmount
+	err = ub.data.DB(ctx).Table("user_balance_record").Create(&userBalanceRecode).Error
+	if err != nil {
+		return 0, err
+	}
+
+	var reward Reward
+	reward.UserId = userBalance.UserId
+	reward.Amount = rewardAmount
+	reward.BalanceRecordId = userBalanceRecode.ID
+	reward.Type = "system_reward_recommend_location" // 本次分红的行为类型
+	reward.Reason = "recommend_location"             // 给我分红的理由
+	reward.ReasonLocationId = recommendNum
+	err = ub.data.DB(ctx).Table("reward").Create(&reward).Error
+	if err != nil {
+		return 0, err
+	}
+
+	return userBalanceRecode.ID, nil
+}
+
 // RecommendRewardBiw .
 func (ub *UserBalanceRepo) RecommendRewardBiw(ctx context.Context, userId int64, rewardAmount int64, recommendNum int64, stop string, tmpMaxNew int64, feeRate int64) (int64, error) {
 	var err error

@@ -6062,6 +6062,8 @@ func (m *AdminAllReply) validate(all bool) error {
 
 	// no validation rules for TodayRecommendReward
 
+	// no validation rules for TodayRecommendLocationReward
+
 	// no validation rules for TodayAreaReward
 
 	// no validation rules for TodayFourReward

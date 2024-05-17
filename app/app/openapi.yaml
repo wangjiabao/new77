@@ -1320,6 +1320,8 @@ components:
                     type: string
                 todayRecommendReward:
                     type: string
+                todayRecommendLocationReward:
+                    type: string
                 todayAreaReward:
                     type: string
                 todayFourReward:

@@ -198,6 +198,7 @@ type UserBalanceRepo interface {
 	RecommendTeamReward(ctx context.Context, userId int64, rewardAmount int64, amount int64, amountDhb int64, locationId int64, recommendNum int64, status string) (int64, error)
 	RecommendRewardBiw(ctx context.Context, userId int64, rewardAmount int64, recommendNum int64, stop string, tmpMaxNew int64, feeRate int64) (int64, error)
 	LocationRewardBiw(ctx context.Context, userId int64, rewardAmount int64, stop string, currentMaxNew int64, feeRate int64) (int64, error)
+	RecommendLocationRewardBiw(ctx context.Context, userId int64, rewardAmount int64, recommendNum int64, stop string, tmpMaxNew int64, feeRate int64) (int64, error)
 	PriceChange(ctx context.Context, userId int64, rewardAmount int64, up string) error
 	AreaRewardBiw(ctx context.Context, userId int64, rewardAmount int64, tmpCurrentReward int64, areaType int64, stop string, tmpMaxNew int64, feeRate int64) (int64, error)
 	FourRewardBiw(ctx context.Context, userId int64, rewardAmount int64, num int64) (int64, error)
@@ -2183,17 +2184,18 @@ func (uuc *UserUseCase) AdminFeeDaily(ctx context.Context, req *v1.AdminDailyFee
 func (uuc *UserUseCase) AdminAll(ctx context.Context, req *v1.AdminAllRequest) (*v1.AdminAllReply, error) {
 
 	var (
-		userBalanceUsdtTotal            int64
-		userBalanceRecordUsdtTotal      int64
-		userBalanceRecordUsdtTotalToday int64
-		userWithdrawUsdtTotalToday      int64
-		userWithdrawUsdtTotal           int64
-		userBalanceDhbTotal             int64
-		userLocationCount               int64
-		userRewardLocationTotal         int64
-		userRewardAreaTotal             int64
-		userRewardRecommendTotal        int64
-		userRewardFourTotal             int64
+		userBalanceUsdtTotal             int64
+		userBalanceRecordUsdtTotal       int64
+		userBalanceRecordUsdtTotalToday  int64
+		userWithdrawUsdtTotalToday       int64
+		userWithdrawUsdtTotal            int64
+		userBalanceDhbTotal              int64
+		userLocationCount                int64
+		userRewardLocationTotal          int64
+		userRewardAreaTotal              int64
+		userRewardRecommendTotal         int64
+		userRewardFourTotal              int64
+		userRewardRecommendLocationTotal int64
 	)
 	//userCount, _ = uuc.repo.GetUserCount(ctx)
 	//userTodayCount, _ = uuc.repo.GetUserCountToday(ctx)
@@ -2234,23 +2236,28 @@ func (uuc *UserUseCase) AdminAll(ctx context.Context, req *v1.AdminAllRequest) (
 	if nil != err {
 
 	}
+	userRewardRecommendLocationTotal, err = uuc.ubRepo.GetUserRewardLocationTotalToday(ctx, "recommend_location")
+	if nil != err {
+
+	}
 	//balanceRewardRewarded, _ = uuc.ubRepo.GetUserRewardBalanceRewardTotal(ctx)
 	//balanceReward, _ = uuc.ubRepo.GetBalanceRewardTotal(ctx)
 	//amountCsd, _ = uuc.ubRepo.GetTradeOkkCsd(ctx)
 	//amountHbs, _ = uuc.ubRepo.GetTradeOkkHbs(ctx)
 
 	return &v1.AdminAllReply{
-		TotalUser:            userLocationCount,
-		TodayLocation:        fmt.Sprintf("%.2f", float64(userBalanceRecordUsdtTotalToday)/float64(100000)),
-		AllLocation:          fmt.Sprintf("%.2f", float64(userBalanceRecordUsdtTotal)/float64(100000)),
-		TodayLocationReward:  fmt.Sprintf("%.2f", float64(userRewardLocationTotal)/float64(100000)),
-		TodayRecommendReward: fmt.Sprintf("%.2f", float64(userRewardRecommendTotal)/float64(100000)),
-		TodayAreaReward:      fmt.Sprintf("%.2f", float64(userRewardAreaTotal)/float64(100000)),
-		TodayFourReward:      fmt.Sprintf("%.2f", float64(userRewardFourTotal)/float64(100000)),
-		TotalIsps:            fmt.Sprintf("%.2f", float64(userBalanceDhbTotal)/float64(100000)),
-		TotalUsdt:            fmt.Sprintf("%.2f", float64(userBalanceUsdtTotal)/float64(100000)),
-		TodayWithdrawUsdt:    fmt.Sprintf("%.2f", float64(userWithdrawUsdtTotalToday)/float64(100000)),
-		TotalWithdrawUsdt:    fmt.Sprintf("%.2f", float64(userWithdrawUsdtTotal)/float64(100000)),
+		TotalUser:                    userLocationCount,
+		TodayLocation:                fmt.Sprintf("%.2f", float64(userBalanceRecordUsdtTotalToday)/float64(100000)),
+		AllLocation:                  fmt.Sprintf("%.2f", float64(userBalanceRecordUsdtTotal)/float64(100000)),
+		TodayLocationReward:          fmt.Sprintf("%.2f", float64(userRewardLocationTotal)/float64(100000)),
+		TodayRecommendReward:         fmt.Sprintf("%.2f", float64(userRewardRecommendTotal)/float64(100000)),
+		TodayRecommendLocationReward: fmt.Sprintf("%.2f", float64(userRewardRecommendLocationTotal)/float64(100000)),
+		TodayAreaReward:              fmt.Sprintf("%.2f", float64(userRewardAreaTotal)/float64(100000)),
+		TodayFourReward:              fmt.Sprintf("%.2f", float64(userRewardFourTotal)/float64(100000)),
+		TotalIsps:                    fmt.Sprintf("%.2f", float64(userBalanceDhbTotal)/float64(100000)),
+		TotalUsdt:                    fmt.Sprintf("%.2f", float64(userBalanceUsdtTotal)/float64(100000)),
+		TodayWithdrawUsdt:            fmt.Sprintf("%.2f", float64(userWithdrawUsdtTotalToday)/float64(100000)),
+		TotalWithdrawUsdt:            fmt.Sprintf("%.2f", float64(userWithdrawUsdtTotal)/float64(100000)),
 	}, nil
 }
 

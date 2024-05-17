@@ -725,6 +725,7 @@ message AdminAllReply {
 	string allLocation = 5; // 总入金u数量
 	string todayLocationReward = 1; // 今日静态释放
 	string todayRecommendReward = 3; // 今日动态释放
+	string todayRecommendLocationReward = 8; // 今日直推秒结释放
 	string todayAreaReward = 16; // 今日矩阵释放
 	string todayFourReward = 15; // 今日前四名分红u数量
 	string totalIsps= 6; // 全网ISPS数量
