@@ -403,6 +403,10 @@ func (ruc *RecordUseCase) EthUserRecordHandle(ctx context.Context, ethUserRecord
 				if tmpLastLevel > lastLevel {
 					lastLevel = tmpLastLevel
 				}
+
+				if vMyLocations.LastLevel > lastLevel {
+					lastLevel = vMyLocations.LastLevel
+				}
 			}
 
 			if stop {
