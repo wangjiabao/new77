@@ -285,6 +285,24 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /api/admin_dhb/config_update_listen:
+        get:
+            tags:
+                - App
+            operationId: App_AdminConfigUpdateListen
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/AdminConfigUpdateListenReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/admin_dhb/create_account:
         post:
             tags:
@@ -303,6 +321,29 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/AdminCreateAccountReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/admin_dhb/daily_area_reward:
+        get:
+            tags:
+                - App
+            operationId: App_AdminDailyAreaReward
+            parameters:
+                - name: date
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/AdminDailyLocationRewardReply'
                 default:
                     description: Default error response
                     content:
@@ -613,6 +654,10 @@ paths:
                   in: query
                   schema:
                     type: string
+                - name: status
+                  in: query
+                  schema:
+                    type: string
                 - name: address
                   in: query
                   schema:
@@ -637,6 +682,10 @@ paths:
             operationId: App_AdminLocationListNew
             parameters:
                 - name: page
+                  in: query
+                  schema:
+                    type: string
+                - name: status
                   in: query
                   schema:
                     type: string
@@ -779,10 +828,6 @@ paths:
                   schema:
                     type: string
                 - name: address
-                  in: query
-                  schema:
-                    type: string
-                - name: coinType
                   in: query
                   schema:
                     type: string
@@ -936,10 +981,6 @@ paths:
                   in: query
                   schema:
                     type: string
-                - name: isLocation
-                  in: query
-                  schema:
-                    type: boolean
                 - name: vip
                   in: query
                   schema:
@@ -1038,6 +1079,24 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/AdminWithdrawReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/admin_dhb/withdraw_biw:
+        get:
+            tags:
+                - App
+            operationId: App_AdminWithdrawBiw
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/AdminWithdrawEthReply'
                 default:
                     description: Default error response
                     content:
@@ -1269,53 +1328,29 @@ components:
         AdminAllReply:
             type: object
             properties:
-                todayTotalUser:
-                    type: string
-                locationCount:
-                    type: string
                 totalUser:
-                    type: string
-                allBalance:
-                    type: string
-                allBalanceBtc:
                     type: string
                 todayLocation:
                     type: string
                 allLocation:
                     type: string
-                todayWithdraw:
+                todayLocationReward:
                     type: string
-                allWithdraw:
+                todayRecommendReward:
                     type: string
-                totalH:
+                todayRecommendLocationReward:
                     type: string
-                allBalanceH:
+                todayAreaReward:
                     type: string
-                todayWithdrawH:
+                todayFourReward:
                     type: string
-                withdrawH:
+                totalIsps:
                     type: string
-                totalC:
+                totalUsdt:
                     type: string
-                amountCsd:
+                todayWithdrawUsdt:
                     type: string
-                amountHbs:
-                    type: string
-                allWithdrawBtc:
-                    type: string
-                todayWithdrawBtc:
-                    type: string
-                allReward:
-                    type: string
-                allSystemRewardAndFee:
-                    type: string
-                balanceReward:
-                    type: string
-                balanceRewardRewarded:
-                    type: string
-                userBalanceLockUsdtTotal:
-                    type: string
-                userLocationNewCurrent:
+                totalWithdrawUsdt:
                     type: string
         AdminAreaLevelUpdateReply:
             type: object
@@ -1365,6 +1400,9 @@ components:
                     type: string
                 value:
                     type: string
+        AdminConfigUpdateListenReply:
+            type: object
+            properties: {}
         AdminConfigUpdateReply:
             type: object
             properties: {}
@@ -1463,19 +1501,17 @@ components:
         AdminLocationListReply_LocationList:
             type: object
             properties:
-                createdAt:
-                    type: string
                 address:
-                    type: string
-                status:
-                    type: string
-                num:
-                    type: string
-                currentLevel:
                     type: string
                 current:
                     type: string
                 currentMax:
+                    type: string
+                usdt:
+                    type: string
+                currentMaxSub:
+                    type: string
+                out:
                     type: string
         AdminLoginReply:
             type: object
@@ -1534,10 +1570,6 @@ components:
                 createdAt:
                     type: string
                 amount:
-                    type: string
-                amountB:
-                    type: string
-                type:
                     type: string
                 address:
                     type: string
@@ -1608,15 +1640,17 @@ components:
                     type: string
                 balanceDhb:
                     type: string
-                balanceUsdtLock:
+                out:
                     type: string
-                balanceDhbLock:
+                areaTotal:
+                    type: string
+                areaMin:
+                    type: string
+                areaMax:
                     type: string
                 vip:
                     type: string
                 historyRecommend:
-                    type: string
-                TeamCsdBalance:
                     type: string
         AdminUserRecommendReply:
             type: object
@@ -1832,8 +1866,6 @@ components:
                 address:
                     type: string
                 amount:
-                    type: string
-                coinType:
                     type: string
         RewardListReply:
             type: object

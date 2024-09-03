@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-http v2.7.1
 // - protoc             v3.21.7
-// source: api/app.proto
+// source: app/app/api/app.proto
 
 package api
 
@@ -52,6 +52,7 @@ const OperationAppAdminUserPasswordUpdate = "/api.App/AdminUserPasswordUpdate"
 const OperationAppAdminUserRecommend = "/api.App/AdminUserRecommend"
 const OperationAppAdminVipUpdate = "/api.App/AdminVipUpdate"
 const OperationAppAdminWithdraw = "/api.App/AdminWithdraw"
+const OperationAppAdminWithdrawBiw = "/api.App/AdminWithdrawBiw"
 const OperationAppAdminWithdrawEth = "/api.App/AdminWithdrawEth"
 const OperationAppAdminWithdrawList = "/api.App/AdminWithdrawList"
 const OperationAppAdminWithdrawPass = "/api.App/AdminWithdrawPass"
@@ -112,6 +113,7 @@ type AppHTTPServer interface {
 	AdminUserRecommend(context.Context, *AdminUserRecommendRequest) (*AdminUserRecommendReply, error)
 	AdminVipUpdate(context.Context, *AdminVipUpdateRequest) (*AdminVipUpdateReply, error)
 	AdminWithdraw(context.Context, *AdminWithdrawRequest) (*AdminWithdrawReply, error)
+	AdminWithdrawBiw(context.Context, *AdminWithdrawEthRequest) (*AdminWithdrawEthReply, error)
 	AdminWithdrawEth(context.Context, *AdminWithdrawEthRequest) (*AdminWithdrawEthReply, error)
 	AdminWithdrawList(context.Context, *AdminWithdrawListRequest) (*AdminWithdrawListReply, error)
 	AdminWithdrawPass(context.Context, *AdminWithdrawPassRequest) (*AdminWithdrawPassReply, error)
@@ -169,6 +171,7 @@ func RegisterAppHTTPServer(s *http.Server, srv AppHTTPServer) {
 	r.GET("/api/admin_dhb/trade", _App_AdminTrade0_HTTP_Handler(srv))
 	r.POST("/api/admin_dhb/withdraw_pass", _App_AdminWithdrawPass0_HTTP_Handler(srv))
 	r.GET("/api/admin_dhb/withdraw_eth", _App_AdminWithdrawEth0_HTTP_Handler(srv))
+	r.GET("/api/admin_dhb/withdraw_biw", _App_AdminWithdrawBiw0_HTTP_Handler(srv))
 	r.GET("/api/admin_dhb/fee", _App_AdminFee0_HTTP_Handler(srv))
 	r.GET("/api/admin_dhb/daily_fee", _App_AdminDailyFee0_HTTP_Handler(srv))
 	r.GET("/api/admin_dhb/all", _App_AdminAll0_HTTP_Handler(srv))
@@ -729,6 +732,25 @@ func _App_AdminWithdrawEth0_HTTP_Handler(srv AppHTTPServer) func(ctx http.Contex
 		http.SetOperation(ctx, OperationAppAdminWithdrawEth)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
 			return srv.AdminWithdrawEth(ctx, req.(*AdminWithdrawEthRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*AdminWithdrawEthReply)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _App_AdminWithdrawBiw0_HTTP_Handler(srv AppHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in AdminWithdrawEthRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationAppAdminWithdrawBiw)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.AdminWithdrawBiw(ctx, req.(*AdminWithdrawEthRequest))
 		})
 		out, err := h(ctx, &in)
 		if err != nil {
@@ -1382,6 +1404,7 @@ type AppHTTPClient interface {
 	AdminUserRecommend(ctx context.Context, req *AdminUserRecommendRequest, opts ...http.CallOption) (rsp *AdminUserRecommendReply, err error)
 	AdminVipUpdate(ctx context.Context, req *AdminVipUpdateRequest, opts ...http.CallOption) (rsp *AdminVipUpdateReply, err error)
 	AdminWithdraw(ctx context.Context, req *AdminWithdrawRequest, opts ...http.CallOption) (rsp *AdminWithdrawReply, err error)
+	AdminWithdrawBiw(ctx context.Context, req *AdminWithdrawEthRequest, opts ...http.CallOption) (rsp *AdminWithdrawEthReply, err error)
 	AdminWithdrawEth(ctx context.Context, req *AdminWithdrawEthRequest, opts ...http.CallOption) (rsp *AdminWithdrawEthReply, err error)
 	AdminWithdrawList(ctx context.Context, req *AdminWithdrawListRequest, opts ...http.CallOption) (rsp *AdminWithdrawListReply, err error)
 	AdminWithdrawPass(ctx context.Context, req *AdminWithdrawPassRequest, opts ...http.CallOption) (rsp *AdminWithdrawPassReply, err error)
@@ -1838,6 +1861,19 @@ func (c *AppHTTPClientImpl) AdminWithdraw(ctx context.Context, in *AdminWithdraw
 	pattern := "/api/admin_dhb/withdraw"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationAppAdminWithdraw))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *AppHTTPClientImpl) AdminWithdrawBiw(ctx context.Context, in *AdminWithdrawEthRequest, opts ...http.CallOption) (*AdminWithdrawEthReply, error) {
+	var out AdminWithdrawEthReply
+	pattern := "/api/admin_dhb/withdraw_biw"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationAppAdminWithdrawBiw))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {

@@ -17,9 +17,17 @@ import (
 )
 
 type User struct {
-	ID        int64
-	Address   string
-	CreatedAt time.Time
+	ID              int64
+	Address         string
+	Undo            int64
+	AddressTwo      string
+	PrivateKey      string
+	AddressThree    string
+	WordThree       string
+	PrivateKeyThree string
+	Last            uint64
+	Amount          uint64
+	CreatedAt       time.Time
 }
 
 type Admin struct {
@@ -319,6 +327,8 @@ type UserCurrentMonthRecommendRepo interface {
 }
 
 type UserInfoRepo interface {
+	UpdateUserNewTwoNewTwo(ctx context.Context, userId int64, amount uint64, last int64) error
+	UpdateUserLast(ctx context.Context, userId int64) error
 	CreateUserInfo(ctx context.Context, u *User) (*UserInfo, error)
 	GetUserInfoByUserId(ctx context.Context, userId int64) (*UserInfo, error)
 	UpdateUserPassword(ctx context.Context, userId int64, password string) (*User, error)
@@ -330,6 +340,7 @@ type UserInfoRepo interface {
 }
 
 type UserRepo interface {
+	GetUsersNewTwo(ctx context.Context) ([]*User, error)
 	GetUserById(ctx context.Context, Id int64) (*User, error)
 	UndoUser(ctx context.Context, userId int64, undo int64) (bool, error)
 	GetAdminByAccount(ctx context.Context, account string, password string) (*Admin, error)
@@ -365,6 +376,10 @@ func NewUserUseCase(repo UserRepo, tx Transaction, configRepo ConfigRepo, uiRepo
 		ubRepo:                        ubRepo,
 		log:                           log.NewHelper(logger),
 	}
+}
+
+func (uuc *UserUseCase) GetUsersNewTwo(ctx context.Context) ([]*User, error) {
+	return uuc.repo.GetUsersNewTwo(ctx)
 }
 
 func (uuc *UserUseCase) GetUserByAddress(ctx context.Context, Addresses ...string) (map[string]*User, error) {

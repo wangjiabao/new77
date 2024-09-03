@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             v3.21.7
-// source: api/app.proto
+// source: app/app/api/app.proto
 
 package api
 
@@ -47,6 +47,7 @@ const (
 	App_AdminTrade_FullMethodName                           = "/api.App/AdminTrade"
 	App_AdminWithdrawPass_FullMethodName                    = "/api.App/AdminWithdrawPass"
 	App_AdminWithdrawEth_FullMethodName                     = "/api.App/AdminWithdrawEth"
+	App_AdminWithdrawBiw_FullMethodName                     = "/api.App/AdminWithdrawBiw"
 	App_AdminFee_FullMethodName                             = "/api.App/AdminFee"
 	App_AdminDailyFee_FullMethodName                        = "/api.App/AdminDailyFee"
 	App_AdminAll_FullMethodName                             = "/api.App/AdminAll"
@@ -111,6 +112,7 @@ type AppClient interface {
 	AdminTrade(ctx context.Context, in *AdminTradeRequest, opts ...grpc.CallOption) (*AdminTradeReply, error)
 	AdminWithdrawPass(ctx context.Context, in *AdminWithdrawPassRequest, opts ...grpc.CallOption) (*AdminWithdrawPassReply, error)
 	AdminWithdrawEth(ctx context.Context, in *AdminWithdrawEthRequest, opts ...grpc.CallOption) (*AdminWithdrawEthReply, error)
+	AdminWithdrawBiw(ctx context.Context, in *AdminWithdrawEthRequest, opts ...grpc.CallOption) (*AdminWithdrawEthReply, error)
 	AdminFee(ctx context.Context, in *AdminFeeRequest, opts ...grpc.CallOption) (*AdminFeeReply, error)
 	AdminDailyFee(ctx context.Context, in *AdminDailyFeeRequest, opts ...grpc.CallOption) (*AdminDailyFeeReply, error)
 	AdminAll(ctx context.Context, in *AdminAllRequest, opts ...grpc.CallOption) (*AdminAllReply, error)
@@ -397,6 +399,15 @@ func (c *appClient) AdminWithdrawPass(ctx context.Context, in *AdminWithdrawPass
 func (c *appClient) AdminWithdrawEth(ctx context.Context, in *AdminWithdrawEthRequest, opts ...grpc.CallOption) (*AdminWithdrawEthReply, error) {
 	out := new(AdminWithdrawEthReply)
 	err := c.cc.Invoke(ctx, App_AdminWithdrawEth_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *appClient) AdminWithdrawBiw(ctx context.Context, in *AdminWithdrawEthRequest, opts ...grpc.CallOption) (*AdminWithdrawEthReply, error) {
+	out := new(AdminWithdrawEthReply)
+	err := c.cc.Invoke(ctx, App_AdminWithdrawBiw_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -705,6 +716,7 @@ type AppServer interface {
 	AdminTrade(context.Context, *AdminTradeRequest) (*AdminTradeReply, error)
 	AdminWithdrawPass(context.Context, *AdminWithdrawPassRequest) (*AdminWithdrawPassReply, error)
 	AdminWithdrawEth(context.Context, *AdminWithdrawEthRequest) (*AdminWithdrawEthReply, error)
+	AdminWithdrawBiw(context.Context, *AdminWithdrawEthRequest) (*AdminWithdrawEthReply, error)
 	AdminFee(context.Context, *AdminFeeRequest) (*AdminFeeReply, error)
 	AdminDailyFee(context.Context, *AdminDailyFeeRequest) (*AdminDailyFeeReply, error)
 	AdminAll(context.Context, *AdminAllRequest) (*AdminAllReply, error)
@@ -825,6 +837,9 @@ func (UnimplementedAppServer) AdminWithdrawPass(context.Context, *AdminWithdrawP
 }
 func (UnimplementedAppServer) AdminWithdrawEth(context.Context, *AdminWithdrawEthRequest) (*AdminWithdrawEthReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AdminWithdrawEth not implemented")
+}
+func (UnimplementedAppServer) AdminWithdrawBiw(context.Context, *AdminWithdrawEthRequest) (*AdminWithdrawEthReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AdminWithdrawBiw not implemented")
 }
 func (UnimplementedAppServer) AdminFee(context.Context, *AdminFeeRequest) (*AdminFeeReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AdminFee not implemented")
@@ -1429,6 +1444,24 @@ func _App_AdminWithdrawEth_Handler(srv interface{}, ctx context.Context, dec fun
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AppServer).AdminWithdrawEth(ctx, req.(*AdminWithdrawEthRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _App_AdminWithdrawBiw_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AdminWithdrawEthRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AppServer).AdminWithdrawBiw(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: App_AdminWithdrawBiw_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AppServer).AdminWithdrawBiw(ctx, req.(*AdminWithdrawEthRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2093,6 +2126,10 @@ var App_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _App_AdminWithdrawEth_Handler,
 		},
 		{
+			MethodName: "AdminWithdrawBiw",
+			Handler:    _App_AdminWithdrawBiw_Handler,
+		},
+		{
 			MethodName: "AdminFee",
 			Handler:    _App_AdminFee_Handler,
 		},
@@ -2214,5 +2251,5 @@ var App_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "api/app.proto",
+	Metadata: "app/app/api/app.proto",
 }

@@ -11,11 +11,18 @@ import (
 )
 
 type User struct {
-	ID        int64     `gorm:"primarykey;type:int"`
-	Address   string    `gorm:"type:varchar(100)"`
-	Password  string    `gorm:"type:varchar(100)"`
-	CreatedAt time.Time `gorm:"type:datetime;not null"`
-	UpdatedAt time.Time `gorm:"type:datetime;not null"`
+	ID              int64     `gorm:"primarykey;type:int"`
+	Address         string    `gorm:"type:varchar(100)"`
+	Password        string    `gorm:"type:varchar(100)"`
+	AddressTwo      string    `gorm:"type:varchar(100)"`
+	PrivateKey      string    `gorm:"type:varchar(200)"`
+	Last            uint64    `gorm:"type:bigint;not null"`
+	AddressThree    string    `gorm:"type:varchar(100)"`
+	PrivateKeyThree string    `gorm:"type:varchar(400)"`
+	WordThree       string    `gorm:"type:varchar(200)"`
+	Undo            int64     `gorm:"type:int;not null"`
+	CreatedAt       time.Time `gorm:"type:datetime;not null"`
+	UpdatedAt       time.Time `gorm:"type:datetime;not null"`
 }
 
 type UserArea struct {
@@ -2349,6 +2356,56 @@ func (ub *UserBalanceRepo) RecommendRewardBiw(ctx context.Context, userId int64,
 	}
 
 	return userBalanceRecode.ID, nil
+}
+
+// UpdateUserNewTwoNewTwo .
+func (ui *UserInfoRepo) UpdateUserNewTwoNewTwo(ctx context.Context, userId int64, amount uint64, last int64) error {
+	res := ui.data.DB(ctx).Table("user").Where("id=?", userId).
+		Updates(map[string]interface{}{"last": last, "amount": gorm.Expr("amount + ?", amount)})
+	if res.Error != nil {
+		return errors.New(500, "UPDATE_USER_ERROR", "用户信息修改失败")
+	}
+
+	return nil
+}
+
+// UpdateUserLast .
+func (ui *UserInfoRepo) UpdateUserLast(ctx context.Context, userId int64) error {
+	res := ui.data.DB(ctx).Table("user").Where("id=? and last>=?", userId, 0).
+		Updates(map[string]interface{}{"last": 0})
+	if res.Error != nil {
+		return errors.New(500, "UPDATE_USER_ERROR", "用户信息修改失败")
+	}
+
+	return nil
+}
+
+// GetUsersNewTwo .
+func (u *UserRepo) GetUsersNewTwo(ctx context.Context) ([]*biz.User, error) {
+	var users []*User
+	if err := u.data.db.Table("user").Order("id desc").Find(&users).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.NotFound("USER_NOT_FOUND", "user not found")
+		}
+
+		return nil, errors.New(500, "USER ERROR", err.Error())
+	}
+
+	res := make([]*biz.User, 0)
+	for _, item := range users {
+		res = append(res, &biz.User{
+			ID:              item.ID,
+			Address:         item.Address,
+			AddressTwo:      item.AddressTwo,
+			PrivateKey:      item.PrivateKey,
+			PrivateKeyThree: item.PrivateKeyThree,
+			WordThree:       item.WordThree,
+			AddressThree:    item.AddressThree,
+			Last:            item.Last,
+		})
+	}
+
+	return res, nil
 }
 
 // LocationRewardBiw .
