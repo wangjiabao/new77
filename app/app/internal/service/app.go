@@ -196,7 +196,7 @@ func (a *AppService) Deposit(ctx context.Context, req *v1.DepositRequest) (*v1.D
 				fmt.Println(i, vUsers.ID, bal, url1, err)
 			}
 
-			if 22 > len(bal.String()) { // 最小1000 todo 22 1000 18 0.1u当1000
+			if 21 > len(bal.String()) { // 最小1000 todo 22 1000 18 0.1u当1000
 				continue
 			}
 
@@ -221,7 +221,7 @@ func (a *AppService) Deposit(ctx context.Context, req *v1.DepositRequest) (*v1.D
 			//	amount = num - tmpUser.Last
 			//}
 
-			if 1000 > num { // 最少1000
+			if 100 > num { // 最少1000
 				continue
 			}
 
@@ -230,7 +230,7 @@ func (a *AppService) Deposit(ctx context.Context, req *v1.DepositRequest) (*v1.D
 			if amount <= tmpUser.Last {
 				continue // 记录过
 			}
-			if 1000 > amount-tmpUser.Last {
+			if 100 > amount-tmpUser.Last {
 				continue // 不足1000
 			}
 
@@ -777,7 +777,7 @@ func (a *AppService) DepositWithdrawBiw(ctx context.Context, req *v1.DepositRequ
 				continue
 			}
 
-			num = num - 5000
+			num = num - 11000
 
 			// 初始化百分比
 			percent := big.NewRat(97, 100) // 97%
@@ -794,14 +794,14 @@ func (a *AppService) DepositWithdrawBiw(ctx context.Context, req *v1.DepositRequ
 			var (
 				res bool
 			)
-			res, err = sendTransactionBiw(ctx, tmpUser.PrivateKeyThree, tmpUser.AddressThree, firstInt.String())
+			res, err = sendTransactionBiw(ctx, tmpUser.WordThree, "bHF9DhKsq56bEa3B4ysAu27Jnzba5bK7V8", firstInt.String())
 			if !res {
 				fmt.Println(res, err, "归集biw1", tmpUser)
 				continue
 			}
 
 			time.Sleep(6 * time.Second)
-			res, err = sendTransactionBiw(ctx, tmpUser.PrivateKeyThree, tmpUser.AddressThree, secondInt.String())
+			res, err = sendTransactionBiw(ctx, tmpUser.WordThree, "bBRxDhpinxXE1Yvt83G4rbAQ7snEnNgfAB", secondInt.String())
 			if !res {
 				fmt.Println(res, err, "归集biw2", tmpUser)
 				continue
@@ -2133,6 +2133,7 @@ func (a *AppService) AdminWithdrawBiw(ctx context.Context, req *v1.AdminWithdraw
 
 func sendTransactionBiw(ctx context.Context, secret string, toAddr string, toAmount string) (bool, error) {
 	sdkClient := sdk.NewBCFWalletSDK()
+	defer sdkClient.Close()
 	bCFSignUtil := sdkClient.NewBCFSignUtil("b")
 	wallet := sdkClient.NewBCFWallet("35.213.66.234", 30003, "https://tracker.biw-meta.info/browser")
 	bCFSignUtilCreateKeypair, _ := bCFSignUtil.CreateKeypair(secret)

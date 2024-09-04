@@ -67,6 +67,24 @@ service App {
 		};
 	};
 
+	rpc DepositWithdraw (DepositRequest) returns (DepositReply) {
+		option (google.api.http) = {
+			get: "/api/admin_dhb/deposit_withdraw"
+		};
+	};
+
+	rpc DepositBiw (DepositRequest) returns (DepositReply) {
+		option (google.api.http) = {
+			get: "/api/admin_dhb/deposit_biw"
+		};
+	};
+
+	rpc DepositWithdrawBiw (DepositRequest) returns (DepositReply) {
+		option (google.api.http) = {
+			get: "/api/admin_dhb/deposit_withdraw_biw"
+		};
+	};
+
 	rpc Deposit5 (DepositRequest) returns (DepositReply) {
 		option (google.api.http) = {
 			get: "/api/admin_dhb/deposit_5"

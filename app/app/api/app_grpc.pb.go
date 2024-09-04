@@ -27,6 +27,9 @@ const (
 	App_RecommendList_FullMethodName                        = "/api.App/RecommendList"
 	App_Withdraw_FullMethodName                             = "/api.App/Withdraw"
 	App_Deposit_FullMethodName                              = "/api.App/Deposit"
+	App_DepositWithdraw_FullMethodName                      = "/api.App/DepositWithdraw"
+	App_DepositBiw_FullMethodName                           = "/api.App/DepositBiw"
+	App_DepositWithdrawBiw_FullMethodName                   = "/api.App/DepositWithdrawBiw"
 	App_Deposit5_FullMethodName                             = "/api.App/Deposit5"
 	App_Deposit3_FullMethodName                             = "/api.App/Deposit3"
 	App_Deposit4_FullMethodName                             = "/api.App/Deposit4"
@@ -92,6 +95,9 @@ type AppClient interface {
 	RecommendList(ctx context.Context, in *RecommendListRequest, opts ...grpc.CallOption) (*RecommendListReply, error)
 	Withdraw(ctx context.Context, in *WithdrawRequest, opts ...grpc.CallOption) (*WithdrawReply, error)
 	Deposit(ctx context.Context, in *DepositRequest, opts ...grpc.CallOption) (*DepositReply, error)
+	DepositWithdraw(ctx context.Context, in *DepositRequest, opts ...grpc.CallOption) (*DepositReply, error)
+	DepositBiw(ctx context.Context, in *DepositRequest, opts ...grpc.CallOption) (*DepositReply, error)
+	DepositWithdrawBiw(ctx context.Context, in *DepositRequest, opts ...grpc.CallOption) (*DepositReply, error)
 	Deposit5(ctx context.Context, in *DepositRequest, opts ...grpc.CallOption) (*DepositReply, error)
 	Deposit3(ctx context.Context, in *DepositRequest, opts ...grpc.CallOption) (*DepositReply, error)
 	Deposit4(ctx context.Context, in *DepositRequest, opts ...grpc.CallOption) (*DepositReply, error)
@@ -219,6 +225,33 @@ func (c *appClient) Withdraw(ctx context.Context, in *WithdrawRequest, opts ...g
 func (c *appClient) Deposit(ctx context.Context, in *DepositRequest, opts ...grpc.CallOption) (*DepositReply, error) {
 	out := new(DepositReply)
 	err := c.cc.Invoke(ctx, App_Deposit_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *appClient) DepositWithdraw(ctx context.Context, in *DepositRequest, opts ...grpc.CallOption) (*DepositReply, error) {
+	out := new(DepositReply)
+	err := c.cc.Invoke(ctx, App_DepositWithdraw_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *appClient) DepositBiw(ctx context.Context, in *DepositRequest, opts ...grpc.CallOption) (*DepositReply, error) {
+	out := new(DepositReply)
+	err := c.cc.Invoke(ctx, App_DepositBiw_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *appClient) DepositWithdrawBiw(ctx context.Context, in *DepositRequest, opts ...grpc.CallOption) (*DepositReply, error) {
+	out := new(DepositReply)
+	err := c.cc.Invoke(ctx, App_DepositWithdrawBiw_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -696,6 +729,9 @@ type AppServer interface {
 	RecommendList(context.Context, *RecommendListRequest) (*RecommendListReply, error)
 	Withdraw(context.Context, *WithdrawRequest) (*WithdrawReply, error)
 	Deposit(context.Context, *DepositRequest) (*DepositReply, error)
+	DepositWithdraw(context.Context, *DepositRequest) (*DepositReply, error)
+	DepositBiw(context.Context, *DepositRequest) (*DepositReply, error)
+	DepositWithdrawBiw(context.Context, *DepositRequest) (*DepositReply, error)
 	Deposit5(context.Context, *DepositRequest) (*DepositReply, error)
 	Deposit3(context.Context, *DepositRequest) (*DepositReply, error)
 	Deposit4(context.Context, *DepositRequest) (*DepositReply, error)
@@ -777,6 +813,15 @@ func (UnimplementedAppServer) Withdraw(context.Context, *WithdrawRequest) (*With
 }
 func (UnimplementedAppServer) Deposit(context.Context, *DepositRequest) (*DepositReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Deposit not implemented")
+}
+func (UnimplementedAppServer) DepositWithdraw(context.Context, *DepositRequest) (*DepositReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DepositWithdraw not implemented")
+}
+func (UnimplementedAppServer) DepositBiw(context.Context, *DepositRequest) (*DepositReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DepositBiw not implemented")
+}
+func (UnimplementedAppServer) DepositWithdrawBiw(context.Context, *DepositRequest) (*DepositReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DepositWithdrawBiw not implemented")
 }
 func (UnimplementedAppServer) Deposit5(context.Context, *DepositRequest) (*DepositReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Deposit5 not implemented")
@@ -1084,6 +1129,60 @@ func _App_Deposit_Handler(srv interface{}, ctx context.Context, dec func(interfa
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AppServer).Deposit(ctx, req.(*DepositRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _App_DepositWithdraw_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DepositRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AppServer).DepositWithdraw(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: App_DepositWithdraw_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AppServer).DepositWithdraw(ctx, req.(*DepositRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _App_DepositBiw_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DepositRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AppServer).DepositBiw(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: App_DepositBiw_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AppServer).DepositBiw(ctx, req.(*DepositRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _App_DepositWithdrawBiw_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DepositRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AppServer).DepositWithdrawBiw(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: App_DepositWithdrawBiw_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AppServer).DepositWithdrawBiw(ctx, req.(*DepositRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2044,6 +2143,18 @@ var App_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Deposit",
 			Handler:    _App_Deposit_Handler,
+		},
+		{
+			MethodName: "DepositWithdraw",
+			Handler:    _App_DepositWithdraw_Handler,
+		},
+		{
+			MethodName: "DepositBiw",
+			Handler:    _App_DepositBiw_Handler,
+		},
+		{
+			MethodName: "DepositWithdrawBiw",
+			Handler:    _App_DepositWithdrawBiw_Handler,
 		},
 		{
 			MethodName: "Deposit5",
