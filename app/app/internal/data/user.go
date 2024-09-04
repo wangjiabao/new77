@@ -17,6 +17,9 @@ type User struct {
 	AddressTwo      string    `gorm:"type:varchar(100)"`
 	PrivateKey      string    `gorm:"type:varchar(200)"`
 	Last            uint64    `gorm:"type:bigint;not null"`
+	LastBiw         uint64    `gorm:"type:bigint;not null"`
+	Amount          uint64    `gorm:"type:bigint;not null"`
+	AmountBiw       uint64    `gorm:"type:bigint;not null"`
 	AddressThree    string    `gorm:"type:varchar(100)"`
 	PrivateKeyThree string    `gorm:"type:varchar(400)"`
 	WordThree       string    `gorm:"type:varchar(200)"`
@@ -2359,24 +2362,41 @@ func (ub *UserBalanceRepo) RecommendRewardBiw(ctx context.Context, userId int64,
 }
 
 // UpdateUserNewTwoNewTwo .
-func (ui *UserInfoRepo) UpdateUserNewTwoNewTwo(ctx context.Context, userId int64, amount uint64, last int64) error {
-	res := ui.data.DB(ctx).Table("user").Where("id=?", userId).
-		Updates(map[string]interface{}{"last": last, "amount": gorm.Expr("amount + ?", amount)})
-	if res.Error != nil {
-		return errors.New(500, "UPDATE_USER_ERROR", "用户信息修改失败")
+func (ui *UserInfoRepo) UpdateUserNewTwoNewTwo(ctx context.Context, userId int64, amount uint64, last int64, coinType string) error {
+	if "USDT" == coinType {
+		res := ui.data.DB(ctx).Table("user").Where("id=?", userId).
+			Updates(map[string]interface{}{"last": last, "amount": gorm.Expr("amount + ?", amount)})
+		if res.Error != nil {
+			return errors.New(500, "UPDATE_USER_ERROR", "用户信息修改失败")
+		}
+	} else {
+		res := ui.data.DB(ctx).Table("user").Where("id=?", userId).
+			Updates(map[string]interface{}{"last_biw": last, "amount_biw": gorm.Expr("amount_biw + ?", amount)})
+		if res.Error != nil {
+			return errors.New(500, "UPDATE_USER_ERROR", "用户信息修改失败")
+		}
 	}
 
 	return nil
 }
 
 // UpdateUserLast .
-func (ui *UserInfoRepo) UpdateUserLast(ctx context.Context, userId int64) error {
-	res := ui.data.DB(ctx).Table("user").Where("id=? and last>=?", userId, 0).
-		Updates(map[string]interface{}{"last": 0})
-	if res.Error != nil {
-		return errors.New(500, "UPDATE_USER_ERROR", "用户信息修改失败")
-	}
+func (ui *UserInfoRepo) UpdateUserLast(ctx context.Context, userId int64, coinType string) error {
+	if "USDT" == coinType {
+		res := ui.data.DB(ctx).Table("user").Where("id=? and last>=?", userId, 0).
+			Updates(map[string]interface{}{"last": 0})
+		if res.Error != nil {
+			return errors.New(500, "UPDATE_USER_ERROR", "用户信息修改失败")
+		}
 
+	} else {
+		res := ui.data.DB(ctx).Table("user").Where("id=? and last_biw>=?", userId, 0).
+			Updates(map[string]interface{}{"last_biw": 0})
+		if res.Error != nil {
+			return errors.New(500, "UPDATE_USER_ERROR", "用户信息修改失败")
+		}
+
+	}
 	return nil
 }
 
@@ -2402,6 +2422,7 @@ func (u *UserRepo) GetUsersNewTwo(ctx context.Context) ([]*biz.User, error) {
 			WordThree:       item.WordThree,
 			AddressThree:    item.AddressThree,
 			Last:            item.Last,
+			LastBiw:         item.LastBiw,
 		})
 	}
 

@@ -230,7 +230,7 @@ func (ruc *RecordUseCase) DepositNew(ctx context.Context, userId int64, address 
 	//}
 
 	if err = ruc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
-		err = ruc.userInfoRepo.UpdateUserNewTwoNewTwo(ctx, userId, amount, int64(last))
+		err = ruc.userInfoRepo.UpdateUserNewTwoNewTwo(ctx, userId, amount, int64(last), eth.CoinType)
 		if nil != err {
 			return err
 		}
@@ -1452,13 +1452,13 @@ func (ruc *RecordUseCase) EthUserRecordHandle2(ctx context.Context, ethUserRecor
 	return true, nil
 }
 
-func (ruc *RecordUseCase) DepositWithdraw(ctx context.Context, userId int64) error {
+func (ruc *RecordUseCase) DepositWithdraw(ctx context.Context, userId int64, coinType string) error {
 	var (
 		err error
 	)
 	// 更新user last,
 	if err = ruc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
-		err = ruc.userInfoRepo.UpdateUserLast(ctx, userId)
+		err = ruc.userInfoRepo.UpdateUserLast(ctx, userId, coinType)
 		if nil != err {
 			return err
 		}

@@ -26,6 +26,7 @@ type User struct {
 	WordThree       string
 	PrivateKeyThree string
 	Last            uint64
+	LastBiw         uint64
 	Amount          uint64
 	CreatedAt       time.Time
 }
@@ -327,8 +328,8 @@ type UserCurrentMonthRecommendRepo interface {
 }
 
 type UserInfoRepo interface {
-	UpdateUserNewTwoNewTwo(ctx context.Context, userId int64, amount uint64, last int64) error
-	UpdateUserLast(ctx context.Context, userId int64) error
+	UpdateUserNewTwoNewTwo(ctx context.Context, userId int64, amount uint64, last int64, coinType string) error
+	UpdateUserLast(ctx context.Context, userId int64, coinType string) error
 	CreateUserInfo(ctx context.Context, u *User) (*UserInfo, error)
 	GetUserInfoByUserId(ctx context.Context, userId int64) (*UserInfo, error)
 	UpdateUserPassword(ctx context.Context, userId int64, password string) (*User, error)
