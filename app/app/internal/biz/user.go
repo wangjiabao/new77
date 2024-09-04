@@ -1332,8 +1332,8 @@ func (uuc *UserUseCase) AdminConfigUpdateListen(ctx context.Context, req *v1.Adm
 		bPrice       int64
 		bPriceBase   int64
 		originBprice int64
-		feeRate      int64
-		users        []*User
+		//feeRate      int64
+		users []*User
 	)
 	configs, _ = uuc.configRepo.GetConfigByKeys(ctx, "b_price_base", "exchange_rate")
 	if nil != configs {
@@ -1342,9 +1342,9 @@ func (uuc *UserUseCase) AdminConfigUpdateListen(ctx context.Context, req *v1.Adm
 				bPriceBase, _ = strconv.ParseInt(vConfig.Value, 10, 64)
 			}
 
-			if "exchange_rate" == vConfig.KeyName {
-				feeRate, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-			}
+			//if "exchange_rate" == vConfig.KeyName {
+			//	feeRate, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+			//}
 		}
 	}
 
@@ -1416,12 +1416,12 @@ func (uuc *UserUseCase) AdminConfigUpdateListen(ctx context.Context, req *v1.Adm
 
 					// 业绩减掉
 					if "stop" == runningLocation.Status {
-						if runningLocation.CurrentMax >= runningLocation.CurrentMaxNew {
-							_, err = uuc.ubRepo.ExchangeBiw(ctx, v.ID, runningLocation.CurrentMax-runningLocation.CurrentMaxNew, feeRate)
-							if nil != err {
-								return err
-							}
-						}
+						//if runningLocation.CurrentMax >= runningLocation.CurrentMaxNew {
+						//	_, err = uuc.ubRepo.ExchangeBiw(ctx, v.ID, runningLocation.CurrentMax-runningLocation.CurrentMaxNew, feeRate)
+						//	if nil != err {
+						//		return err
+						//	}
+						//}
 
 						tmpTop := runningLocation.Top
 						tmpTopNum := runningLocation.TopNum
