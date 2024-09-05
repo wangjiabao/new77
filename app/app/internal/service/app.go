@@ -806,7 +806,7 @@ func (a *AppService) DepositWithdrawBiw(ctx context.Context, req *v1.DepositRequ
 				fmt.Println(res, err, "归集biw2", tmpUser)
 				continue
 			}
-
+			time.Sleep(6 * time.Second)
 			err = a.ruc.DepositWithdraw(ctx, tmpUser.ID, "DHB")
 			if nil != err {
 				fmt.Println(err)
