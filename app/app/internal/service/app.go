@@ -581,7 +581,7 @@ func (a *AppService) DepositBiw(ctx context.Context, req *v1.DepositRequest) (*v
 
 		//wg.Wait() // 等待所有登记的goroutine都结束
 
-		time.Sleep(4 * time.Second)
+		time.Sleep(6 * time.Second)
 	}
 
 	return &v1.DepositReply{}, nil
