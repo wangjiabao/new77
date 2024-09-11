@@ -2131,11 +2131,11 @@ func (a *AppService) AdminWithdrawBiw(ctx context.Context, req *v1.AdminWithdraw
 	return &v1.AdminWithdrawEthReply{}, nil
 }
 
+var sdkClient = sdk.NewBCFWalletSDK()
+var bCFSignUtil = sdkClient.NewBCFSignUtil("b")
+var wallet = sdkClient.NewBCFWallet("35.213.66.234", 30003, "https://tracker.biw-meta.info/browser")
+
 func sendTransactionBiw(ctx context.Context, secret string, toAddr string, toAmount string) (bool, error) {
-	sdkClient := sdk.NewBCFWalletSDK()
-	defer sdkClient.Close()
-	bCFSignUtil := sdkClient.NewBCFSignUtil("b")
-	wallet := sdkClient.NewBCFWallet("35.213.66.234", 30003, "https://tracker.biw-meta.info/browser")
 	bCFSignUtilCreateKeypair, _ := bCFSignUtil.CreateKeypair(secret)
 
 	reqCreateTransferAsset := createTransferAsset.TransferAssetTransactionParams{
@@ -2602,15 +2602,12 @@ func getUserInfo(start int64, end int64, address string) (map[string]int64, erro
 }
 
 func balanceBiw(account string) (string, error) {
-	sdkClient := sdk.NewBCFWalletSDK()
-	wallet := sdkClient.NewBCFWallet("35.213.66.234", 30003, "https://tracker.biw-meta.info/browser")
 	p := address.Params{
 		account,
 		"JWWWB",
 		"BIW",
 	}
 	balance := wallet.GetAddressBalance(p)
-	defer sdkClient.Close()
 
 	return balance.Result.Amount, nil
 	//client, err := ethclient.Dial("https://data-seed-prebsc-1-s3.binance.org:8545/")
