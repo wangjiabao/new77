@@ -271,690 +271,690 @@ func (ruc *RecordUseCase) DepositNew(ctx context.Context, userId int64, address 
 }
 
 func (ruc *RecordUseCase) EthUserRecordHandle(ctx context.Context, ethUserRecord ...*EthUserRecord) (bool, error) {
-
-	var (
-		configs      []*Config
-		buyOne       int64
-		buyTwo       int64
-		buyThree     int64
-		buyFour      int64
-		buyFive      int64
-		buySix       int64
-		areaOne      int64
-		areaTwo      int64
-		areaThree    int64
-		areaFour     int64
-		areaFive     int64
-		recommendOne int64
-		recommendTwo int64
-		bPrice       int64
-		bPriceBase   int64
-		feeRate      int64
-		//recommendRate1 int64
-		//recommendRate2 int64
-		//recommendRate3 int64
-		//recommendRate4 int64
-		//recommendRate5 int64
-		//recommendRate6 int64
-		//recommendRate7 int64
-		//recommendRate8 int64
-		//recommendBase  = int64(100)
-	)
-	// 配置
-	configs, _ = ruc.configRepo.GetConfigByKeys(ctx,
-		"area_one", "area_two", "area_three", "area_four", "area_five", "recommend_new_one", "recommend_new_two", "exchange_rate",
-		"buy_one", "buy_two", "buy_six", "buy_three", "buy_four", "buy_five", "b_price", "b_price_base", "recommend_rate_1", "recommend_rate_2", "recommend_rate_3", "recommend_rate_4", "recommend_rate_5", "recommend_rate_6", "recommend_rate_7", "recommend_rate_8")
-	if nil != configs {
-		for _, vConfig := range configs {
-			if "buy_one" == vConfig.KeyName {
-				buyOne, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-			}
-			if "buy_two" == vConfig.KeyName {
-				buyTwo, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-			}
-			if "buy_three" == vConfig.KeyName {
-				buyThree, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-			}
-			if "buy_four" == vConfig.KeyName {
-				buyFour, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-			}
-			if "buy_five" == vConfig.KeyName {
-				buyFive, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-			}
-
-			if "buy_six" == vConfig.KeyName {
-				buySix, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-			}
-
-			if "area_one" == vConfig.KeyName {
-				areaOne, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-			}
-			if "area_two" == vConfig.KeyName {
-				areaTwo, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-			}
-			if "area_three" == vConfig.KeyName {
-				areaThree, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-			}
-			if "area_four" == vConfig.KeyName {
-				areaFour, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-			}
-			if "area_five" == vConfig.KeyName {
-				areaFive, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-			}
-			if "recommend_new_one" == vConfig.KeyName {
-				recommendOne, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-			}
-			if "recommend_new_two" == vConfig.KeyName {
-				recommendTwo, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-			}
-			if "b_price" == vConfig.KeyName {
-				bPrice, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-			}
-			if "b_price_base" == vConfig.KeyName {
-				bPriceBase, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-			}
-			if "exchange_rate" == vConfig.KeyName {
-				feeRate, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-			}
-
-			//		if "b_price_base" == vConfig.KeyName {
-			//			bPriceBase, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-			//		}
-			//		if "recommend_rate_1" == vConfig.KeyName {
-			//			recommendRate1, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-			//		}
-			//		if "recommend_rate_2" == vConfig.KeyName {
-			//			recommendRate2, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-			//		}
-			//		if "recommend_rate_3" == vConfig.KeyName {
-			//			recommendRate3, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-			//		}
-			//		if "recommend_rate_4" == vConfig.KeyName {
-			//			recommendRate4, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-			//		}
-			//		if "recommend_rate_5" == vConfig.KeyName {
-			//			recommendRate5, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-			//		}
-			//		if "recommend_rate_6" == vConfig.KeyName {
-			//			recommendRate6, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-			//		}
-			//		if "recommend_rate_7" == vConfig.KeyName {
-			//			recommendRate7, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-			//		}
-			//		if "recommend_rate_8" == vConfig.KeyName {
-			//			recommendRate8, _ = strconv.ParseInt(vConfig.Value, 10, 64)
-			//		}
-		}
-	}
-
-	for _, v := range ethUserRecord {
-		var (
-			allLocations   []*LocationNew
-			myLocations    []*LocationNew
-			myLastLocation *LocationNew
-			lastLevel      int64
-			err            error
-		)
-
-		// 获取当前用户的占位信息，已经有运行中的跳过
-		allLocations, err = ruc.locationRepo.GetAllLocationsNew(ctx, v.RelAmount*25/10) // 同倍率的
-		if nil == allLocations {                                                        // 查询异常跳过本次循环
-			fmt.Println(err, "错误投资", v)
-			continue
-		}
-		if nil != err {
-			fmt.Println(err, "123")
-			continue
-		}
-
-		if 10000000 == v.RelAmount && int64(len(allLocations)) < buySix {
-
-		} else if 30000000 == v.RelAmount && int64(len(allLocations)) < buyOne {
-
-		} else if 100000000 == v.RelAmount && int64(len(allLocations)) < buyTwo {
-
-		} else if 300000000 == v.RelAmount && int64(len(allLocations)) < buyThree {
-
-		} else if 500000000 == v.RelAmount && int64(len(allLocations)) < buyFour {
-
-		} else if 1000000000 == v.RelAmount && int64(len(allLocations)) < buyFive {
-
-		} else {
-			fmt.Println(v, "1234")
-			continue
-		}
-
-		// 获取当前用户的占位信息，已经有运行中的跳过
-		myLocations, err = ruc.locationRepo.GetLocationsNewByUserId(ctx, v.UserId)
-		if nil == myLocations { // 查询异常跳过本次循环
-			fmt.Println(err, "错误投资2", v)
-			continue
-		}
-		if nil != err {
-			fmt.Println(err, "12")
-			continue
-		}
-
-		if 0 < len(myLocations) {
-			var (
-				stop bool
-			)
-
-			for _, vMyLocations := range myLocations {
-				if "stop" != vMyLocations.Status {
-					stop = true
-					fmt.Println(err, "已投资", v)
-					break
-				}
-
-				myLastLocation = vMyLocations // 遍历到最后一个
-				var tmpLastLevel int64
-				// 1大区
-				if vMyLocations.Total >= vMyLocations.TotalTwo && vMyLocations.Total >= vMyLocations.TotalThree {
-					if areaOne <= vMyLocations.TotalTwo+vMyLocations.TotalThree {
-						tmpLastLevel = 1
-					}
-					if areaTwo <= vMyLocations.TotalTwo+vMyLocations.TotalThree {
-						tmpLastLevel = 2
-					}
-					if areaThree <= vMyLocations.TotalTwo+vMyLocations.TotalThree {
-						tmpLastLevel = 3
-					}
-					if areaFour <= vMyLocations.TotalTwo+vMyLocations.TotalThree {
-						tmpLastLevel = 4
-					}
-					if areaFive <= vMyLocations.TotalTwo+vMyLocations.TotalThree {
-						tmpLastLevel = 5
-					}
-				} else if vMyLocations.TotalTwo >= vMyLocations.Total && vMyLocations.TotalTwo >= vMyLocations.TotalThree {
-					if areaOne <= vMyLocations.Total+vMyLocations.TotalThree {
-						tmpLastLevel = 1
-					}
-					if areaTwo <= vMyLocations.Total+vMyLocations.TotalThree {
-						tmpLastLevel = 2
-					}
-					if areaThree <= vMyLocations.Total+vMyLocations.TotalThree {
-						tmpLastLevel = 3
-					}
-					if areaFour <= vMyLocations.Total+vMyLocations.TotalThree {
-						tmpLastLevel = 4
-					}
-					if areaFive <= vMyLocations.Total+vMyLocations.TotalThree {
-						tmpLastLevel = 5
-					}
-				} else if vMyLocations.TotalThree >= vMyLocations.Total && vMyLocations.TotalThree >= vMyLocations.TotalTwo {
-					if areaOne <= vMyLocations.TotalTwo+vMyLocations.Total {
-						tmpLastLevel = 1
-					}
-					if areaTwo <= vMyLocations.TotalTwo+vMyLocations.Total {
-						tmpLastLevel = 2
-					}
-					if areaThree <= vMyLocations.TotalTwo+vMyLocations.Total {
-						tmpLastLevel = 3
-					}
-					if areaFour <= vMyLocations.TotalTwo+vMyLocations.Total {
-						tmpLastLevel = 4
-					}
-					if areaFive <= vMyLocations.TotalTwo+vMyLocations.Total {
-						tmpLastLevel = 5
-					}
-				}
-
-				if tmpLastLevel > lastLevel {
-					lastLevel = tmpLastLevel
-				}
-
-				if vMyLocations.LastLevel > lastLevel {
-					lastLevel = vMyLocations.LastLevel
-				}
-			}
-
-			if stop {
-				continue // 跳过已经投资
-			}
-		}
-
-		// 推荐人
-		var (
-			userRecommend         *UserRecommend
-			myUserRecommendUserId int64
-			tmpRecommendUserIds   []string
-		)
-		userRecommend, err = ruc.userRecommendRepo.GetUserRecommendByUserId(ctx, v.UserId)
-		if nil != err {
-			continue
-		}
-		if "" != userRecommend.RecommendCode {
-			tmpRecommendUserIds = strings.Split(userRecommend.RecommendCode, "D")
-			if 2 <= len(tmpRecommendUserIds) {
-				myUserRecommendUserId, _ = strconv.ParseInt(tmpRecommendUserIds[len(tmpRecommendUserIds)-1], 10, 64) // 最后一位是直推人
-			}
-		}
-
-		// 直推人投资
-		var (
-			myRecommmendLocation *LocationNew
-		)
-		if 0 < myUserRecommendUserId {
-			myRecommmendLocation, err = ruc.locationRepo.GetMyLocationLastRunning(ctx, myUserRecommendUserId)
-			if nil != err {
-				continue
-			}
-		}
-
-		// 顺位
-		var (
-			lastLocation *LocationNew
-		)
-
-		// 有直推人占位且第一次入金，挂在直推人名下，按位查找
-		if nil != myRecommmendLocation && nil == myLastLocation {
-			var (
-				selectLocation *LocationNew // 选中的
-			)
-			if 3 <= myRecommmendLocation.Count {
-				var tmpSopFor bool
-
-				tmpIds := make([]int64, 0)
-				tmpIds = append(tmpIds, myRecommmendLocation.ID)
-				for _, vTmpId := range tmpIds { // 小于3个人
-					// 查找
-					var (
-						topLocations []*LocationNew
-					)
-					topLocations, err = ruc.locationRepo.GetLocationsByTop(ctx, vTmpId)
-					if nil != err {
-						break
-					}
-
-					// 没数据没数据, 正常最少三个
-					if 0 >= len(topLocations) {
-						tmpSopFor = true
-						break
-					}
-
-					for _, vTopLocations := range topLocations {
-						if 3 > vTopLocations.Count {
-							selectLocation = vTopLocations
-							break
-						}
-						tmpIds = append(tmpIds, vTopLocations.ID)
-					}
-
-					if nil != selectLocation {
-						break
-					}
-					//
-				}
-
-				if tmpSopFor {
-					continue
-				}
-
-			} else {
-				selectLocation = myRecommmendLocation
-			}
-
-			lastLocation = selectLocation
-		} else if nil != myLastLocation || nil == myRecommmendLocation { // 2复投，直接顺位 2直推无位置或一号用户无直推人，顺位补齐
-
-			var (
-				firstLocation  *LocationNew
-				tmpSopFor      bool
-				selectLocation *LocationNew // 选中的
-			)
-
-			firstLocation, err = ruc.locationRepo.GetLocationFirst(ctx)
-			if nil != err {
-				continue
-			}
-			if nil != firstLocation {
-				if 3 <= firstLocation.Count {
-					tmpIds := make([]int64, 0)
-					tmpIds = append(tmpIds, firstLocation.ID)
-					for _, vTmpId := range tmpIds { // 小于3个人
-						// 查找
-						var (
-							topLocations []*LocationNew
-						)
-						topLocations, err = ruc.locationRepo.GetLocationsByTop(ctx, vTmpId)
-						if nil != err {
-							break
-						}
-
-						// 没数据, 正常最少三个
-						if 0 >= len(topLocations) {
-							tmpSopFor = true
-							break
-						}
-
-						for _, vTopLocations := range topLocations {
-							if 3 > vTopLocations.Count {
-								selectLocation = vTopLocations
-								break
-							}
-							tmpIds = append(tmpIds, vTopLocations.ID)
-						}
-
-						if nil != selectLocation {
-							break
-						}
-						//
-					}
-
-					if tmpSopFor {
-						continue
-					}
-				} else {
-					selectLocation = firstLocation
-				}
-			}
-
-			lastLocation = selectLocation
-		} else {
-			continue
-		}
-
-		if err = ruc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
-
-			// 推荐人
-			if 0 < len(tmpRecommendUserIds) {
-				lastKey := len(tmpRecommendUserIds) - 1 // 有直推len比>=2 ,key是0则是空格，1是直推，键位最后一个人
-				if 1 <= lastKey {
-					for i := 0; i <= 1; i++ { // 两代
-						// 有占位信息，推荐人推荐人的上一代
-						if lastKey-i <= 0 {
-							break
-						}
-
-						tmpMyTopUserRecommendUserId, _ := strconv.ParseInt(tmpRecommendUserIds[lastKey-i], 10, 64) // 最后一位是直推人
-						if 0 >= tmpMyTopUserRecommendUserId {
-							break
-						}
-
-						var myUserRecommendUserLocationsLast []*LocationNew
-						myUserRecommendUserLocationsLast, err = ruc.locationRepo.GetLocationsNewByUserId(ctx, tmpMyTopUserRecommendUserId)
-						if nil != myUserRecommendUserLocationsLast {
-
-							var tmpMyTopUserRecommendUserLocationLast *LocationNew
-							if 1 <= len(myUserRecommendUserLocationsLast) {
-								for _, vMyUserRecommendUserLocationLast := range myUserRecommendUserLocationsLast {
-									if "running" == vMyUserRecommendUserLocationLast.Status {
-										tmpMyTopUserRecommendUserLocationLast = vMyUserRecommendUserLocationLast
-										break
-									}
-								}
-
-								if nil == tmpMyTopUserRecommendUserLocationLast { // 无位
-									continue
-								}
-
-								tmpMinUsdt := tmpMyTopUserRecommendUserLocationLast.Usdt
-								if v.RelAmount < tmpMinUsdt {
-									tmpMinUsdt = v.RelAmount
-								}
-
-								var tmpMyRecommendAmount int64
-								if 0 == i { // 当前用户被此人直推
-									tmpMyRecommendAmount = tmpMinUsdt / 1000 * recommendOne
-								} else if 1 == i {
-									tmpMyRecommendAmount = tmpMinUsdt / 1000 * recommendTwo
-								} else {
-									continue
-								}
-
-								if 0 < tmpMyRecommendAmount { // 扣除推荐人分红
-									bAmount := tmpMyRecommendAmount * bPriceBase / bPrice
-									tmpStatus := tmpMyTopUserRecommendUserLocationLast.Status
-									tmpStopDate := time.Now().UTC().Add(8 * time.Hour)
-									// 过了
-									if tmpMyTopUserRecommendUserLocationLast.Current+tmpMyRecommendAmount >= tmpMyTopUserRecommendUserLocationLast.CurrentMax { // 占位分红人分满停止
-										tmpStatus = "stop"
-										tmpStopDate = time.Now().UTC().Add(8 * time.Hour)
-
-										tmpMyRecommendAmount = tmpMyTopUserRecommendUserLocationLast.CurrentMax - tmpMyTopUserRecommendUserLocationLast.Current
-										bAmount = tmpMyRecommendAmount * bPriceBase / bPrice
-									}
-
-									if 0 < tmpMyRecommendAmount && 0 < bAmount {
-										var tmpMaxNew int64
-										if tmpMyTopUserRecommendUserLocationLast.CurrentMaxNew < tmpMyTopUserRecommendUserLocationLast.CurrentMax {
-											tmpMaxNew = tmpMyTopUserRecommendUserLocationLast.CurrentMax - tmpMyTopUserRecommendUserLocationLast.CurrentMaxNew
-										}
-
-										if err = ruc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
-											err = ruc.locationRepo.UpdateLocationNewNew(ctx, tmpMyTopUserRecommendUserLocationLast.ID, tmpStatus, tmpMyRecommendAmount, tmpMaxNew, bAmount, tmpStopDate) // 分红占位数据修改
-											if nil != err {
-												return err
-											}
-
-											_, err = ruc.userBalanceRepo.RecommendLocationRewardBiw(ctx, tmpMyTopUserRecommendUserId, bAmount, int64(i+1), tmpStatus, tmpMaxNew, feeRate) // 推荐人奖励
-											if nil != err {
-												return err
-											}
-
-											// 业绩减掉
-											if "stop" == tmpStatus {
-												tmpTop := tmpMyTopUserRecommendUserLocationLast.Top
-												tmpTopNum := tmpMyTopUserRecommendUserLocationLast.TopNum
-												for j := 0; j < 10000 && 0 < tmpTop && 0 < tmpTopNum; j++ {
-													err = ruc.locationRepo.UpdateLocationNewTotalSub(ctx, tmpTop, tmpTopNum, tmpMyTopUserRecommendUserLocationLast.Usdt/100000)
-													if nil != err {
-														return err
-													}
-
-													var (
-														currentLocation *LocationNew
-													)
-													currentLocation, err = ruc.locationRepo.GetLocationById(ctx, tmpTop)
-													if nil != err {
-														return err
-													}
-
-													if nil != currentLocation && 0 < currentLocation.Top {
-														tmpTop = currentLocation.Top
-														tmpTopNum = currentLocation.TopNum
-														continue
-													}
-
-													break
-												}
-											}
-
-											return nil
-										}); nil != err {
-											fmt.Println("err reward daily recommend", err, myUserRecommendUserLocationsLast)
-											continue
-										}
-									}
-								}
-							}
-						}
-
-					}
-
-				}
-
-			}
-
-			var (
-				tmpTop int64
-				tmpNum int64
-			)
-
-			// 顺位
-			if nil != lastLocation {
-				err = ruc.locationRepo.UpdateLocationNewCount(ctx, lastLocation.ID, lastLocation.Count+1, v.RelAmount/100000)
-				if nil != err {
-					return err
-				}
-				tmpTop = lastLocation.ID
-				tmpNum = lastLocation.Count + 1
-
-				var (
-					currentTop    = lastLocation.Top
-					currentTopNum = lastLocation.TopNum
-				)
-				// 大小区业绩
-				for j := 0; j < 10000 && 0 < currentTop && 0 < currentTopNum; j++ {
-					err = ruc.locationRepo.UpdateLocationNewTotal(ctx, currentTop, currentTopNum, v.RelAmount/100000)
-					if nil != err {
-						return err
-					}
-
-					var (
-						currentLocation *LocationNew
-					)
-					currentLocation, err = ruc.locationRepo.GetLocationById(ctx, currentTop)
-					if nil != err {
-						return err
-					}
-
-					if nil != currentLocation && 0 < currentLocation.Top && 0 < currentLocation.TopNum {
-						currentTop = currentLocation.Top
-						currentTopNum = currentLocation.TopNum
-						continue
-					}
-
-					break
-				}
-			}
-
-			_, err = ruc.locationRepo.CreateLocationNew(ctx, &LocationNew{ // 占位
-				UserId:     v.UserId,
-				Status:     "running",
-				Current:    0,
-				CurrentMax: v.RelAmount * 25 / 10, // 2.5倍率
-				Num:        1,
-				Top:        tmpTop,
-				TopNum:     tmpNum,
-				LastLevel:  lastLevel,
-			}, v.RelAmount)
-
-			if nil != err {
-				return err
-			}
-
-			// 充值记录
-			_, err = ruc.ethUserRecordRepo.CreateEthUserRecordListByHash(ctx, &EthUserRecord{
-				Hash:     v.Hash,
-				UserId:   v.UserId,
-				Status:   v.Status,
-				Type:     v.Type,
-				Amount:   v.Amount,
-				CoinType: v.CoinType,
-				Last:     v.Last,
-			})
-
-			if nil != err {
-				return err
-			}
-
-			if 0 < myUserRecommendUserId {
-				err = ruc.userRecommendRepo.UpdateUserRecommendTotal(ctx, myUserRecommendUserId, v.RelAmount/100000)
-				if nil != err {
-					return err
-				}
-			}
-
-			//if 0 < len(tmpRecommendUserIdsInt) {
-			//	var (
-			//		currentK int64
-			//	)
-			//	for k, vTmpRecommendUserIdsInt := range tmpRecommendUserIdsInt {
-			//		var (
-			//			myUserRecommendUserLocationsLast []*LocationNew
-			//		)
-			//
-			//		// 有占位信息，推荐人第一代
-			//		myUserRecommendUserLocationsLast, err = ruc.locationRepo.GetLocationsNewByUserId(ctx, myUserRecommendUserInfo.UserId)
-			//		if nil != myUserRecommendUserLocationsLast {
-			//			var myUserRecommendUserLocationLast *LocationNew
-			//			if 1 <= len(myUserRecommendUserLocationsLast) {
-			//				myUserRecommendUserLocationLast = myUserRecommendUserLocationsLast[0]
-			//				for _, vMyUserRecommendUserLocationLast := range myUserRecommendUserLocationsLast {
-			//					if "running" == vMyUserRecommendUserLocationLast.Status {
-			//						myUserRecommendUserLocationLast = vMyUserRecommendUserLocationLast
-			//						break
-			//					}
-			//				}
-			//
-			//				tmpStatus := myUserRecommendUserLocationLast.Status // 现在还在运行中
-			//				var tmpRecommendAmount int64
-			//				if 0 == currentK { // 直推
-			//					if 1 <= len(myUserRecommendUserLocationsLast) {
-			//						tmpRecommendAmount = v.RelAmount * recommendRate1 / recommendBase
-			//					}
-			//				} else if 1 == currentK {
-			//					if 1 <= len(myUserRecommendUserLocationsLast) {
-			//						tmpRecommendAmount = v.RelAmount * recommendRate2 / recommendBase
-			//					}
-			//				} else if 2 == currentK {
-			//					if 2 <= len(myUserRecommendUserLocationsLast) {
-			//						tmpRecommendAmount = v.RelAmount * recommendRate3 / recommendBase
-			//					}
-			//				} else if 3 == currentK {
-			//					if 3 <= len(myUserRecommendUserLocationsLast) { // 复投2次拿第4代
-			//						tmpRecommendAmount = v.RelAmount * recommendRate4 / recommendBase
-			//					}
-			//				} else if 4 == currentK {
-			//					if 4 <= len(myUserRecommendUserLocationsLast) { // 复投3次拿第5代
-			//						tmpRecommendAmount = v.RelAmount * recommendRate5 / recommendBase
-			//					}
-			//				} else if 5 == currentK {
-			//					if 5 <= len(myUserRecommendUserLocationsLast) { // 复投4次拿第6代
-			//						tmpRecommendAmount = v.RelAmount * recommendRate6 / recommendBase
-			//					}
-			//				} else if 6 == currentK {
-			//					if 6 <= len(myUserRecommendUserLocationsLast) { // 复投5次拿第7代
-			//						tmpRecommendAmount = v.RelAmount * recommendRate7 / recommendBase
-			//					}
-			//				} else if 7 == currentK {
-			//					if 7 <= len(myUserRecommendUserLocationsLast) { // 复投6次拿第8代
-			//						tmpRecommendAmount = v.RelAmount * recommendRate8 / recommendBase
-			//					}
-			//				}
-			//
-			//				// 奖励usdt
-			//				tmpRewardAmount := tmpRecommendAmount * bPrice / bPriceBase
-			//
-			//				myUserRecommendUserLocationLast.Status = "running"
-			//				myUserRecommendUserLocationLast.Current += tmpRewardAmount
-			//
-			//				tmpRewardAmount2 := tmpRewardAmount
-			//				if myUserRecommendUserLocationLast.Current >= myUserRecommendUserLocationLast.CurrentMax { // 占位分红人分满停止
-			//					myUserRecommendUserLocationLast.Status = "stop"
-			//					if "running" == tmpStatus {
-			//						myUserRecommendUserLocationLast.StopDate = time.Now().UTC().Add(8 * time.Hour)
-			//						tmpRewardAmount2 = tmpRewardAmount - (myUserRecommendUserLocationLast.Current - myUserRecommendUserLocationLast.CurrentMax)
-			//					} else {
-			//						tmpRewardAmount2 = 0
-			//					}
-			//				}
-			//
-			//				if 0 < tmpRewardAmount {
-			//					err = ruc.locationRepo.UpdateLocationNew(ctx, myUserRecommendUserLocationLast.ID, myUserRecommendUserLocationLast.Status, tmpRewardAmount, myUserRecommendUserLocationLast.StopDate) // 分红占位数据修改
-			//					if nil != err {
-			//						return err
-			//					}
-			//					_, err = ruc.userBalanceRepo.NormalRecommendReward(ctx, myUserRecommendUserId, tmpRewardAmount, tmpRewardAmount2, currentLocationNew.ID, tmpStatus, myUserRecommendUserLocationLast.Status, "recommend", "recommend") // 直推人奖励
-			//					if nil != err {
-			//						return err
-			//					}
-			//				}
-			//			}
-			//
-			//		}
-			//	}
-			//}
-
-			return nil
-		}); nil != err {
-			fmt.Println(err, "错误投资3", v)
-			continue
-		}
-	}
-
+	//
+	//	var (
+	//		configs      []*Config
+	//		buyOne       int64
+	//		buyTwo       int64
+	//		buyThree     int64
+	//		buyFour      int64
+	//		buyFive      int64
+	//		buySix       int64
+	//		areaOne      int64
+	//		areaTwo      int64
+	//		areaThree    int64
+	//		areaFour     int64
+	//		areaFive     int64
+	//		recommendOne int64
+	//		recommendTwo int64
+	//		bPrice       int64
+	//		bPriceBase   int64
+	//		feeRate      int64
+	//		//recommendRate1 int64
+	//		//recommendRate2 int64
+	//		//recommendRate3 int64
+	//		//recommendRate4 int64
+	//		//recommendRate5 int64
+	//		//recommendRate6 int64
+	//		//recommendRate7 int64
+	//		//recommendRate8 int64
+	//		//recommendBase  = int64(100)
+	//	)
+	//	// 配置
+	//	configs, _ = ruc.configRepo.GetConfigByKeys(ctx,
+	//		"area_one", "area_two", "area_three", "area_four", "area_five", "recommend_new_one", "recommend_new_two", "exchange_rate",
+	//		"buy_one", "buy_two", "buy_six", "buy_three", "buy_four", "buy_five", "b_price", "b_price_base", "recommend_rate_1", "recommend_rate_2", "recommend_rate_3", "recommend_rate_4", "recommend_rate_5", "recommend_rate_6", "recommend_rate_7", "recommend_rate_8")
+	//	if nil != configs {
+	//		for _, vConfig := range configs {
+	//			if "buy_one" == vConfig.KeyName {
+	//				buyOne, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+	//			}
+	//			if "buy_two" == vConfig.KeyName {
+	//				buyTwo, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+	//			}
+	//			if "buy_three" == vConfig.KeyName {
+	//				buyThree, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+	//			}
+	//			if "buy_four" == vConfig.KeyName {
+	//				buyFour, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+	//			}
+	//			if "buy_five" == vConfig.KeyName {
+	//				buyFive, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+	//			}
+	//
+	//			if "buy_six" == vConfig.KeyName {
+	//				buySix, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+	//			}
+	//
+	//			if "area_one" == vConfig.KeyName {
+	//				areaOne, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+	//			}
+	//			if "area_two" == vConfig.KeyName {
+	//				areaTwo, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+	//			}
+	//			if "area_three" == vConfig.KeyName {
+	//				areaThree, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+	//			}
+	//			if "area_four" == vConfig.KeyName {
+	//				areaFour, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+	//			}
+	//			if "area_five" == vConfig.KeyName {
+	//				areaFive, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+	//			}
+	//			if "recommend_new_one" == vConfig.KeyName {
+	//				recommendOne, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+	//			}
+	//			if "recommend_new_two" == vConfig.KeyName {
+	//				recommendTwo, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+	//			}
+	//			if "b_price" == vConfig.KeyName {
+	//				bPrice, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+	//			}
+	//			if "b_price_base" == vConfig.KeyName {
+	//				bPriceBase, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+	//			}
+	//			if "exchange_rate" == vConfig.KeyName {
+	//				feeRate, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+	//			}
+	//
+	//			//		if "b_price_base" == vConfig.KeyName {
+	//			//			bPriceBase, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+	//			//		}
+	//			//		if "recommend_rate_1" == vConfig.KeyName {
+	//			//			recommendRate1, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+	//			//		}
+	//			//		if "recommend_rate_2" == vConfig.KeyName {
+	//			//			recommendRate2, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+	//			//		}
+	//			//		if "recommend_rate_3" == vConfig.KeyName {
+	//			//			recommendRate3, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+	//			//		}
+	//			//		if "recommend_rate_4" == vConfig.KeyName {
+	//			//			recommendRate4, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+	//			//		}
+	//			//		if "recommend_rate_5" == vConfig.KeyName {
+	//			//			recommendRate5, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+	//			//		}
+	//			//		if "recommend_rate_6" == vConfig.KeyName {
+	//			//			recommendRate6, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+	//			//		}
+	//			//		if "recommend_rate_7" == vConfig.KeyName {
+	//			//			recommendRate7, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+	//			//		}
+	//			//		if "recommend_rate_8" == vConfig.KeyName {
+	//			//			recommendRate8, _ = strconv.ParseInt(vConfig.Value, 10, 64)
+	//			//		}
+	//		}
+	//	}
+	//
+	//	for _, v := range ethUserRecord {
+	//		var (
+	//			allLocations   []*LocationNew
+	//			myLocations    []*LocationNew
+	//			myLastLocation *LocationNew
+	//			lastLevel      int64
+	//			err            error
+	//		)
+	//
+	//		// 获取当前用户的占位信息，已经有运行中的跳过
+	//		allLocations, err = ruc.locationRepo.GetAllLocationsNew(ctx, v.RelAmount*25/10) // 同倍率的
+	//		if nil == allLocations {                                                        // 查询异常跳过本次循环
+	//			fmt.Println(err, "错误投资", v)
+	//			continue
+	//		}
+	//		if nil != err {
+	//			fmt.Println(err, "123")
+	//			continue
+	//		}
+	//
+	//		if 10000000 == v.RelAmount && int64(len(allLocations)) < buySix {
+	//
+	//		} else if 30000000 == v.RelAmount && int64(len(allLocations)) < buyOne {
+	//
+	//		} else if 100000000 == v.RelAmount && int64(len(allLocations)) < buyTwo {
+	//
+	//		} else if 300000000 == v.RelAmount && int64(len(allLocations)) < buyThree {
+	//
+	//		} else if 500000000 == v.RelAmount && int64(len(allLocations)) < buyFour {
+	//
+	//		} else if 1000000000 == v.RelAmount && int64(len(allLocations)) < buyFive {
+	//
+	//		} else {
+	//			fmt.Println(v, "1234")
+	//			continue
+	//		}
+	//
+	//		// 获取当前用户的占位信息，已经有运行中的跳过
+	//		myLocations, err = ruc.locationRepo.GetLocationsNewByUserId(ctx, v.UserId)
+	//		if nil == myLocations { // 查询异常跳过本次循环
+	//			fmt.Println(err, "错误投资2", v)
+	//			continue
+	//		}
+	//		if nil != err {
+	//			fmt.Println(err, "12")
+	//			continue
+	//		}
+	//
+	//		if 0 < len(myLocations) {
+	//			var (
+	//				stop bool
+	//			)
+	//
+	//			for _, vMyLocations := range myLocations {
+	//				if "stop" != vMyLocations.Status {
+	//					stop = true
+	//					fmt.Println(err, "已投资", v)
+	//					break
+	//				}
+	//
+	//				myLastLocation = vMyLocations // 遍历到最后一个
+	//				var tmpLastLevel int64
+	//				// 1大区
+	//				if vMyLocations.Total >= vMyLocations.TotalTwo && vMyLocations.Total >= vMyLocations.TotalThree {
+	//					if areaOne <= vMyLocations.TotalTwo+vMyLocations.TotalThree {
+	//						tmpLastLevel = 1
+	//					}
+	//					if areaTwo <= vMyLocations.TotalTwo+vMyLocations.TotalThree {
+	//						tmpLastLevel = 2
+	//					}
+	//					if areaThree <= vMyLocations.TotalTwo+vMyLocations.TotalThree {
+	//						tmpLastLevel = 3
+	//					}
+	//					if areaFour <= vMyLocations.TotalTwo+vMyLocations.TotalThree {
+	//						tmpLastLevel = 4
+	//					}
+	//					if areaFive <= vMyLocations.TotalTwo+vMyLocations.TotalThree {
+	//						tmpLastLevel = 5
+	//					}
+	//				} else if vMyLocations.TotalTwo >= vMyLocations.Total && vMyLocations.TotalTwo >= vMyLocations.TotalThree {
+	//					if areaOne <= vMyLocations.Total+vMyLocations.TotalThree {
+	//						tmpLastLevel = 1
+	//					}
+	//					if areaTwo <= vMyLocations.Total+vMyLocations.TotalThree {
+	//						tmpLastLevel = 2
+	//					}
+	//					if areaThree <= vMyLocations.Total+vMyLocations.TotalThree {
+	//						tmpLastLevel = 3
+	//					}
+	//					if areaFour <= vMyLocations.Total+vMyLocations.TotalThree {
+	//						tmpLastLevel = 4
+	//					}
+	//					if areaFive <= vMyLocations.Total+vMyLocations.TotalThree {
+	//						tmpLastLevel = 5
+	//					}
+	//				} else if vMyLocations.TotalThree >= vMyLocations.Total && vMyLocations.TotalThree >= vMyLocations.TotalTwo {
+	//					if areaOne <= vMyLocations.TotalTwo+vMyLocations.Total {
+	//						tmpLastLevel = 1
+	//					}
+	//					if areaTwo <= vMyLocations.TotalTwo+vMyLocations.Total {
+	//						tmpLastLevel = 2
+	//					}
+	//					if areaThree <= vMyLocations.TotalTwo+vMyLocations.Total {
+	//						tmpLastLevel = 3
+	//					}
+	//					if areaFour <= vMyLocations.TotalTwo+vMyLocations.Total {
+	//						tmpLastLevel = 4
+	//					}
+	//					if areaFive <= vMyLocations.TotalTwo+vMyLocations.Total {
+	//						tmpLastLevel = 5
+	//					}
+	//				}
+	//
+	//				if tmpLastLevel > lastLevel {
+	//					lastLevel = tmpLastLevel
+	//				}
+	//
+	//				if vMyLocations.LastLevel > lastLevel {
+	//					lastLevel = vMyLocations.LastLevel
+	//				}
+	//			}
+	//
+	//			if stop {
+	//				continue // 跳过已经投资
+	//			}
+	//		}
+	//
+	//		// 推荐人
+	//		var (
+	//			userRecommend         *UserRecommend
+	//			myUserRecommendUserId int64
+	//			tmpRecommendUserIds   []string
+	//		)
+	//		userRecommend, err = ruc.userRecommendRepo.GetUserRecommendByUserId(ctx, v.UserId)
+	//		if nil != err {
+	//			continue
+	//		}
+	//		if "" != userRecommend.RecommendCode {
+	//			tmpRecommendUserIds = strings.Split(userRecommend.RecommendCode, "D")
+	//			if 2 <= len(tmpRecommendUserIds) {
+	//				myUserRecommendUserId, _ = strconv.ParseInt(tmpRecommendUserIds[len(tmpRecommendUserIds)-1], 10, 64) // 最后一位是直推人
+	//			}
+	//		}
+	//
+	//		// 直推人投资
+	//		var (
+	//			myRecommmendLocation *LocationNew
+	//		)
+	//		if 0 < myUserRecommendUserId {
+	//			myRecommmendLocation, err = ruc.locationRepo.GetMyLocationLastRunning(ctx, myUserRecommendUserId)
+	//			if nil != err {
+	//				continue
+	//			}
+	//		}
+	//
+	//		// 顺位
+	//		var (
+	//			lastLocation *LocationNew
+	//		)
+	//
+	//		// 有直推人占位且第一次入金，挂在直推人名下，按位查找
+	//		if nil != myRecommmendLocation && nil == myLastLocation {
+	//			var (
+	//				selectLocation *LocationNew // 选中的
+	//			)
+	//			if 3 <= myRecommmendLocation.Count {
+	//				var tmpSopFor bool
+	//
+	//				tmpIds := make([]int64, 0)
+	//				tmpIds = append(tmpIds, myRecommmendLocation.ID)
+	//				for _, vTmpId := range tmpIds { // 小于3个人
+	//					// 查找
+	//					var (
+	//						topLocations []*LocationNew
+	//					)
+	//					topLocations, err = ruc.locationRepo.GetLocationsByTop(ctx, vTmpId)
+	//					if nil != err {
+	//						break
+	//					}
+	//
+	//					// 没数据没数据, 正常最少三个
+	//					if 0 >= len(topLocations) {
+	//						tmpSopFor = true
+	//						break
+	//					}
+	//
+	//					for _, vTopLocations := range topLocations {
+	//						if 3 > vTopLocations.Count {
+	//							selectLocation = vTopLocations
+	//							break
+	//						}
+	//						tmpIds = append(tmpIds, vTopLocations.ID)
+	//					}
+	//
+	//					if nil != selectLocation {
+	//						break
+	//					}
+	//					//
+	//				}
+	//
+	//				if tmpSopFor {
+	//					continue
+	//				}
+	//
+	//			} else {
+	//				selectLocation = myRecommmendLocation
+	//			}
+	//
+	//			lastLocation = selectLocation
+	//		} else if nil != myLastLocation || nil == myRecommmendLocation { // 2复投，直接顺位 2直推无位置或一号用户无直推人，顺位补齐
+	//
+	//			var (
+	//				firstLocation  *LocationNew
+	//				tmpSopFor      bool
+	//				selectLocation *LocationNew // 选中的
+	//			)
+	//
+	//			firstLocation, err = ruc.locationRepo.GetLocationFirst(ctx)
+	//			if nil != err {
+	//				continue
+	//			}
+	//			if nil != firstLocation {
+	//				if 3 <= firstLocation.Count {
+	//					tmpIds := make([]int64, 0)
+	//					tmpIds = append(tmpIds, firstLocation.ID)
+	//					for _, vTmpId := range tmpIds { // 小于3个人
+	//						// 查找
+	//						var (
+	//							topLocations []*LocationNew
+	//						)
+	//						topLocations, err = ruc.locationRepo.GetLocationsByTop(ctx, vTmpId)
+	//						if nil != err {
+	//							break
+	//						}
+	//
+	//						// 没数据, 正常最少三个
+	//						if 0 >= len(topLocations) {
+	//							tmpSopFor = true
+	//							break
+	//						}
+	//
+	//						for _, vTopLocations := range topLocations {
+	//							if 3 > vTopLocations.Count {
+	//								selectLocation = vTopLocations
+	//								break
+	//							}
+	//							tmpIds = append(tmpIds, vTopLocations.ID)
+	//						}
+	//
+	//						if nil != selectLocation {
+	//							break
+	//						}
+	//						//
+	//					}
+	//
+	//					if tmpSopFor {
+	//						continue
+	//					}
+	//				} else {
+	//					selectLocation = firstLocation
+	//				}
+	//			}
+	//
+	//			lastLocation = selectLocation
+	//		} else {
+	//			continue
+	//		}
+	//
+	//		if err = ruc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
+	//
+	//			// 推荐人
+	//			if 0 < len(tmpRecommendUserIds) {
+	//				lastKey := len(tmpRecommendUserIds) - 1 // 有直推len比>=2 ,key是0则是空格，1是直推，键位最后一个人
+	//				if 1 <= lastKey {
+	//					for i := 0; i <= 1; i++ { // 两代
+	//						// 有占位信息，推荐人推荐人的上一代
+	//						if lastKey-i <= 0 {
+	//							break
+	//						}
+	//
+	//						tmpMyTopUserRecommendUserId, _ := strconv.ParseInt(tmpRecommendUserIds[lastKey-i], 10, 64) // 最后一位是直推人
+	//						if 0 >= tmpMyTopUserRecommendUserId {
+	//							break
+	//						}
+	//
+	//						var myUserRecommendUserLocationsLast []*LocationNew
+	//						myUserRecommendUserLocationsLast, err = ruc.locationRepo.GetLocationsNewByUserId(ctx, tmpMyTopUserRecommendUserId)
+	//						if nil != myUserRecommendUserLocationsLast {
+	//
+	//							var tmpMyTopUserRecommendUserLocationLast *LocationNew
+	//							if 1 <= len(myUserRecommendUserLocationsLast) {
+	//								for _, vMyUserRecommendUserLocationLast := range myUserRecommendUserLocationsLast {
+	//									if "running" == vMyUserRecommendUserLocationLast.Status {
+	//										tmpMyTopUserRecommendUserLocationLast = vMyUserRecommendUserLocationLast
+	//										break
+	//									}
+	//								}
+	//
+	//								if nil == tmpMyTopUserRecommendUserLocationLast { // 无位
+	//									continue
+	//								}
+	//
+	//								tmpMinUsdt := tmpMyTopUserRecommendUserLocationLast.Usdt
+	//								if v.RelAmount < tmpMinUsdt {
+	//									tmpMinUsdt = v.RelAmount
+	//								}
+	//
+	//								var tmpMyRecommendAmount int64
+	//								if 0 == i { // 当前用户被此人直推
+	//									tmpMyRecommendAmount = tmpMinUsdt / 1000 * recommendOne
+	//								} else if 1 == i {
+	//									tmpMyRecommendAmount = tmpMinUsdt / 1000 * recommendTwo
+	//								} else {
+	//									continue
+	//								}
+	//
+	//								if 0 < tmpMyRecommendAmount { // 扣除推荐人分红
+	//									bAmount := tmpMyRecommendAmount * bPriceBase / bPrice
+	//									tmpStatus := tmpMyTopUserRecommendUserLocationLast.Status
+	//									tmpStopDate := time.Now().UTC().Add(8 * time.Hour)
+	//									// 过了
+	//									if tmpMyTopUserRecommendUserLocationLast.Current+tmpMyRecommendAmount >= tmpMyTopUserRecommendUserLocationLast.CurrentMax { // 占位分红人分满停止
+	//										tmpStatus = "stop"
+	//										tmpStopDate = time.Now().UTC().Add(8 * time.Hour)
+	//
+	//										tmpMyRecommendAmount = tmpMyTopUserRecommendUserLocationLast.CurrentMax - tmpMyTopUserRecommendUserLocationLast.Current
+	//										bAmount = tmpMyRecommendAmount * bPriceBase / bPrice
+	//									}
+	//
+	//									if 0 < tmpMyRecommendAmount && 0 < bAmount {
+	//										var tmpMaxNew int64
+	//										if tmpMyTopUserRecommendUserLocationLast.CurrentMaxNew < tmpMyTopUserRecommendUserLocationLast.CurrentMax {
+	//											tmpMaxNew = tmpMyTopUserRecommendUserLocationLast.CurrentMax - tmpMyTopUserRecommendUserLocationLast.CurrentMaxNew
+	//										}
+	//
+	//										if err = ruc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
+	//											err = ruc.locationRepo.UpdateLocationNewNew(ctx, tmpMyTopUserRecommendUserLocationLast.ID, tmpStatus, tmpMyRecommendAmount, tmpMaxNew, bAmount, tmpStopDate) // 分红占位数据修改
+	//											if nil != err {
+	//												return err
+	//											}
+	//
+	//											_, err = ruc.userBalanceRepo.RecommendLocationRewardBiw(ctx, tmpMyTopUserRecommendUserId, bAmount, int64(i+1), tmpStatus, tmpMaxNew, feeRate) // 推荐人奖励
+	//											if nil != err {
+	//												return err
+	//											}
+	//
+	//											// 业绩减掉
+	//											if "stop" == tmpStatus {
+	//												tmpTop := tmpMyTopUserRecommendUserLocationLast.Top
+	//												tmpTopNum := tmpMyTopUserRecommendUserLocationLast.TopNum
+	//												for j := 0; j < 10000 && 0 < tmpTop && 0 < tmpTopNum; j++ {
+	//													err = ruc.locationRepo.UpdateLocationNewTotalSub(ctx, tmpTop, tmpTopNum, tmpMyTopUserRecommendUserLocationLast.Usdt/100000)
+	//													if nil != err {
+	//														return err
+	//													}
+	//
+	//													var (
+	//														currentLocation *LocationNew
+	//													)
+	//													currentLocation, err = ruc.locationRepo.GetLocationById(ctx, tmpTop)
+	//													if nil != err {
+	//														return err
+	//													}
+	//
+	//													if nil != currentLocation && 0 < currentLocation.Top {
+	//														tmpTop = currentLocation.Top
+	//														tmpTopNum = currentLocation.TopNum
+	//														continue
+	//													}
+	//
+	//													break
+	//												}
+	//											}
+	//
+	//											return nil
+	//										}); nil != err {
+	//											fmt.Println("err reward daily recommend", err, myUserRecommendUserLocationsLast)
+	//											continue
+	//										}
+	//									}
+	//								}
+	//							}
+	//						}
+	//
+	//					}
+	//
+	//				}
+	//
+	//			}
+	//
+	//			var (
+	//				tmpTop int64
+	//				tmpNum int64
+	//			)
+	//
+	//			// 顺位
+	//			if nil != lastLocation {
+	//				err = ruc.locationRepo.UpdateLocationNewCount(ctx, lastLocation.ID, lastLocation.Count+1, v.RelAmount/100000)
+	//				if nil != err {
+	//					return err
+	//				}
+	//				tmpTop = lastLocation.ID
+	//				tmpNum = lastLocation.Count + 1
+	//
+	//				var (
+	//					currentTop    = lastLocation.Top
+	//					currentTopNum = lastLocation.TopNum
+	//				)
+	//				// 大小区业绩
+	//				for j := 0; j < 10000 && 0 < currentTop && 0 < currentTopNum; j++ {
+	//					err = ruc.locationRepo.UpdateLocationNewTotal(ctx, currentTop, currentTopNum, v.RelAmount/100000)
+	//					if nil != err {
+	//						return err
+	//					}
+	//
+	//					var (
+	//						currentLocation *LocationNew
+	//					)
+	//					currentLocation, err = ruc.locationRepo.GetLocationById(ctx, currentTop)
+	//					if nil != err {
+	//						return err
+	//					}
+	//
+	//					if nil != currentLocation && 0 < currentLocation.Top && 0 < currentLocation.TopNum {
+	//						currentTop = currentLocation.Top
+	//						currentTopNum = currentLocation.TopNum
+	//						continue
+	//					}
+	//
+	//					break
+	//				}
+	//			}
+	//
+	//			_, err = ruc.locationRepo.CreateLocationNew(ctx, &LocationNew{ // 占位
+	//				UserId:     v.UserId,
+	//				Status:     "running",
+	//				Current:    0,
+	//				CurrentMax: v.RelAmount * 25 / 10, // 2.5倍率
+	//				Num:        1,
+	//				Top:        tmpTop,
+	//				TopNum:     tmpNum,
+	//				LastLevel:  lastLevel,
+	//			}, v.RelAmount)
+	//
+	//			if nil != err {
+	//				return err
+	//			}
+	//
+	//			// 充值记录
+	//			_, err = ruc.ethUserRecordRepo.CreateEthUserRecordListByHash(ctx, &EthUserRecord{
+	//				Hash:     v.Hash,
+	//				UserId:   v.UserId,
+	//				Status:   v.Status,
+	//				Type:     v.Type,
+	//				Amount:   v.Amount,
+	//				CoinType: v.CoinType,
+	//				Last:     v.Last,
+	//			})
+	//
+	//			if nil != err {
+	//				return err
+	//			}
+	//
+	//			if 0 < myUserRecommendUserId {
+	//				err = ruc.userRecommendRepo.UpdateUserRecommendTotal(ctx, myUserRecommendUserId, v.RelAmount/100000)
+	//				if nil != err {
+	//					return err
+	//				}
+	//			}
+	//
+	//			//if 0 < len(tmpRecommendUserIdsInt) {
+	//			//	var (
+	//			//		currentK int64
+	//			//	)
+	//			//	for k, vTmpRecommendUserIdsInt := range tmpRecommendUserIdsInt {
+	//			//		var (
+	//			//			myUserRecommendUserLocationsLast []*LocationNew
+	//			//		)
+	//			//
+	//			//		// 有占位信息，推荐人第一代
+	//			//		myUserRecommendUserLocationsLast, err = ruc.locationRepo.GetLocationsNewByUserId(ctx, myUserRecommendUserInfo.UserId)
+	//			//		if nil != myUserRecommendUserLocationsLast {
+	//			//			var myUserRecommendUserLocationLast *LocationNew
+	//			//			if 1 <= len(myUserRecommendUserLocationsLast) {
+	//			//				myUserRecommendUserLocationLast = myUserRecommendUserLocationsLast[0]
+	//			//				for _, vMyUserRecommendUserLocationLast := range myUserRecommendUserLocationsLast {
+	//			//					if "running" == vMyUserRecommendUserLocationLast.Status {
+	//			//						myUserRecommendUserLocationLast = vMyUserRecommendUserLocationLast
+	//			//						break
+	//			//					}
+	//			//				}
+	//			//
+	//			//				tmpStatus := myUserRecommendUserLocationLast.Status // 现在还在运行中
+	//			//				var tmpRecommendAmount int64
+	//			//				if 0 == currentK { // 直推
+	//			//					if 1 <= len(myUserRecommendUserLocationsLast) {
+	//			//						tmpRecommendAmount = v.RelAmount * recommendRate1 / recommendBase
+	//			//					}
+	//			//				} else if 1 == currentK {
+	//			//					if 1 <= len(myUserRecommendUserLocationsLast) {
+	//			//						tmpRecommendAmount = v.RelAmount * recommendRate2 / recommendBase
+	//			//					}
+	//			//				} else if 2 == currentK {
+	//			//					if 2 <= len(myUserRecommendUserLocationsLast) {
+	//			//						tmpRecommendAmount = v.RelAmount * recommendRate3 / recommendBase
+	//			//					}
+	//			//				} else if 3 == currentK {
+	//			//					if 3 <= len(myUserRecommendUserLocationsLast) { // 复投2次拿第4代
+	//			//						tmpRecommendAmount = v.RelAmount * recommendRate4 / recommendBase
+	//			//					}
+	//			//				} else if 4 == currentK {
+	//			//					if 4 <= len(myUserRecommendUserLocationsLast) { // 复投3次拿第5代
+	//			//						tmpRecommendAmount = v.RelAmount * recommendRate5 / recommendBase
+	//			//					}
+	//			//				} else if 5 == currentK {
+	//			//					if 5 <= len(myUserRecommendUserLocationsLast) { // 复投4次拿第6代
+	//			//						tmpRecommendAmount = v.RelAmount * recommendRate6 / recommendBase
+	//			//					}
+	//			//				} else if 6 == currentK {
+	//			//					if 6 <= len(myUserRecommendUserLocationsLast) { // 复投5次拿第7代
+	//			//						tmpRecommendAmount = v.RelAmount * recommendRate7 / recommendBase
+	//			//					}
+	//			//				} else if 7 == currentK {
+	//			//					if 7 <= len(myUserRecommendUserLocationsLast) { // 复投6次拿第8代
+	//			//						tmpRecommendAmount = v.RelAmount * recommendRate8 / recommendBase
+	//			//					}
+	//			//				}
+	//			//
+	//			//				// 奖励usdt
+	//			//				tmpRewardAmount := tmpRecommendAmount * bPrice / bPriceBase
+	//			//
+	//			//				myUserRecommendUserLocationLast.Status = "running"
+	//			//				myUserRecommendUserLocationLast.Current += tmpRewardAmount
+	//			//
+	//			//				tmpRewardAmount2 := tmpRewardAmount
+	//			//				if myUserRecommendUserLocationLast.Current >= myUserRecommendUserLocationLast.CurrentMax { // 占位分红人分满停止
+	//			//					myUserRecommendUserLocationLast.Status = "stop"
+	//			//					if "running" == tmpStatus {
+	//			//						myUserRecommendUserLocationLast.StopDate = time.Now().UTC().Add(8 * time.Hour)
+	//			//						tmpRewardAmount2 = tmpRewardAmount - (myUserRecommendUserLocationLast.Current - myUserRecommendUserLocationLast.CurrentMax)
+	//			//					} else {
+	//			//						tmpRewardAmount2 = 0
+	//			//					}
+	//			//				}
+	//			//
+	//			//				if 0 < tmpRewardAmount {
+	//			//					err = ruc.locationRepo.UpdateLocationNew(ctx, myUserRecommendUserLocationLast.ID, myUserRecommendUserLocationLast.Status, tmpRewardAmount, myUserRecommendUserLocationLast.StopDate) // 分红占位数据修改
+	//			//					if nil != err {
+	//			//						return err
+	//			//					}
+	//			//					_, err = ruc.userBalanceRepo.NormalRecommendReward(ctx, myUserRecommendUserId, tmpRewardAmount, tmpRewardAmount2, currentLocationNew.ID, tmpStatus, myUserRecommendUserLocationLast.Status, "recommend", "recommend") // 直推人奖励
+	//			//					if nil != err {
+	//			//						return err
+	//			//					}
+	//			//				}
+	//			//			}
+	//			//
+	//			//		}
+	//			//	}
+	//			//}
+	//
+	//			return nil
+	//		}); nil != err {
+	//			fmt.Println(err, "错误投资3", v)
+	//			continue
+	//		}
+	//	}
+	//
 	return true, nil
 }
 

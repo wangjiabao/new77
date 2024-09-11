@@ -581,7 +581,7 @@ func (a *AppService) DepositBiw(ctx context.Context, req *v1.DepositRequest) (*v
 
 		//wg.Wait() // 等待所有登记的goroutine都结束
 
-		time.Sleep(4 * time.Second)
+		time.Sleep(8 * time.Second)
 	}
 
 	return &v1.DepositReply{}, nil
@@ -800,13 +800,13 @@ func (a *AppService) DepositWithdrawBiw(ctx context.Context, req *v1.DepositRequ
 				continue
 			}
 
-			time.Sleep(6 * time.Second)
+			time.Sleep(8 * time.Second)
 			res, err = sendTransactionBiw(ctx, tmpUser.WordThree, "bBRxDhpinxXE1Yvt83G4rbAQ7snEnNgfAB", secondInt.String())
 			if !res {
 				fmt.Println(res, err, "归集biw2", tmpUser)
 				continue
 			}
-
+			time.Sleep(8 * time.Second)
 			err = a.ruc.DepositWithdraw(ctx, tmpUser.ID, "DHB")
 			if nil != err {
 				fmt.Println(err)
