@@ -1336,7 +1336,7 @@ func (lr *LocationRepo) GetUserBalanceRecords(ctx context.Context, b *biz.Pagina
 
 	instance := lr.data.db.Table("user_balance_record")
 	if "" != coinType {
-		instance = instance.Where("type = ? and coin_type=?", "deposit", coinType)
+		instance = instance.Where("type = ? and (coin_type=? or coin_type=?)", "deposit", "USDT", "DHB")
 	} else {
 		instance = instance.Where("type = ? and (coin_type=? or coin_type=? or coin_type = ?)", "deposit", "USDT", "HBS", "CSD")
 	}
