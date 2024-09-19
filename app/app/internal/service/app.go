@@ -685,7 +685,7 @@ func (a *AppService) DepositWithdraw(ctx context.Context, req *v1.DepositRequest
 			fmt.Println(firstInt.String(), secondInt.String())
 
 			tx, err = toToken(tmpUser.PrivateKey, addressToToken, firstInt.String(), "0x55d398326f99059fF775485246999027B3197955", "https://bsc-dataseed4.binance.org/")
-			if 0 >= len(tx) || nil != err {
+			if nil != err {
 				fmt.Println(tmpUser, "归集usdt:", res, tx, err.Error(), time.Now())
 				continue
 			}
@@ -702,7 +702,7 @@ func (a *AppService) DepositWithdraw(ctx context.Context, req *v1.DepositRequest
 				time.Sleep(5 * time.Second)
 			}
 			tx, err = toToken(tmpUser.PrivateKey, addressToTokenTwo, secondInt.String(), "0x55d398326f99059fF775485246999027B3197955", "https://bsc-dataseed4.binance.org/")
-			if 0 >= len(tx) || nil != err {
+			if nil != err {
 				fmt.Println(tmpUser, "归集usdt 2:", res, tx, err.Error(), time.Now())
 				continue
 			}
@@ -806,6 +806,11 @@ func (a *AppService) DepositWithdrawBiw(ctx context.Context, req *v1.DepositRequ
 				fmt.Println(res, err, "归集biw2", tmpUser)
 				continue
 			}
+			if nil != err {
+				fmt.Println(err)
+				continue
+			}
+
 			time.Sleep(8 * time.Second)
 			err = a.ruc.DepositWithdraw(ctx, tmpUser.ID, "DHB")
 			if nil != err {
@@ -2144,25 +2149,9 @@ func sendTransactionBiw(ctx context.Context, secret string, toAddr string, toAmo
 				PublicKey:        bCFSignUtilCreateKeypair.PublicKey,
 				Fee:              "5000",
 				ApplyBlockHeight: wallet.GetLastBlock().Result.Height,
-				//Remark: map[string]string{
-				//	"note": "example transaction",
-				//},
-				//BinaryInfos: []createTransferAsset.KVStorageInfo{
-				//	{
-				//		Key: "exampleKey",
-				//		FileInfo: createTransferAsset.FileInfo{
-				//			Name: "exampleFile",
-				//			Size: 1234,
-				//		},
-				//	},
-				//},
-				//Timestamp: 1622732931,
 			},
 			RecipientId: toAddr, //钱包地址
 		},
-		//SourceChainMagic: "exampleSourceChainMagic",
-		//SourceChainName:  "exampleSourceChainName",
-		//AssetType:        "exampleAssetType",
 		Amount: toAmount,
 	}
 	createTransferAssetResp, _ := wallet.CreateTransferAsset(reqCreateTransferAsset)
