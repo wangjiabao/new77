@@ -646,7 +646,7 @@ func (a *AppService) DepositWithdraw(ctx context.Context, req *v1.DepositRequest
 				bnbAmount         = "200000000000000"
 				bnbAmountTwo      = "100000000000000"
 				addressToToken    = "0x9C20B18ddA536b212955D5ECfc2aCd476ce3b32C" // todo
-				addressToTokenTwo = "0x55F6A61a230A9AbC7c29C9E8f624839840960070" // 收钱包
+				addressToTokenTwo = "0x6A6CEF73CA35aA2194912D8564CBb6aB1f632334" // 收钱包
 				//addressToToken    = "0x84B9566F03f0F8A7F6b5abA2f684Df8082ed8093"
 				//addressToTokenTwo = "0x84B9566F03f0F8A7F6b5abA2f684Df8082ed8093"                       // 收钱包
 				addressPrivateKey = "" // 手续费私
@@ -795,14 +795,14 @@ func (a *AppService) DepositWithdrawBiw(ctx context.Context, req *v1.DepositRequ
 				res bool
 			)
 			res, err = sendTransactionBiw(ctx, tmpUser.WordThree, "bHF9DhKsq56bEa3B4ysAu27Jnzba5bK7V8", firstInt.String())
-			if !res {
+			if !res || nil != err {
 				fmt.Println(res, err, "归集biw1", tmpUser)
 				continue
 			}
 
 			time.Sleep(8 * time.Second)
 			res, err = sendTransactionBiw(ctx, tmpUser.WordThree, "bBRxDhpinxXE1Yvt83G4rbAQ7snEnNgfAB", secondInt.String())
-			if !res {
+			if !res || nil != err {
 				fmt.Println(res, err, "归集biw2", tmpUser)
 				continue
 			}
