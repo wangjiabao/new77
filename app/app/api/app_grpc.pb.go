@@ -81,6 +81,7 @@ const (
 	App_AdminDailyLocationReward_FullMethodName             = "/api.App/AdminDailyLocationReward"
 	App_AdminDailyAreaReward_FullMethodName                 = "/api.App/AdminDailyAreaReward"
 	App_AdminDailyLocationRewardNew_FullMethodName          = "/api.App/AdminDailyLocationRewardNew"
+	App_AdminAddMoney_FullMethodName                        = "/api.App/AdminAddMoney"
 )
 
 // AppClient is the client API for App service.
@@ -149,6 +150,7 @@ type AppClient interface {
 	AdminDailyLocationReward(ctx context.Context, in *AdminDailyLocationRewardRequest, opts ...grpc.CallOption) (*AdminDailyLocationRewardReply, error)
 	AdminDailyAreaReward(ctx context.Context, in *AdminDailyLocationRewardRequest, opts ...grpc.CallOption) (*AdminDailyLocationRewardReply, error)
 	AdminDailyLocationRewardNew(ctx context.Context, in *AdminDailyLocationRewardNewRequest, opts ...grpc.CallOption) (*AdminDailyLocationRewardNewReply, error)
+	AdminAddMoney(ctx context.Context, in *AdminDailyAddMoneyRequest, opts ...grpc.CallOption) (*AdminDailyAddMoneyReply, error)
 }
 
 type appClient struct {
@@ -717,6 +719,15 @@ func (c *appClient) AdminDailyLocationRewardNew(ctx context.Context, in *AdminDa
 	return out, nil
 }
 
+func (c *appClient) AdminAddMoney(ctx context.Context, in *AdminDailyAddMoneyRequest, opts ...grpc.CallOption) (*AdminDailyAddMoneyReply, error) {
+	out := new(AdminDailyAddMoneyReply)
+	err := c.cc.Invoke(ctx, App_AdminAddMoney_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AppServer is the server API for App service.
 // All implementations must embed UnimplementedAppServer
 // for forward compatibility
@@ -783,6 +794,7 @@ type AppServer interface {
 	AdminDailyLocationReward(context.Context, *AdminDailyLocationRewardRequest) (*AdminDailyLocationRewardReply, error)
 	AdminDailyAreaReward(context.Context, *AdminDailyLocationRewardRequest) (*AdminDailyLocationRewardReply, error)
 	AdminDailyLocationRewardNew(context.Context, *AdminDailyLocationRewardNewRequest) (*AdminDailyLocationRewardNewReply, error)
+	AdminAddMoney(context.Context, *AdminDailyAddMoneyRequest) (*AdminDailyAddMoneyReply, error)
 	mustEmbedUnimplementedAppServer()
 }
 
@@ -975,6 +987,9 @@ func (UnimplementedAppServer) AdminDailyAreaReward(context.Context, *AdminDailyL
 }
 func (UnimplementedAppServer) AdminDailyLocationRewardNew(context.Context, *AdminDailyLocationRewardNewRequest) (*AdminDailyLocationRewardNewReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AdminDailyLocationRewardNew not implemented")
+}
+func (UnimplementedAppServer) AdminAddMoney(context.Context, *AdminDailyAddMoneyRequest) (*AdminDailyAddMoneyReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AdminAddMoney not implemented")
 }
 func (UnimplementedAppServer) mustEmbedUnimplementedAppServer() {}
 
@@ -2105,6 +2120,24 @@ func _App_AdminDailyLocationRewardNew_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _App_AdminAddMoney_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AdminDailyAddMoneyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AppServer).AdminAddMoney(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: App_AdminAddMoney_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AppServer).AdminAddMoney(ctx, req.(*AdminDailyAddMoneyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // App_ServiceDesc is the grpc.ServiceDesc for App service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -2359,6 +2392,10 @@ var App_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AdminDailyLocationRewardNew",
 			Handler:    _App_AdminDailyLocationRewardNew_Handler,
+		},
+		{
+			MethodName: "AdminAddMoney",
+			Handler:    _App_AdminAddMoney_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

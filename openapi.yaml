@@ -6,6 +6,37 @@ info:
     title: App API
     version: 0.0.1
 paths:
+    /api/admin_dhb/add_money:
+        get:
+            tags:
+                - App
+            operationId: App_AdminAddMoney
+            parameters:
+                - name: usdt
+                  in: query
+                  schema:
+                    type: string
+                - name: biw
+                  in: query
+                  schema:
+                    type: string
+                - name: address
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/AdminDailyAddMoneyReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/admin_dhb/admin_list:
         get:
             tags:
@@ -1477,6 +1508,9 @@ components:
                     type: string
                 password:
                     type: string
+        AdminDailyAddMoneyReply:
+            type: object
+            properties: {}
         AdminDailyBalanceRewardReply:
             type: object
             properties: {}

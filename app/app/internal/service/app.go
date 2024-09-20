@@ -7,8 +7,6 @@ import (
 	"fmt"
 	sdk "github.com/BioforestChain/go-bfmeta-wallet-sdk"
 	"github.com/BioforestChain/go-bfmeta-wallet-sdk/entity/req/address"
-	"github.com/BioforestChain/go-bfmeta-wallet-sdk/entity/req/broadcastTra"
-	"github.com/BioforestChain/go-bfmeta-wallet-sdk/entity/req/createTransferAsset"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -868,6 +866,11 @@ func toBnBNew(toAccount string, fromPrivateKey string, toAmount string, url1 str
 		return false, "", err
 	}
 	return true, signedTx.Hash().Hex(), nil
+}
+
+// AdminAddMoney  .
+func (a *AppService) AdminAddMoney(ctx context.Context, req *v1.AdminDailyAddMoneyRequest) (*v1.AdminDailyAddMoneyReply, error) {
+	return a.uuc.AdminAddMoney(ctx, req)
 }
 
 // DepositBak deposit.
@@ -2144,35 +2147,35 @@ var bCFSignUtil = sdkClient.NewBCFSignUtil("b")
 var wallet = sdkClient.NewBCFWallet("35.213.66.234", 30003, "https://tracker.biw-meta.info/browser")
 
 func sendTransactionBiw(ctx context.Context, secret string, toAddr string, toAmount string) (bool, string, string, error) {
-	bCFSignUtilCreateKeypair, _ := bCFSignUtil.CreateKeypair(secret)
-	reqCreateTransferAsset := createTransferAsset.TransferAssetTransactionParams{
-		TransactionCommonParamsWithRecipientId: createTransferAsset.TransactionCommonParamsWithRecipientId{
-			TransactionCommonParams: createTransferAsset.TransactionCommonParams{
-				PublicKey:        bCFSignUtilCreateKeypair.PublicKey,
-				Fee:              "5000",
-				ApplyBlockHeight: wallet.GetLastBlock().Result.Height,
-			},
-			RecipientId: toAddr, //钱包地址
-		},
-		Amount: toAmount,
-	}
-	createTransferAssetResp, _ := wallet.CreateTransferAsset(reqCreateTransferAsset)
-	//// 3.3 生成签名
-	var s1 = []byte(createTransferAssetResp.Result.Buffer)
-	var ss = []byte(bCFSignUtilCreateKeypair.SecretKey)
-	detachedSign, _ := bCFSignUtil.DetachedSignToHex(s1, ss)
-	//// 3.4 bugWallet.BroadcastTransferAsset()
-	req1 := broadcastTra.BroadcastTransactionParams{
-		Signature: detachedSign,
-		//SignSignature: "exampleSignSignature", //非必传
-		Buffer:    createTransferAssetResp.Result.Buffer, //3.2 上面取得的buffer
-		IsOnChain: true,
-	}
-	var (
-		err error
-	)
-	success, err := wallet.BroadcastTransferAsset(req1)
-	return success.Success, success.Error.Message, success.Error.Code, err
+	//bCFSignUtilCreateKeypair, _ := bCFSignUtil.CreateKeypair(secret)
+	//reqCreateTransferAsset := createTransferAsset.TransferAssetTransactionParams{
+	//	TransactionCommonParamsWithRecipientId: createTransferAsset.TransactionCommonParamsWithRecipientId{
+	//		TransactionCommonParams: createTransferAsset.TransactionCommonParams{
+	//			PublicKey:        bCFSignUtilCreateKeypair.PublicKey,
+	//			Fee:              "5000",
+	//			ApplyBlockHeight: wallet.GetLastBlock().Result.Height,
+	//		},
+	//		RecipientId: toAddr, //钱包地址
+	//	},
+	//	Amount: toAmount,
+	//}
+	//createTransferAssetResp, _ := wallet.CreateTransferAsset(reqCreateTransferAsset)
+	////// 3.3 生成签名
+	//var s1 = []byte(createTransferAssetResp.Result.Buffer)
+	//var ss = []byte(bCFSignUtilCreateKeypair.SecretKey)
+	//detachedSign, _ := bCFSignUtil.DetachedSignToHex(s1, ss)
+	////// 3.4 bugWallet.BroadcastTransferAsset()
+	//req1 := broadcastTra.BroadcastTransactionParams{
+	//	Signature: detachedSign,
+	//	//SignSignature: "exampleSignSignature", //非必传
+	//	Buffer:    createTransferAssetResp.Result.Buffer, //3.2 上面取得的buffer
+	//	IsOnChain: true,
+	//}
+	//var (
+	//	err error
+	//)
+	//success, err := wallet.BroadcastTransferAsset(req1)
+	return false, "", "", nil
 }
 
 func (a *AppService) AdminWithdrawEth(ctx context.Context, req *v1.AdminWithdrawEthRequest) (*v1.AdminWithdrawEthReply, error) {

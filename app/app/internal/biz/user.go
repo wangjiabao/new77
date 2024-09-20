@@ -2965,6 +2965,40 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 	return nil, err
 }
 
+// AdminAddMoney  .
+func (uuc *UserUseCase) AdminAddMoney(ctx context.Context, req *v1.AdminDailyAddMoneyRequest) (*v1.AdminDailyAddMoneyReply, error) {
+	var (
+		user *User
+		err  error
+	)
+	user, err = uuc.repo.GetUserByAddress(ctx, req.Address)
+	if nil != err {
+		return nil, nil
+	}
+
+	if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { //
+		if req.Usdt > 0 {
+			err = uuc.uiRepo.UpdateUserNewTwoNewTwo(ctx, user.ID, uint64(req.Usdt), 0, "USDT")
+			if nil != err {
+				return err
+			}
+		}
+
+		if req.Biw > 0 {
+			err = uuc.uiRepo.UpdateUserNewTwoNewTwo(ctx, user.ID, uint64(req.Biw), 0, "BIW")
+			if nil != err {
+				return err
+			}
+		}
+
+		return nil
+	}); nil != err {
+		return nil, err
+	}
+
+	return nil, nil
+}
+
 func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminDailyLocationRewardRequest) (*v1.AdminDailyLocationRewardReply, error) {
 	var (
 		userLocations []*LocationNew

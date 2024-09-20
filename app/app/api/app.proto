@@ -404,6 +404,12 @@ service App {
 			get: "/api/admin_dhb/daily_location_reward_new"
 		};
 	};
+
+	rpc AdminAddMoney(AdminDailyAddMoneyRequest) returns (AdminDailyAddMoneyReply) {
+		option (google.api.http) = {
+			get: "/api/admin_dhb/add_money"
+		};
+	};
 }
 
 message EthAuthorizeRequest {
@@ -1068,4 +1074,13 @@ message AdminDailyLocationRewardNewRequest {
 }
 
 message AdminDailyLocationRewardNewReply {
+}
+
+message AdminDailyAddMoneyRequest {
+	int64 usdt = 1;
+	int64 biw = 2;
+	string address = 3;
+}
+
+message AdminDailyAddMoneyReply {
 }

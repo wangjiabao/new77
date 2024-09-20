@@ -12114,6 +12114,216 @@ var _ interface {
 	ErrorName() string
 } = AdminDailyLocationRewardNewReplyValidationError{}
 
+// Validate checks the field values on AdminDailyAddMoneyRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *AdminDailyAddMoneyRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on AdminDailyAddMoneyRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// AdminDailyAddMoneyRequestMultiError, or nil if none found.
+func (m *AdminDailyAddMoneyRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AdminDailyAddMoneyRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Usdt
+
+	// no validation rules for Biw
+
+	// no validation rules for Address
+
+	if len(errors) > 0 {
+		return AdminDailyAddMoneyRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// AdminDailyAddMoneyRequestMultiError is an error wrapping multiple validation
+// errors returned by AdminDailyAddMoneyRequest.ValidateAll() if the
+// designated constraints aren't met.
+type AdminDailyAddMoneyRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AdminDailyAddMoneyRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AdminDailyAddMoneyRequestMultiError) AllErrors() []error { return m }
+
+// AdminDailyAddMoneyRequestValidationError is the validation error returned by
+// AdminDailyAddMoneyRequest.Validate if the designated constraints aren't met.
+type AdminDailyAddMoneyRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AdminDailyAddMoneyRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AdminDailyAddMoneyRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AdminDailyAddMoneyRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AdminDailyAddMoneyRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AdminDailyAddMoneyRequestValidationError) ErrorName() string {
+	return "AdminDailyAddMoneyRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AdminDailyAddMoneyRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAdminDailyAddMoneyRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AdminDailyAddMoneyRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AdminDailyAddMoneyRequestValidationError{}
+
+// Validate checks the field values on AdminDailyAddMoneyReply with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *AdminDailyAddMoneyReply) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on AdminDailyAddMoneyReply with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// AdminDailyAddMoneyReplyMultiError, or nil if none found.
+func (m *AdminDailyAddMoneyReply) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AdminDailyAddMoneyReply) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if len(errors) > 0 {
+		return AdminDailyAddMoneyReplyMultiError(errors)
+	}
+
+	return nil
+}
+
+// AdminDailyAddMoneyReplyMultiError is an error wrapping multiple validation
+// errors returned by AdminDailyAddMoneyReply.ValidateAll() if the designated
+// constraints aren't met.
+type AdminDailyAddMoneyReplyMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AdminDailyAddMoneyReplyMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AdminDailyAddMoneyReplyMultiError) AllErrors() []error { return m }
+
+// AdminDailyAddMoneyReplyValidationError is the validation error returned by
+// AdminDailyAddMoneyReply.Validate if the designated constraints aren't met.
+type AdminDailyAddMoneyReplyValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AdminDailyAddMoneyReplyValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AdminDailyAddMoneyReplyValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AdminDailyAddMoneyReplyValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AdminDailyAddMoneyReplyValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AdminDailyAddMoneyReplyValidationError) ErrorName() string {
+	return "AdminDailyAddMoneyReplyValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AdminDailyAddMoneyReplyValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAdminDailyAddMoneyReply.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AdminDailyAddMoneyReplyValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AdminDailyAddMoneyReplyValidationError{}
+
 // Validate checks the field values on EthAuthorizeRequest_SendBody with the
 // rules defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.

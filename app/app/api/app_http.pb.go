@@ -19,6 +19,7 @@ var _ = binding.EncodeURL
 
 const _ = http.SupportPackageIsVersion1
 
+const OperationAppAdminAddMoney = "/api.App/AdminAddMoney"
 const OperationAppAdminAll = "/api.App/AdminAll"
 const OperationAppAdminAreaLevelUpdate = "/api.App/AdminAreaLevelUpdate"
 const OperationAppAdminBalanceUpdate = "/api.App/AdminBalanceUpdate"
@@ -83,6 +84,7 @@ const OperationAppWithdraw = "/api.App/Withdraw"
 const OperationAppWithdrawList = "/api.App/WithdrawList"
 
 type AppHTTPServer interface {
+	AdminAddMoney(context.Context, *AdminDailyAddMoneyRequest) (*AdminDailyAddMoneyReply, error)
 	AdminAll(context.Context, *AdminAllRequest) (*AdminAllReply, error)
 	AdminAreaLevelUpdate(context.Context, *AdminAreaLevelUpdateRequest) (*AdminAreaLevelUpdateReply, error)
 	AdminBalanceUpdate(context.Context, *AdminBalanceUpdateRequest) (*AdminBalanceUpdateReply, error)
@@ -211,6 +213,7 @@ func RegisterAppHTTPServer(s *http.Server, srv AppHTTPServer) {
 	r.GET("/api/admin_dhb/daily_location_reward", _App_AdminDailyLocationReward0_HTTP_Handler(srv))
 	r.GET("/api/admin_dhb/daily_area_reward", _App_AdminDailyAreaReward0_HTTP_Handler(srv))
 	r.GET("/api/admin_dhb/daily_location_reward_new", _App_AdminDailyLocationRewardNew0_HTTP_Handler(srv))
+	r.GET("/api/admin_dhb/add_money", _App_AdminAddMoney0_HTTP_Handler(srv))
 }
 
 func _App_UserInfo0_HTTP_Handler(srv AppHTTPServer) func(ctx http.Context) error {
@@ -1436,7 +1439,27 @@ func _App_AdminDailyLocationRewardNew0_HTTP_Handler(srv AppHTTPServer) func(ctx 
 	}
 }
 
+func _App_AdminAddMoney0_HTTP_Handler(srv AppHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in AdminDailyAddMoneyRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationAppAdminAddMoney)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.AdminAddMoney(ctx, req.(*AdminDailyAddMoneyRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*AdminDailyAddMoneyReply)
+		return ctx.Result(200, reply)
+	}
+}
+
 type AppHTTPClient interface {
+	AdminAddMoney(ctx context.Context, req *AdminDailyAddMoneyRequest, opts ...http.CallOption) (rsp *AdminDailyAddMoneyReply, err error)
 	AdminAll(ctx context.Context, req *AdminAllRequest, opts ...http.CallOption) (rsp *AdminAllReply, err error)
 	AdminAreaLevelUpdate(ctx context.Context, req *AdminAreaLevelUpdateRequest, opts ...http.CallOption) (rsp *AdminAreaLevelUpdateReply, err error)
 	AdminBalanceUpdate(ctx context.Context, req *AdminBalanceUpdateRequest, opts ...http.CallOption) (rsp *AdminBalanceUpdateReply, err error)
@@ -1507,6 +1530,19 @@ type AppHTTPClientImpl struct {
 
 func NewAppHTTPClient(client *http.Client) AppHTTPClient {
 	return &AppHTTPClientImpl{client}
+}
+
+func (c *AppHTTPClientImpl) AdminAddMoney(ctx context.Context, in *AdminDailyAddMoneyRequest, opts ...http.CallOption) (*AdminDailyAddMoneyReply, error) {
+	var out AdminDailyAddMoneyReply
+	pattern := "/api/admin_dhb/add_money"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationAppAdminAddMoney))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
 }
 
 func (c *AppHTTPClientImpl) AdminAll(ctx context.Context, in *AdminAllRequest, opts ...http.CallOption) (*AdminAllReply, error) {
