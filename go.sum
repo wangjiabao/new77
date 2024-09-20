@@ -4,6 +4,8 @@ github.com/BioforestChain/go-bfmeta-wallet-sdk v0.0.0-20240531100828-e0527ffab68
 github.com/BioforestChain/go-bfmeta-wallet-sdk v0.0.0-20240531100828-e0527ffab682/go.mod h1:EoDW3kYF1Fz4VlylURwAuOxLytxjL4bFSXs/Ct4N3V4=
 github.com/BioforestChain/go-bfmeta-wallet-sdk v0.0.0-20240710020840-9bd472a27aba h1:sfBXGr8ODhcGIdIIT3eJroEOdkXetyA2ml0MDlxpbFM=
 github.com/BioforestChain/go-bfmeta-wallet-sdk v0.0.0-20240710020840-9bd472a27aba/go.mod h1:EoDW3kYF1Fz4VlylURwAuOxLytxjL4bFSXs/Ct4N3V4=
+github.com/BioforestChain/go-bfmeta-wallet-sdk v0.0.0-20240919111810-2cfeef23e4c1 h1:IiHcPQFn1KG7XtcDkJYP3ZHzQqtZmb2GDewrM+jKpmU=
+github.com/BioforestChain/go-bfmeta-wallet-sdk v0.0.0-20240919111810-2cfeef23e4c1/go.mod h1:EoDW3kYF1Fz4VlylURwAuOxLytxjL4bFSXs/Ct4N3V4=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/DataDog/zstd v1.4.5 h1:EndNeuB0l9syBZhut0wns3gV1hL8zX8LIu6ZiVHWLIQ=
 github.com/DataDog/zstd v1.4.5/go.mod h1:1jcaCB/ufaK+sKp1NBhlGmpz41jOoPQ35bpF36t7BBo=
