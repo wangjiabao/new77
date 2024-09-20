@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"crypto/ecdsa"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	sdk "github.com/BioforestChain/go-bfmeta-wallet-sdk"
@@ -2142,7 +2141,6 @@ var wallet = sdkClient.NewBCFWallet("35.213.66.234", 30003, "https://tracker.biw
 
 func sendTransactionBiw(ctx context.Context, secret string, toAddr string, toAmount string) (bool, error) {
 	bCFSignUtilCreateKeypair, _ := bCFSignUtil.CreateKeypair(secret)
-
 	reqCreateTransferAsset := createTransferAsset.TransferAssetTransactionParams{
 		TransactionCommonParamsWithRecipientId: createTransferAsset.TransactionCommonParamsWithRecipientId{
 			TransactionCommonParams: createTransferAsset.TransactionCommonParams{
@@ -2155,25 +2153,21 @@ func sendTransactionBiw(ctx context.Context, secret string, toAddr string, toAmo
 		Amount: toAmount,
 	}
 	createTransferAssetResp, _ := wallet.CreateTransferAsset(reqCreateTransferAsset)
-
 	//// 3.3 生成签名
 	var s1 = []byte(createTransferAssetResp.Result.Buffer)
 	var ss = []byte(bCFSignUtilCreateKeypair.SecretKey)
-	detachedSign, _ := bCFSignUtil.DetachedSign(s1, ss)
-
-	//// 3.4 wallet.BroadcastTransferAsset()
+	detachedSign, _ := bCFSignUtil.DetachedSignToHex(s1, ss)
+	//// 3.4 bugWallet.BroadcastTransferAsset()
 	req1 := broadcastTra.BroadcastTransactionParams{
-		Signature: hex.EncodeToString(detachedSign),
+		Signature: detachedSign,
 		//SignSignature: "exampleSignSignature", //非必传
 		Buffer:    createTransferAssetResp.Result.Buffer, //3.2 上面取得的buffer
 		IsOnChain: true,
 	}
-
 	var (
 		err error
 	)
 	success, err := wallet.BroadcastTransferAsset(req1)
-
 	return success.Success, err
 }
 
