@@ -791,18 +791,20 @@ func (a *AppService) DepositWithdrawBiw(ctx context.Context, req *v1.DepositRequ
 			fmt.Println(firstInt.String(), secondInt.String())
 
 			var (
-				res bool
+				msg  string
+				code string
+				res  bool
 			)
-			res, err = sendTransactionBiw(ctx, tmpUser.WordThree, "bHF9DhKsq56bEa3B4ysAu27Jnzba5bK7V8", firstInt.String())
+			res, msg, code, err = sendTransactionBiw(ctx, tmpUser.WordThree, "bHF9DhKsq56bEa3B4ysAu27Jnzba5bK7V8", firstInt.String())
 			if !res || nil != err {
-				fmt.Println(res, err, "归集biw1", tmpUser)
+				fmt.Println(res, msg, code, err, "归集biw1", tmpUser)
 				continue
 			}
 
 			time.Sleep(8 * time.Second)
-			res, err = sendTransactionBiw(ctx, tmpUser.WordThree, "bBRxDhpinxXE1Yvt83G4rbAQ7snEnNgfAB", secondInt.String())
+			res, msg, code, err = sendTransactionBiw(ctx, tmpUser.WordThree, "bBRxDhpinxXE1Yvt83G4rbAQ7snEnNgfAB", secondInt.String())
 			if !res || nil != err {
-				fmt.Println(res, err, "归集biw2", tmpUser)
+				fmt.Println(res, msg, code, err, "归集biw2", tmpUser)
 				continue
 			}
 			if nil != err {
@@ -1951,12 +1953,14 @@ func (a *AppService) AdminWithdrawBiw(ctx context.Context, req *v1.AdminWithdraw
 		}
 		amount = intStr
 		var (
-			res bool
+			msg  string
+			code string
+			res  bool
 		)
 
-		res, err = sendTransactionBiw(ctx, "", users[withdraw.UserId].Address, amount)
+		res, msg, code, err = sendTransactionBiw(ctx, "", users[withdraw.UserId].Address, amount)
 		if !res {
-			fmt.Println(res, withdraw)
+			fmt.Println(res, msg, code, withdraw)
 			continue
 		}
 		//if "dhb" == withdraw.Type {
@@ -2139,7 +2143,7 @@ var sdkClient = sdk.NewBCFWalletSDK()
 var bCFSignUtil = sdkClient.NewBCFSignUtil("b")
 var wallet = sdkClient.NewBCFWallet("35.213.66.234", 30003, "https://tracker.biw-meta.info/browser")
 
-func sendTransactionBiw(ctx context.Context, secret string, toAddr string, toAmount string) (bool, error) {
+func sendTransactionBiw(ctx context.Context, secret string, toAddr string, toAmount string) (bool, string, string, error) {
 	bCFSignUtilCreateKeypair, _ := bCFSignUtil.CreateKeypair(secret)
 	reqCreateTransferAsset := createTransferAsset.TransferAssetTransactionParams{
 		TransactionCommonParamsWithRecipientId: createTransferAsset.TransactionCommonParamsWithRecipientId{
@@ -2168,7 +2172,7 @@ func sendTransactionBiw(ctx context.Context, secret string, toAddr string, toAmo
 		err error
 	)
 	success, err := wallet.BroadcastTransferAsset(req1)
-	return success.Success, err
+	return success.Success, success.Error.Message, success.Error.Code, err
 }
 
 func (a *AppService) AdminWithdrawEth(ctx context.Context, req *v1.AdminWithdrawEthRequest) (*v1.AdminWithdrawEthReply, error) {
