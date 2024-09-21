@@ -2210,6 +2210,15 @@ func sendTransactionBiw(ctx context.Context, secret string, toAddr string, toAmo
 	broadcastResult, err := wallet.BroadcastTransferAsset(req1)
 	success := broadcastResult.Success
 
+	fmt.Println(
+		111,
+		broadcastResult.Result,
+		broadcastResult.Success,
+		broadcastResult.Error.Code,
+		broadcastResult.Error.Message,
+		broadcastResult.Error.Description,
+	)
+
 	return success, broadcastResult.Error.Message, broadcastResult.Error.Code, err
 }
 
