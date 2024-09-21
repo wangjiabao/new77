@@ -812,7 +812,6 @@ func (a *AppService) DepositWithdrawBiw(ctx context.Context, req *v1.DepositRequ
 				continue
 			}
 
-			time.Sleep(8 * time.Second)
 			err = a.ruc.DepositWithdraw(ctx, tmpUser.ID, "DHB")
 			if nil != err {
 				fmt.Println(err)
@@ -2210,14 +2209,14 @@ func sendTransactionBiw(ctx context.Context, secret string, toAddr string, toAmo
 	broadcastResult, err := wallet.BroadcastTransferAsset(req1)
 	success := broadcastResult.Success
 
-	fmt.Println(
-		111,
-		broadcastResult.Result,
-		broadcastResult.Success,
-		broadcastResult.Error.Code,
-		broadcastResult.Error.Message,
-		broadcastResult.Error.Description,
-	)
+	//fmt.Println(
+	//	111,
+	//	broadcastResult.Result,
+	//	broadcastResult.Success,
+	//	broadcastResult.Error.Code,
+	//	broadcastResult.Error.Message,
+	//	broadcastResult.Error.Description,
+	//)
 
 	return success, broadcastResult.Error.Message, broadcastResult.Error.Code, err
 }
