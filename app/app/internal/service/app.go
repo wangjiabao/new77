@@ -7,6 +7,8 @@ import (
 	"fmt"
 	sdk "github.com/BioforestChain/go-bfmeta-wallet-sdk"
 	"github.com/BioforestChain/go-bfmeta-wallet-sdk/entity/req/address"
+	"github.com/BioforestChain/go-bfmeta-wallet-sdk/entity/req/broadcastTra"
+	"github.com/BioforestChain/go-bfmeta-wallet-sdk/entity/req/createTransferAsset"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -2175,7 +2177,40 @@ func sendTransactionBiw(ctx context.Context, secret string, toAddr string, toAmo
 	//	err error
 	//)
 	//success, err := wallet.BroadcastTransferAsset(req1)
-	return false, "", "", nil
+	bCFSignUtilCreateKeypair, _ := bCFSignUtil.CreateKeypair(secret)
+
+	reqCreateTransferAsset := createTransferAsset.TransferAssetTransactionParams{
+		TransactionCommonParamsWithRecipientId: createTransferAsset.TransactionCommonParamsWithRecipientId{
+			TransactionCommonParams: createTransferAsset.TransactionCommonParams{
+				PublicKey:        bCFSignUtilCreateKeypair.PublicKey,
+				Fee:              "5000",
+				ApplyBlockHeight: wallet.GetLastBlock().Result.Height,
+			},
+			RecipientId: toAddr, //钱包地址
+		},
+		Amount: toAmount,
+	}
+	//reqCreateTransferAssetJson, _ := json.Marshal(reqCreateTransferAsset)
+	createTransferAssetResp, _ := wallet.CreateTransferAsset(reqCreateTransferAsset)
+	if !createTransferAssetResp.Success {
+		return false, "错误", "错误", nil
+	}
+
+	//// 3.3 生成签名
+	detachedSign, _ := bCFSignUtil.DetachedSign(createTransferAssetResp.Result.Buffer.StringBuffer, bCFSignUtilCreateKeypair.SecretKey.StringBuffer)
+
+	//// 3.4 bugWallet.BroadcastTransferAsset()
+	req1 := broadcastTra.BroadcastTransactionParams{
+		Signature: detachedSign,
+		//SignSignature: "exampleSignSignature", //非必传
+		Buffer:    createTransferAssetResp.Result.Buffer, //3.2 上面取得的buffer
+		IsOnChain: true,
+	}
+
+	broadcastResult, err := wallet.BroadcastTransferAsset(req1)
+	success := broadcastResult.Success
+
+	return success, broadcastResult.Error.Message, broadcastResult.Error.Code, err
 }
 
 func (a *AppService) AdminWithdrawEth(ctx context.Context, req *v1.AdminWithdrawEthRequest) (*v1.AdminWithdrawEthReply, error) {
