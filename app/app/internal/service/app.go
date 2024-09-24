@@ -1962,11 +1962,13 @@ func (a *AppService) AdminWithdrawBiw(ctx context.Context, req *v1.AdminWithdraw
 			res  bool
 		)
 
+		time.Sleep(8 * time.Second)
 		res, msg, code, err = sendTransactionBiw(ctx, "", users[withdraw.UserId].Address, amount)
-		if !res {
+		if !res || nil != err {
 			fmt.Println(res, msg, code, withdraw)
 			continue
 		}
+
 		//if "dhb" == withdraw.Type {
 		//	tokenAddress = "0x6504631df9F6FF397b0ec442FB80685a7B1688d4"
 		//} else
