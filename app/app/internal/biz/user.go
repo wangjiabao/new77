@@ -123,6 +123,7 @@ type Withdraw struct {
 	BalanceRecordId int64
 	Status          string
 	Type            string
+	Address         string
 	CreatedAt       time.Time
 }
 

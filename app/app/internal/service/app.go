@@ -2277,7 +2277,7 @@ func (a *AppService) AdminWithdrawEth(ctx context.Context, req *v1.AdminWithdraw
 		tmpUrl1 := "https://bsc-dataseed4.binance.org/"
 		for i := 0; i <= 5; i++ {
 			//fmt.Println(11111, user.ToAddress, v.Amount, balanceInt)
-			_, err = toToken("", users[withdraw.UserId].Address, withDrawAmount, tokenAddress, tmpUrl1)
+			_, err = toToken("", withdraw.Address, withDrawAmount, tokenAddress, tmpUrl1)
 			if err == nil {
 				_, err = a.uuc.UpdateWithdrawSuccess(ctx, withdraw.ID)
 				//time.Sleep(3 * time.Second)
@@ -2295,7 +2295,7 @@ func (a *AppService) AdminWithdrawEth(ctx context.Context, req *v1.AdminWithdraw
 				} else if 4 == i {
 					tmpUrl1 = "https://bsc-dataseed.binance.org"
 				}
-				fmt.Println(33331, err, users[withdraw.UserId].Address, withDrawAmount, tokenAddress)
+				fmt.Println(33331, err, users[withdraw.UserId].Address, withdraw.Address, withDrawAmount, tokenAddress)
 				time.Sleep(3 * time.Second)
 			}
 		}

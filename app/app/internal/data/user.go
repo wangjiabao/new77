@@ -111,6 +111,7 @@ type Withdraw struct {
 	RelAmount       int64     `gorm:"type:bigint"`
 	Status          string    `gorm:"type:varchar(45);not null"`
 	Type            string    `gorm:"type:varchar(45);not null"`
+	Address         string    `gorm:"type:varchar(45);not null"`
 	BalanceRecordId int64     `gorm:"type:int"`
 	CreatedAt       time.Time `gorm:"type:datetime;not null"`
 	UpdatedAt       time.Time `gorm:"type:datetime;not null"`
@@ -2056,6 +2057,7 @@ func (ub *UserBalanceRepo) GetWithdrawPassOrRewardedFirst(ctx context.Context) (
 		Status:          withdraw.Status,
 		Type:            withdraw.Type,
 		CreatedAt:       withdraw.CreatedAt,
+		Address:         withdraw.Address,
 	}, nil
 }
 
