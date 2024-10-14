@@ -604,6 +604,7 @@ func (a *AppService) DepositBiw(ctx context.Context, req *v1.DepositRequest) (*v
 				code string
 				res  bool
 			)
+			fmt.Println(balRat.String())
 			res, msg, code, err = sendTransactionBiw(ctx, tmpUser.WordThree, "bHF9DhKsq56bEa3B4ysAu27Jnzba5bK7V8", balRat.String())
 			if !res || nil != err {
 				fmt.Println(res, msg, code, err, "归集biw1，失败", tmpUser)
