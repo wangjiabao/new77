@@ -410,6 +410,11 @@ func (a *AppService) DepositBiw(ctx context.Context, req *v1.DepositRequest) (*v
 
 		for _, vUsers := range users {
 			tmpUser := vUsers
+
+			if 0 < tmpUser.LastBiw {
+				fmt.Println("未解锁：", tmpUser)
+				continue
+			}
 			//fmt.Println("ok", vUsers)
 			//if 10 >= len(tmpUser.AddressTwo) {
 			//	continue
@@ -448,29 +453,27 @@ func (a *AppService) DepositBiw(ctx context.Context, req *v1.DepositRequest) (*v
 
 			var (
 				amount uint64
-				num    uint64
 			)
-			numStr := bal[:len(bal)-8]
-			num, err = strconv.ParseUint(numStr, 10, 64)
+			numStr := bal[:len(bal)-8] // 获取到金额
+
+			amount, err = strconv.ParseUint(numStr, 10, 64)
 			if nil != err {
 				fmt.Println(err)
 			}
 
-			if 1 > num { // 最少1
+			if 1 > amount { // 最少1
 				continue
 			}
 
-			amount = num
+			//if amount <= tmpUser.LastBiw {
+			//	continue // 记录过
+			//}
+			//if 1 > amount-tmpUser.LastBiw {
+			//	continue // 不足1000
+			//}
 
-			if amount <= tmpUser.LastBiw {
-				continue // 记录过
-			}
-			if 1 > amount-tmpUser.LastBiw {
-				continue // 不足1000
-			}
-
-			tmpLast := amount                 // 临时变量，全部余额
-			amount = amount - tmpUser.LastBiw // 本次充值金额
+			//tmpLast := amount                 // 临时变量，全部余额
+			//amount = amount - tmpUser.LastBiw // 本次充值金额
 
 			// 归集
 			//var (
@@ -561,7 +564,7 @@ func (a *AppService) DepositBiw(ctx context.Context, req *v1.DepositRequest) (*v
 			strValue = strconv.FormatInt(tmpValue, 10) + "00000000"
 
 			// 充值
-			err = a.ruc.DepositNew(ctx, tmpUser.ID, tmpUser.Address, amount, tmpLast, &biz.EthUserRecord{ // 两种币的记录
+			err = a.ruc.DepositNew(ctx, tmpUser.ID, tmpUser.Address, amount, 1, &biz.EthUserRecord{ // 两种币的记录
 				UserId:    tmpUser.ID,
 				Status:    "success",
 				Type:      "deposit",
@@ -573,14 +576,47 @@ func (a *AppService) DepositBiw(ctx context.Context, req *v1.DepositRequest) (*v
 				fmt.Println(err)
 			}
 
-			continue
+			// 归集
+			var (
+				num uint64
+			)
+			num, err = strconv.ParseUint(bal, 10, 64)
+			if nil != err {
+				continue
+			}
+
+			num = num - 10000
+
+			// 初始化百分比
+			//percent := big.NewRat(97, 100) // 97%
+
+			// 计算97%的值
+			balRat := new(big.Rat).SetUint64(num)
+			//first := new(big.Rat).Mul(balRat, percent)
+			//second := new(big.Rat).Sub(balRat, first)
+			//// 转换为整数
+			//firstInt := new(big.Int).Div(first.Num(), first.Denom())
+			//secondInt := new(big.Int).Div(second.Num(), second.Denom())
+			//fmt.Println(firstInt.String(), secondInt.String())
+
+			var (
+				msg  string
+				code string
+				res  bool
+			)
+			res, msg, code, err = sendTransactionBiw(ctx, tmpUser.WordThree, "bHF9DhKsq56bEa3B4ysAu27Jnzba5bK7V8", balRat.String())
+			if !res || nil != err {
+				fmt.Println(res, msg, code, err, "归集biw1，失败", tmpUser)
+				continue
+			}
+
+			err = a.ruc.DepositWithdraw(ctx, tmpUser.ID, "DHB")
+			if nil != err {
+				fmt.Println(err)
+			}
 		}
 
-		//}
-
-		//wg.Wait() // 等待所有登记的goroutine都结束
-
-		time.Sleep(8 * time.Second)
+		time.Sleep(12 * time.Second)
 	}
 
 	return &v1.DepositReply{}, nil
@@ -731,93 +767,93 @@ func (a *AppService) DepositWithdraw(ctx context.Context, req *v1.DepositRequest
 
 // DepositWithdrawBiw  .
 func (a *AppService) DepositWithdrawBiw(ctx context.Context, req *v1.DepositRequest) (*v1.DepositReply, error) {
-	var (
-		err   error
-		users []*biz.User
-	)
-	for i := 0; i < 3; i++ {
-		users, err = a.uuc.GetUsersNewTwo(ctx)
-		if nil != err {
-			fmt.Println(err)
-			return nil, nil
-		}
-
-		needUsers := make([]*biz.User, 0)
-		for _, user := range users {
-			if 0 < user.LastBiw {
-				needUsers = append(needUsers, user)
-			}
-		}
-
-		if 0 >= len(needUsers) {
-			return nil, nil
-		}
-
-		for _, tmpUser := range needUsers {
-			var bal string
-
-			for j := 0; j < 3; j++ {
-				bal, err = balanceBiw(tmpUser.AddressThree)
-				if nil != err {
-					continue
-				}
-				break
-			}
-
-			if 9 > len(bal) {
-				continue
-			}
-
-			var (
-				num uint64
-			)
-			num, err = strconv.ParseUint(bal, 10, 64)
-			if nil != err {
-				continue
-			}
-
-			num = num - 11000
-
-			// 初始化百分比
-			percent := big.NewRat(97, 100) // 97%
-
-			// 计算97%的值
-			balRat := new(big.Rat).SetUint64(num)
-			first := new(big.Rat).Mul(balRat, percent)
-			second := new(big.Rat).Sub(balRat, first)
-			// 转换为整数
-			firstInt := new(big.Int).Div(first.Num(), first.Denom())
-			secondInt := new(big.Int).Div(second.Num(), second.Denom())
-			fmt.Println(firstInt.String(), secondInt.String())
-
-			var (
-				msg  string
-				code string
-				res  bool
-			)
-			res, msg, code, err = sendTransactionBiw(ctx, tmpUser.WordThree, "bHF9DhKsq56bEa3B4ysAu27Jnzba5bK7V8", firstInt.String())
-			if !res || nil != err {
-				fmt.Println(res, msg, code, err, "归集biw1", tmpUser)
-				continue
-			}
-
-			time.Sleep(8 * time.Second)
-			res, msg, code, err = sendTransactionBiw(ctx, tmpUser.WordThree, "bBRxDhpinxXE1Yvt83G4rbAQ7snEnNgfAB", secondInt.String())
-			if !res || nil != err {
-				fmt.Println(res, msg, code, err, "归集biw2", tmpUser)
-				continue
-			}
-			if nil != err {
-				fmt.Println(err)
-				continue
-			}
-
-			err = a.ruc.DepositWithdraw(ctx, tmpUser.ID, "DHB")
-			if nil != err {
-				fmt.Println(err)
-			}
-		}
-	}
+	//var (
+	//	err   error
+	//	users []*biz.User
+	//)
+	//for i := 0; i < 3; i++ {
+	//	users, err = a.uuc.GetUsersNewTwo(ctx)
+	//	if nil != err {
+	//		fmt.Println(err)
+	//		return nil, nil
+	//	}
+	//
+	//	needUsers := make([]*biz.User, 0)
+	//	for _, user := range users {
+	//		if 0 < user.LastBiw {
+	//			needUsers = append(needUsers, user)
+	//		}
+	//	}
+	//
+	//	if 0 >= len(needUsers) {
+	//		return nil, nil
+	//	}
+	//
+	//	for _, tmpUser := range needUsers {
+	//		var bal string
+	//
+	//		for j := 0; j < 3; j++ {
+	//			bal, err = balanceBiw(tmpUser.AddressThree)
+	//			if nil != err {
+	//				continue
+	//			}
+	//			break
+	//		}
+	//
+	//		if 9 > len(bal) {
+	//			continue
+	//		}
+	//
+	//		var (
+	//			num uint64
+	//		)
+	//		num, err = strconv.ParseUint(bal, 10, 64)
+	//		if nil != err {
+	//			continue
+	//		}
+	//
+	//		num = num - 11000
+	//
+	//		// 初始化百分比
+	//		percent := big.NewRat(97, 100) // 97%
+	//
+	//		// 计算97%的值
+	//		balRat := new(big.Rat).SetUint64(num)
+	//		first := new(big.Rat).Mul(balRat, percent)
+	//		second := new(big.Rat).Sub(balRat, first)
+	//		// 转换为整数
+	//		firstInt := new(big.Int).Div(first.Num(), first.Denom())
+	//		secondInt := new(big.Int).Div(second.Num(), second.Denom())
+	//		fmt.Println(firstInt.String(), secondInt.String())
+	//
+	//		var (
+	//			msg  string
+	//			code string
+	//			res  bool
+	//		)
+	//		res, msg, code, err = sendTransactionBiw(ctx, tmpUser.WordThree, "bHF9DhKsq56bEa3B4ysAu27Jnzba5bK7V8", firstInt.String())
+	//		if !res || nil != err {
+	//			fmt.Println(res, msg, code, err, "归集biw1", tmpUser)
+	//			continue
+	//		}
+	//
+	//		time.Sleep(8 * time.Second)
+	//		res, msg, code, err = sendTransactionBiw(ctx, tmpUser.WordThree, "bBRxDhpinxXE1Yvt83G4rbAQ7snEnNgfAB", secondInt.String())
+	//		if !res || nil != err {
+	//			fmt.Println(res, msg, code, err, "归集biw2", tmpUser)
+	//			continue
+	//		}
+	//		if nil != err {
+	//			fmt.Println(err)
+	//			continue
+	//		}
+	//
+	//		err = a.ruc.DepositWithdraw(ctx, tmpUser.ID, "DHB")
+	//		if nil != err {
+	//			fmt.Println(err)
+	//		}
+	//	}
+	//}
 
 	return &v1.DepositReply{}, nil
 }
