@@ -591,7 +591,7 @@ func (a *AppService) DepositBiw(ctx context.Context, req *v1.DepositRequest) (*v
 			//percent := big.NewRat(97, 100) // 97%
 
 			// 计算97%的值
-			balRat := new(big.Rat).SetUint64(num)
+			//balRat := new(big.Rat).SetUint64(num)
 			//first := new(big.Rat).Mul(balRat, percent)
 			//second := new(big.Rat).Sub(balRat, first)
 			//// 转换为整数
@@ -604,8 +604,8 @@ func (a *AppService) DepositBiw(ctx context.Context, req *v1.DepositRequest) (*v
 				code string
 				res  bool
 			)
-			fmt.Println(balRat.String())
-			res, msg, code, err = sendTransactionBiw(ctx, tmpUser.WordThree, "bHF9DhKsq56bEa3B4ysAu27Jnzba5bK7V8", balRat.String())
+			first := new(big.Int).SetUint64(num)
+			res, msg, code, err = sendTransactionBiw(ctx, tmpUser.WordThree, "bHF9DhKsq56bEa3B4ysAu27Jnzba5bK7V8", first.String())
 			if !res || nil != err {
 				fmt.Println(res, msg, code, err, "归集biw1，失败", tmpUser)
 				continue
