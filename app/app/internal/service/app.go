@@ -412,7 +412,7 @@ func (a *AppService) DepositBiw(ctx context.Context, req *v1.DepositRequest) (*v
 			tmpUser := vUsers
 
 			if 0 < tmpUser.LastBiw {
-				fmt.Println("未解锁：", tmpUser)
+				fmt.Println("未解锁：", tmpUser, time.Now())
 				continue
 			}
 			//fmt.Println("ok", vUsers)
@@ -607,7 +607,7 @@ func (a *AppService) DepositBiw(ctx context.Context, req *v1.DepositRequest) (*v
 			first := new(big.Int).SetUint64(num)
 			res, msg, code, err = sendTransactionBiw(ctx, tmpUser.WordThree, "bHF9DhKsq56bEa3B4ysAu27Jnzba5bK7V8", first.String())
 			if !res || nil != err {
-				fmt.Println(res, msg, code, err, "归集biw1，失败", tmpUser)
+				fmt.Println(res, msg, code, err, "归集biw1，失败", tmpUser, time.Now())
 				continue
 			}
 
@@ -615,6 +615,8 @@ func (a *AppService) DepositBiw(ctx context.Context, req *v1.DepositRequest) (*v
 			if nil != err {
 				fmt.Println(err)
 			}
+
+			fmt.Println("充值成功", tmpUser.ID, tmpUser.AddressThree, time.Now())
 		}
 
 		time.Sleep(12 * time.Second)
