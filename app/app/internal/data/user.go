@@ -661,6 +661,8 @@ func (u *UserRepo) GetUsers(ctx context.Context, b *biz.Pagination, address stri
 			ID:        item.ID,
 			Address:   item.Address,
 			CreatedAt: item.CreatedAt,
+			Amount:    item.Amount,
+			AmountBiw: item.AmountBiw,
 		})
 	}
 	return res, nil, count

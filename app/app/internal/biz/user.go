@@ -28,6 +28,7 @@ type User struct {
 	Last            uint64
 	LastBiw         uint64
 	Amount          uint64
+	AmountBiw       uint64
 	RecommendLevel  int64
 	CreatedAt       time.Time
 }
@@ -771,6 +772,8 @@ func (uuc *UserUseCase) AdminUserList(ctx context.Context, req *v1.AdminUserList
 			AreaTotal:        areaAll,
 			AreaMax:          areaMax,
 			AreaMin:          areaMin,
+			AmountBiw:        int64(vUsers.AmountBiw),
+			AmountUsdt:       int64(vUsers.Amount),
 		})
 	}
 

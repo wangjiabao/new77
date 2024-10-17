@@ -1774,6 +1774,10 @@ components:
                     type: string
                 historyRecommend:
                     type: string
+                amountUsdt:
+                    type: string
+                amountBiw:
+                    type: string
         AdminUserRecommendReply:
             type: object
             properties:
