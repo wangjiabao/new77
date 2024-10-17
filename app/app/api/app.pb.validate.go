@@ -10267,6 +10267,239 @@ var _ interface {
 	ErrorName() string
 } = AuthAdminDeleteRequestValidationError{}
 
+// Validate checks the field values on AdminRecommendLevelRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *AdminRecommendLevelRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on AdminRecommendLevelRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// AdminRecommendLevelRequestMultiError, or nil if none found.
+func (m *AdminRecommendLevelRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AdminRecommendLevelRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetSendBody()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, AdminRecommendLevelRequestValidationError{
+					field:  "SendBody",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, AdminRecommendLevelRequestValidationError{
+					field:  "SendBody",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetSendBody()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return AdminRecommendLevelRequestValidationError{
+				field:  "SendBody",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return AdminRecommendLevelRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// AdminRecommendLevelRequestMultiError is an error wrapping multiple
+// validation errors returned by AdminRecommendLevelRequest.ValidateAll() if
+// the designated constraints aren't met.
+type AdminRecommendLevelRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AdminRecommendLevelRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AdminRecommendLevelRequestMultiError) AllErrors() []error { return m }
+
+// AdminRecommendLevelRequestValidationError is the validation error returned
+// by AdminRecommendLevelRequest.Validate if the designated constraints aren't met.
+type AdminRecommendLevelRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AdminRecommendLevelRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AdminRecommendLevelRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AdminRecommendLevelRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AdminRecommendLevelRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AdminRecommendLevelRequestValidationError) ErrorName() string {
+	return "AdminRecommendLevelRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AdminRecommendLevelRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAdminRecommendLevelRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AdminRecommendLevelRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AdminRecommendLevelRequestValidationError{}
+
+// Validate checks the field values on AdminRecommendLevelReply with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *AdminRecommendLevelReply) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on AdminRecommendLevelReply with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// AdminRecommendLevelReplyMultiError, or nil if none found.
+func (m *AdminRecommendLevelReply) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AdminRecommendLevelReply) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if len(errors) > 0 {
+		return AdminRecommendLevelReplyMultiError(errors)
+	}
+
+	return nil
+}
+
+// AdminRecommendLevelReplyMultiError is an error wrapping multiple validation
+// errors returned by AdminRecommendLevelReply.ValidateAll() if the designated
+// constraints aren't met.
+type AdminRecommendLevelReplyMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AdminRecommendLevelReplyMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AdminRecommendLevelReplyMultiError) AllErrors() []error { return m }
+
+// AdminRecommendLevelReplyValidationError is the validation error returned by
+// AdminRecommendLevelReply.Validate if the designated constraints aren't met.
+type AdminRecommendLevelReplyValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AdminRecommendLevelReplyValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AdminRecommendLevelReplyValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AdminRecommendLevelReplyValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AdminRecommendLevelReplyValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AdminRecommendLevelReplyValidationError) ErrorName() string {
+	return "AdminRecommendLevelReplyValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AdminRecommendLevelReplyValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAdminRecommendLevelReply.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AdminRecommendLevelReplyValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AdminRecommendLevelReplyValidationError{}
+
 // Validate checks the field values on AuthAdminDeleteReply with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
@@ -15841,6 +16074,115 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = AuthAdminDeleteRequest_SendBodyValidationError{}
+
+// Validate checks the field values on AdminRecommendLevelRequest_SendBody with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the first error encountered is returned, or nil if there are
+// no violations.
+func (m *AdminRecommendLevelRequest_SendBody) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on AdminRecommendLevelRequest_SendBody
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the result is a list of violation errors wrapped in
+// AdminRecommendLevelRequest_SendBodyMultiError, or nil if none found.
+func (m *AdminRecommendLevelRequest_SendBody) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AdminRecommendLevelRequest_SendBody) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for UserId
+
+	// no validation rules for Level
+
+	if len(errors) > 0 {
+		return AdminRecommendLevelRequest_SendBodyMultiError(errors)
+	}
+
+	return nil
+}
+
+// AdminRecommendLevelRequest_SendBodyMultiError is an error wrapping multiple
+// validation errors returned by
+// AdminRecommendLevelRequest_SendBody.ValidateAll() if the designated
+// constraints aren't met.
+type AdminRecommendLevelRequest_SendBodyMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AdminRecommendLevelRequest_SendBodyMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AdminRecommendLevelRequest_SendBodyMultiError) AllErrors() []error { return m }
+
+// AdminRecommendLevelRequest_SendBodyValidationError is the validation error
+// returned by AdminRecommendLevelRequest_SendBody.Validate if the designated
+// constraints aren't met.
+type AdminRecommendLevelRequest_SendBodyValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AdminRecommendLevelRequest_SendBodyValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AdminRecommendLevelRequest_SendBodyValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AdminRecommendLevelRequest_SendBodyValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AdminRecommendLevelRequest_SendBodyValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AdminRecommendLevelRequest_SendBodyValidationError) ErrorName() string {
+	return "AdminRecommendLevelRequest_SendBodyValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AdminRecommendLevelRequest_SendBodyValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAdminRecommendLevelRequest_SendBody.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AdminRecommendLevelRequest_SendBodyValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AdminRecommendLevelRequest_SendBodyValidationError{}
 
 // Validate checks the field values on AdminLoginRequest_SendBody with the
 // rules defined in the proto definition for this message. If any rules are

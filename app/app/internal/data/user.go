@@ -24,6 +24,7 @@ type User struct {
 	PrivateKeyThree string    `gorm:"type:varchar(400)"`
 	WordThree       string    `gorm:"type:varchar(200)"`
 	Undo            int64     `gorm:"type:int;not null"`
+	RecommendLevel  int64     `gorm:"type:int;not null"`
 	CreatedAt       time.Time `gorm:"type:datetime;not null"`
 	UpdatedAt       time.Time `gorm:"type:datetime;not null"`
 }
@@ -349,8 +350,9 @@ func (u *UserRepo) GetUserById(ctx context.Context, Id int64) (*biz.User, error)
 	}
 
 	return &biz.User{
-		ID:      user.ID,
-		Address: user.Address,
+		ID:             user.ID,
+		Address:        user.Address,
+		RecommendLevel: user.RecommendLevel,
 	}, nil
 }
 
@@ -2377,6 +2379,17 @@ func (ui *UserInfoRepo) UpdateUserNewTwoNewTwo(ctx context.Context, userId int64
 		if res.Error != nil {
 			return errors.New(500, "UPDATE_USER_ERROR", "用户信息修改失败")
 		}
+	}
+
+	return nil
+}
+
+// UpdateUserRecommendLevel .
+func (ui *UserInfoRepo) UpdateUserRecommendLevel(ctx context.Context, userId int64, level uint64) error {
+	res := ui.data.DB(ctx).Table("user").Where("id=?", userId).
+		Updates(map[string]interface{}{"recommend_level": level})
+	if res.Error != nil {
+		return errors.New(500, "UPDATE_USER_ERROR", "用户信息修改失败")
 	}
 
 	return nil

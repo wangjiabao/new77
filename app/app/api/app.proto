@@ -410,6 +410,13 @@ service App {
 			get: "/api/admin_dhb/add_money"
 		};
 	};
+
+	rpc AdminRecommendLevelUpdate (AdminRecommendLevelRequest) returns (AdminRecommendLevelReply) {
+		option (google.api.http) = {
+			post: "/api/admin_dhb/admin_recommend_level"
+			body: "send_body"
+		};
+	};
 }
 
 message EthAuthorizeRequest {
@@ -994,6 +1001,19 @@ message AuthAdminDeleteRequest {
 	}
 
 	SendBody send_body = 1;
+}
+
+message AdminRecommendLevelRequest {
+	message SendBody{
+		int64 user_id = 1;
+		int64 level = 2;
+	}
+
+	SendBody send_body = 1;
+}
+
+message AdminRecommendLevelReply {
+
 }
 
 message AuthAdminDeleteReply {

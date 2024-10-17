@@ -55,6 +55,30 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /api/admin_dhb/admin_recommend_level:
+        post:
+            tags:
+                - App
+            operationId: App_AdminRecommendLevelUpdate
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/AdminRecommendLevelRequest_SendBody'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/AdminRecommendLevelReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/admin_dhb/admin_update_location_new_max:
         post:
             tags:
@@ -1642,6 +1666,16 @@ components:
                 userId:
                     type: string
                 password:
+                    type: string
+        AdminRecommendLevelReply:
+            type: object
+            properties: {}
+        AdminRecommendLevelRequest_SendBody:
+            type: object
+            properties:
+                userId:
+                    type: string
+                level:
                     type: string
         AdminRewardListReply:
             type: object

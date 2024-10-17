@@ -28,6 +28,7 @@ type User struct {
 	Last            uint64
 	LastBiw         uint64
 	Amount          uint64
+	RecommendLevel  int64
 	CreatedAt       time.Time
 }
 
@@ -330,6 +331,7 @@ type UserCurrentMonthRecommendRepo interface {
 
 type UserInfoRepo interface {
 	UpdateUserNewTwoNewTwo(ctx context.Context, userId int64, amount uint64, last int64, coinType string) error
+	UpdateUserRecommendLevel(ctx context.Context, userId int64, level uint64) error
 	UpdateUserLast(ctx context.Context, userId int64, coinType string) error
 	CreateUserInfo(ctx context.Context, u *User) (*UserInfo, error)
 	GetUserInfoByUserId(ctx context.Context, userId int64) (*UserInfo, error)
@@ -2839,6 +2841,12 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 						break
 					}
 
+					var tmpRecommendUser *User
+					tmpRecommendUser, err = uuc.repo.GetUserById(ctx, tmpMyTopUserRecommendUserId)
+					if nil != err || nil == tmpRecommendUser {
+						continue
+					}
+
 					var myUserRecommendUserLocationsLast []*LocationNew
 					myUserRecommendUserLocationsLast, err = uuc.locationRepo.GetLocationsNewByUserId(ctx, tmpMyTopUserRecommendUserId)
 					if nil != myUserRecommendUserLocationsLast {
@@ -2866,21 +2874,28 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 							}
 
 							var tmpMyRecommendAmount int64
-							if 0 == i { // 当前用户被此人直推
+							tmpI := i
+							lenMyUserRecommendUserLocationsLast := len(myUserRecommendUserLocationsLast)
+							if tmpRecommendUser.RecommendLevel > 0 && tmpRecommendUser.RecommendLevel < 9 {
+								tmpI = int(tmpRecommendUser.RecommendLevel) - 1
+								lenMyUserRecommendUserLocationsLast = 8
+							}
+
+							if 0 == tmpI { // 当前用户被此人直推
 								tmpMyRecommendAmount = tmpMinUsdt / 1000 * locationRewardRate / 100 * recommendOneRate
-							} else if 1 == i {
+							} else if 1 == tmpI {
 								tmpMyRecommendAmount = tmpMinUsdt / 1000 * locationRewardRate / 100 * recommendTwoRate
-							} else if 2 == i && 2 <= len(myUserRecommendUserLocationsLast) { // 3代需要复投1次
+							} else if 2 == tmpI && 2 <= lenMyUserRecommendUserLocationsLast { // 3代需要复投1次
 								tmpMyRecommendAmount = tmpMinUsdt / 1000 * locationRewardRate / 100 * recommendThreeRate
-							} else if 3 == i && 3 <= len(myUserRecommendUserLocationsLast) { // 4代需要复投2次
+							} else if 3 == tmpI && 3 <= lenMyUserRecommendUserLocationsLast { // 4代需要复投2次
 								tmpMyRecommendAmount = tmpMinUsdt / 1000 * locationRewardRate / 100 * recommendFourRate
-							} else if 4 == i && 4 <= len(myUserRecommendUserLocationsLast) { // 5代需要复投3次
+							} else if 4 == tmpI && 4 <= lenMyUserRecommendUserLocationsLast { // 5代需要复投3次
 								tmpMyRecommendAmount = tmpMinUsdt / 1000 * locationRewardRate / 100 * recommendFiveRate
-							} else if 5 == i && 5 <= len(myUserRecommendUserLocationsLast) { // 6代需要复投4次
+							} else if 5 == tmpI && 5 <= lenMyUserRecommendUserLocationsLast { // 6代需要复投4次
 								tmpMyRecommendAmount = tmpMinUsdt / 1000 * locationRewardRate / 100 * recommendSixRate
-							} else if 6 == i && 6 <= len(myUserRecommendUserLocationsLast) { // 7代需要复投5次
+							} else if 6 == tmpI && 6 <= lenMyUserRecommendUserLocationsLast { // 7代需要复投5次
 								tmpMyRecommendAmount = tmpMinUsdt / 1000 * locationRewardRate / 100 * recommendSevenRate
-							} else if 7 == i && 7 <= len(myUserRecommendUserLocationsLast) { // 8代需要复投6次
+							} else if 7 == tmpI && 7 <= lenMyUserRecommendUserLocationsLast { // 8代需要复投6次
 								tmpMyRecommendAmount = tmpMinUsdt / 1000 * locationRewardRate / 100 * recommendEightRate
 							} else {
 								continue
@@ -2994,6 +3009,20 @@ func (uuc *UserUseCase) AdminAddMoney(ctx context.Context, req *v1.AdminDailyAdd
 
 		return nil
 	}); nil != err {
+		return nil, err
+	}
+
+	return nil, nil
+}
+
+// AdminRecommendLevelUpdate  .
+func (uuc *UserUseCase) AdminRecommendLevelUpdate(ctx context.Context, req *v1.AdminRecommendLevelRequest) (*v1.AdminRecommendLevelReply, error) {
+	var (
+		err error
+	)
+
+	err = uuc.uiRepo.UpdateUserRecommendLevel(ctx, req.SendBody.UserId, uint64(req.SendBody.Level))
+	if nil != err {
 		return nil, err
 	}
 

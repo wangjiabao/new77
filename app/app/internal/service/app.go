@@ -913,6 +913,11 @@ func (a *AppService) AdminAddMoney(ctx context.Context, req *v1.AdminDailyAddMon
 	return a.uuc.AdminAddMoney(ctx, req)
 }
 
+// AdminRecommendLevelUpdate  .
+func (a *AppService) AdminRecommendLevelUpdate(ctx context.Context, req *v1.AdminRecommendLevelRequest) (*v1.AdminRecommendLevelReply, error) {
+	return a.uuc.AdminRecommendLevelUpdate(ctx, req)
+}
+
 // DepositBak deposit.
 func (a *AppService) DepositBak(ctx context.Context, req *v1.DepositRequest) (*v1.DepositReply, error) {
 	end := time.Now().UTC().Add(50 * time.Second)
