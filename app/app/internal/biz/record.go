@@ -132,7 +132,7 @@ type LocationRepo interface {
 	GetLocationsNewByUserId(ctx context.Context, userId int64) ([]*LocationNew, error)
 	GetLocationsNew2ByUserId(ctx context.Context, userId int64) ([]*LocationNew, error)
 	UpdateLocationNew(ctx context.Context, id int64, status string, current int64, stopDate time.Time) error
-	UpdateLocationNewNew(ctx context.Context, id int64, status string, current int64, amountB int64, biw int64, stopDate time.Time) error
+	UpdateLocationNewNew(ctx context.Context, id int64, userId int64, status string, current int64, amountB int64, biw int64, stopDate time.Time) error
 	UpdateLocationNewNewNew(ctx context.Context, id int64, current int64) error
 	UpdateLocationNew2(ctx context.Context, id int64, status string, current int64, stopDate time.Time) error
 	UpdateLocationNewCurrent(ctx context.Context, id int64, current int64) error

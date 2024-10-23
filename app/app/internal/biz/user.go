@@ -1409,7 +1409,7 @@ func (uuc *UserUseCase) AdminConfigUpdateListen(ctx context.Context, req *v1.Adm
 						if runningLocation.CurrentMax >= runningLocation.CurrentMaxNew {
 							tmpMaxNew = runningLocation.CurrentMax - runningLocation.CurrentMaxNew
 						}
-						err = uuc.locationRepo.UpdateLocationNewNew(ctx, runningLocation.ID, runningLocation.Status, tmp, tmpMaxNew, 0, runningLocation.StopDate) // 分红占位数据修改
+						err = uuc.locationRepo.UpdateLocationNewNew(ctx, runningLocation.ID, runningLocation.UserId, runningLocation.Status, tmp, tmpMaxNew, 0, runningLocation.StopDate) // 分红占位数据修改
 						if nil != err {
 							return err
 						}
@@ -2771,7 +2771,7 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 					tmpMaxNew = vUserLocations.CurrentMax - vUserLocations.CurrentMaxNew
 				}
 				if 0 < tmpCurrentReward && 0 < bLocationRewardAmount {
-					err = uuc.locationRepo.UpdateLocationNewNew(ctx, vUserLocations.ID, tmpStatus, tmpCurrentReward, tmpMaxNew, bLocationRewardAmount, tmpStopDate) // 分红占位数据修改
+					err = uuc.locationRepo.UpdateLocationNewNew(ctx, vUserLocations.ID, vUserLocations.UserId, tmpStatus, tmpCurrentReward, tmpMaxNew, bLocationRewardAmount, tmpStopDate) // 分红占位数据修改
 					if nil != err {
 						return err
 					}
@@ -2928,7 +2928,7 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 									}
 
 									if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
-										err = uuc.locationRepo.UpdateLocationNewNew(ctx, tmpMyTopUserRecommendUserLocationLast.ID, tmpStatus, tmpMyRecommendAmount, tmpMaxNew, bAmount, tmpStopDate) // 分红占位数据修改
+										err = uuc.locationRepo.UpdateLocationNewNew(ctx, tmpMyTopUserRecommendUserLocationLast.ID, tmpMyTopUserRecommendUserLocationLast.UserId, tmpStatus, tmpMyRecommendAmount, tmpMaxNew, bAmount, tmpStopDate) // 分红占位数据修改
 										if nil != err {
 											return err
 										}
@@ -3177,7 +3177,7 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 						}
 
 						if 0 < tmpCurrentReward && 0 < bLocationRewardAmount {
-							err = uuc.locationRepo.UpdateLocationNewNew(ctx, vUserLocationsItem.ID, vUserLocationsItem.Status, tmpCurrentReward, tmpMaxNew, bLocationRewardAmount, vUserLocationsItem.StopDate) // 分红占位数据修改
+							err = uuc.locationRepo.UpdateLocationNewNew(ctx, vUserLocationsItem.ID, vUserLocationsItem.UserId, vUserLocationsItem.Status, tmpCurrentReward, tmpMaxNew, bLocationRewardAmount, vUserLocationsItem.StopDate) // 分红占位数据修改
 							if nil != err {
 								return err
 							}
@@ -3273,7 +3273,7 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 						}
 
 						if 0 < tmpCurrentReward && 0 < bLocationRewardAmount {
-							err = uuc.locationRepo.UpdateLocationNewNew(ctx, vUserLocationsItem.ID, vUserLocationsItem.Status, tmpCurrentReward, tmpMaxNew, bLocationRewardAmount, vUserLocationsItem.StopDate) // 分红占位数据修改
+							err = uuc.locationRepo.UpdateLocationNewNew(ctx, vUserLocationsItem.ID, vUserLocationsItem.UserId, vUserLocationsItem.Status, tmpCurrentReward, tmpMaxNew, bLocationRewardAmount, vUserLocationsItem.StopDate) // 分红占位数据修改
 							if nil != err {
 								return err
 							}
@@ -3368,7 +3368,7 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 						}
 
 						if 0 < tmpCurrentReward && 0 < bLocationRewardAmount {
-							err = uuc.locationRepo.UpdateLocationNewNew(ctx, vUserLocationsItem.ID, vUserLocationsItem.Status, tmpCurrentReward, tmpMaxNew, bLocationRewardAmount, vUserLocationsItem.StopDate) // 分红占位数据修改
+							err = uuc.locationRepo.UpdateLocationNewNew(ctx, vUserLocationsItem.ID, vUserLocationsItem.UserId, vUserLocationsItem.Status, tmpCurrentReward, tmpMaxNew, bLocationRewardAmount, vUserLocationsItem.StopDate) // 分红占位数据修改
 							if nil != err {
 								return err
 							}
@@ -3463,7 +3463,7 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 						}
 
 						if 0 < tmpCurrentReward && 0 < bLocationRewardAmount {
-							err = uuc.locationRepo.UpdateLocationNewNew(ctx, vUserLocationsItem.ID, vUserLocationsItem.Status, tmpCurrentReward, tmpMaxNew, bLocationRewardAmount, vUserLocationsItem.StopDate) // 分红占位数据修改
+							err = uuc.locationRepo.UpdateLocationNewNew(ctx, vUserLocationsItem.ID, vUserLocationsItem.UserId, vUserLocationsItem.Status, tmpCurrentReward, tmpMaxNew, bLocationRewardAmount, vUserLocationsItem.StopDate) // 分红占位数据修改
 							if nil != err {
 								return err
 							}
@@ -3558,7 +3558,7 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 						}
 
 						if 0 < tmpCurrentReward && 0 < bLocationRewardAmount {
-							err = uuc.locationRepo.UpdateLocationNewNew(ctx, vUserLocationsItem.ID, vUserLocationsItem.Status, tmpCurrentReward, tmpMaxNew, bLocationRewardAmount, vUserLocationsItem.StopDate) // 分红占位数据修改
+							err = uuc.locationRepo.UpdateLocationNewNew(ctx, vUserLocationsItem.ID, vUserLocationsItem.UserId, vUserLocationsItem.Status, tmpCurrentReward, tmpMaxNew, bLocationRewardAmount, vUserLocationsItem.StopDate) // 分红占位数据修改
 							if nil != err {
 								return err
 							}
