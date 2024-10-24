@@ -30,6 +30,7 @@ type User struct {
 	Amount          uint64
 	AmountBiw       uint64
 	RecommendLevel  int64
+	OutRate         int64
 	CreatedAt       time.Time
 }
 
@@ -641,7 +642,7 @@ func (uuc *UserUseCase) AdminUserList(ctx context.Context, req *v1.AdminUserList
 			myRecommendUserIds []int64
 			locations          []*Location
 			lastLevel          int64 = -1
-			out                int64
+			out                      = vUsers.OutRate
 			areaAll            int64
 			areaMax            int64
 			areaMin            int64
@@ -666,9 +667,9 @@ func (uuc *UserUseCase) AdminUserList(ctx context.Context, req *v1.AdminUserList
 					}
 				}
 
-				if "stop" == v.Status {
-					out++
-				}
+				//if "stop" == v.Status {
+				//	out++
+				//}
 				var tmpLastLevel int64
 				// 1大区
 				if v.Total >= v.TotalTwo && v.Total >= v.TotalThree {

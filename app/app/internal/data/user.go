@@ -25,6 +25,7 @@ type User struct {
 	WordThree       string    `gorm:"type:varchar(200)"`
 	Undo            int64     `gorm:"type:int;not null"`
 	RecommendLevel  int64     `gorm:"type:int;not null"`
+	OutRate         int64     `gorm:"type:int;not null"`
 	CreatedAt       time.Time `gorm:"type:datetime;not null"`
 	UpdatedAt       time.Time `gorm:"type:datetime;not null"`
 }
@@ -663,6 +664,7 @@ func (u *UserRepo) GetUsers(ctx context.Context, b *biz.Pagination, address stri
 			CreatedAt: item.CreatedAt,
 			Amount:    item.Amount,
 			AmountBiw: item.AmountBiw,
+			OutRate:   item.OutRate,
 		})
 	}
 	return res, nil, count
