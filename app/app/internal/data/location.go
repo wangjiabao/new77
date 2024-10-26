@@ -917,7 +917,7 @@ func (lr *LocationRepo) UpdateLocationNew(ctx context.Context, id int64, status 
 }
 
 // UpdateLocationNewNew .
-func (lr *LocationRepo) UpdateLocationNewNew(ctx context.Context, id int64, userId int64, status string, current int64, amountB int64, biw int64, stopDate time.Time) error {
+func (lr *LocationRepo) UpdateLocationNewNew(ctx context.Context, id int64, userId int64, status string, current int64, amountB int64, biw int64, stopDate time.Time, usdt int64) error {
 
 	if "stop" == status {
 		res := lr.data.DB(ctx).Table("location_new").
@@ -932,6 +932,19 @@ func (lr *LocationRepo) UpdateLocationNewNew(ctx context.Context, id int64, user
 			Updates(map[string]interface{}{"out": gorm.Expr("out + ?", 1)})
 		if 0 == res.RowsAffected || res.Error != nil {
 			return res.Error
+		}
+
+		var reward Reward
+		reward.UserId = userId
+		reward.Amount = usdt
+		reward.BalanceRecordId = id
+		reward.Type = "out"   // 本次分红的行为类型
+		reward.Reason = "out" // 给我分红的理由
+		reward.ReasonLocationId = id
+		var err error
+		err = lr.data.DB(ctx).Table("reward").Create(&reward).Error
+		if err != nil {
+			return err
 		}
 	} else {
 		res := lr.data.DB(ctx).Table("location_new").
@@ -1260,6 +1273,45 @@ func (lr *LocationRepo) GetRewardLocationByIds(ctx context.Context, ids ...int64
 	return res, nil
 }
 
+// GetLocationsOut .
+func (lr *LocationRepo) GetLocationsOut(ctx context.Context, b *biz.Pagination, userId int64, status string) ([]*biz.Reward, error, int64) {
+	var (
+		locations []*Reward
+		count     int64
+	)
+	instance := lr.data.db.Table("reward").Where("type=?", "out")
+
+	if 0 < userId {
+		instance = instance.Where("user_id=?", userId)
+	}
+
+	instance = instance.Count(&count)
+	if err := instance.Scopes(Paginate(b.PageNum, b.PageSize)).Order("id desc").Find(&locations).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.NotFound("LOCATION_NOT_FOUND", "location not found"), 0
+		}
+
+		return nil, errors.New(500, "LOCATION ERROR", err.Error()), 0
+	}
+
+	res := make([]*biz.Reward, 0)
+	for _, location := range locations {
+		res = append(res, &biz.Reward{
+			ID:              location.ID,
+			UserId:          location.UserId,
+			Amount:          location.Amount,
+			AmountB:         location.AmountB,
+			BalanceRecordId: location.BalanceRecordId,
+			Type:            location.Type,
+			TypeRecordId:    location.TypeRecordId,
+			Reason:          location.Reason,
+			CreatedAt:       location.CreatedAt,
+		})
+	}
+
+	return res, nil, count
+}
+
 // GetLocations .
 func (lr *LocationRepo) GetLocations(ctx context.Context, b *biz.Pagination, userId int64, status string) ([]*biz.LocationNew, error, int64) {
 	var (
@@ -1332,6 +1384,80 @@ func (lr *LocationRepo) GetLocations2(ctx context.Context, b *biz.Pagination, us
 	}
 
 	return res, nil, count
+}
+
+func (lr *LocationRepo) GetEthUserRecordListByUserId(ctx context.Context, b *biz.Pagination, userId int64) ([]*biz.EthUserRecord, error, int64) {
+	var (
+		count         int64
+		ethUserRecord []*EthUserRecord
+	)
+
+	res := make([]*biz.EthUserRecord, 0)
+
+	instance := lr.data.db.Table("eth_user_record")
+	if 0 < userId {
+		instance = instance.Where("user_id=?", userId)
+	}
+
+	instance = instance.Count(&count)
+	if err := instance.Scopes(Paginate(b.PageNum, b.PageSize)).Order("id desc").Find(&ethUserRecord).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.NotFound("LOCATION_NOT_FOUND", "location not found"), 0
+		}
+
+		return nil, errors.New(500, "LOCATION ERROR", err.Error()), 0
+	}
+
+	for _, item := range ethUserRecord {
+		res = append(res, &biz.EthUserRecord{
+			ID:        item.ID,
+			UserId:    item.UserId,
+			Hash:      item.Hash,
+			Status:    item.Status,
+			Type:      item.Type,
+			Amount:    item.Amount,
+			AmountTwo: item.AmountTwo,
+			CoinType:  item.CoinType,
+			CreatedAt: item.CreatedAt,
+		})
+	}
+
+	return res, nil, count
+}
+
+// GetUserBalanceRecordsTwo .
+func (lr *LocationRepo) GetUserBalanceRecordsTwo(ctx context.Context, userId int64) ([]*biz.UserBalanceRecord, error) {
+	var (
+		records []*UserBalanceRecord
+	)
+
+	instance := lr.data.db.Table("user_balance_record")
+	instance = instance.Where("type=? and coin_type=?", "deposit", "USDT")
+
+	if 0 < userId {
+		instance = instance.Where("user_id=?", userId)
+	}
+
+	if err := instance.Order("id desc").Find(&records).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.NotFound("LOCATION_NOT_FOUND", "location not found")
+		}
+
+		return nil, errors.New(500, "LOCATION ERROR", err.Error())
+	}
+
+	res := make([]*biz.UserBalanceRecord, 0)
+	for _, v := range records {
+		res = append(res, &biz.UserBalanceRecord{
+			ID:        v.ID,
+			UserId:    v.UserId,
+			Amount:    v.Amount,
+			CoinType:  v.CoinType,
+			CreatedAt: v.CreatedAt,
+		})
+	}
+
+	return res, nil
 }
 
 // GetUserBalanceRecords .
