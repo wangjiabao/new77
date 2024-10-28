@@ -2164,6 +2164,48 @@ func (ub *UserBalanceRepo) FourRewardBiw(ctx context.Context, userId int64, rewa
 	return userBalanceRecode.ID, nil
 }
 
+// FourRewardBYes .
+func (ub *UserBalanceRepo) FourRewardYes(ctx context.Context, rewardAmount int64) error {
+	var (
+		err    error
+		reward Reward
+	)
+	reward.UserId = 999999
+	reward.Amount = rewardAmount
+	reward.Type = "four_yes" // 本次分红的行为类型
+	reward.Reason = "four_yes"
+	err = ub.data.DB(ctx).Table("reward").Create(&reward).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// GetRewardFourYes .
+func (ub *UserBalanceRepo) GetRewardFourYes(ctx context.Context) (*biz.Reward, error) {
+	var reward *Reward
+	if err := ub.data.db.Where("user_id=? and reason=?", 999999, "four_yes").Order("id desc").Table("reward").First(&reward).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+
+		return nil, errors.New(500, "REWARD ERROR", err.Error())
+	}
+	return &biz.Reward{
+		ID:               reward.ID,
+		UserId:           reward.UserId,
+		Amount:           reward.Amount,
+		BalanceRecordId:  reward.BalanceRecordId,
+		Type:             reward.Type,
+		TypeRecordId:     reward.TypeRecordId,
+		Reason:           reward.Reason,
+		ReasonLocationId: reward.ReasonLocationId,
+		LocationType:     reward.LocationType,
+		CreatedAt:        reward.CreatedAt,
+	}, nil
+}
+
 // ExchangeBiw .
 func (ub *UserBalanceRepo) ExchangeBiw(ctx context.Context, userId int64, currentMaxNew int64, feeRate int64) (int64, error) {
 	var userBalance UserBalance

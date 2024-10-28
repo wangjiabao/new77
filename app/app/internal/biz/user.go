@@ -215,7 +215,9 @@ type UserBalanceRepo interface {
 	PriceChange(ctx context.Context, userId int64, rewardAmount int64, up string) error
 	AreaRewardBiw(ctx context.Context, userId int64, rewardAmount int64, tmpCurrentReward int64, areaType int64, stop string, tmpMaxNew int64, feeRate int64) (int64, error)
 	FourRewardBiw(ctx context.Context, userId int64, rewardAmount int64, num int64) (int64, error)
+	FourRewardYes(ctx context.Context, rewardAmount int64) error
 	ExchangeBiw(ctx context.Context, userId int64, currentMaxNew int64, feeRate int64) (int64, error)
+	GetRewardFourYes(ctx context.Context) (*Reward, error)
 	SystemWithdrawReward(ctx context.Context, amount int64, locationId int64) error
 	SystemReward(ctx context.Context, amount int64, locationId int64) error
 	SystemDailyReward(ctx context.Context, amount int64, locationId int64) error
@@ -498,7 +500,15 @@ func (uuc *UserUseCase) AdminRewardList(ctx context.Context, req *v1.AdminReward
 			}
 		}
 
+		if 999999 == vUserReward.UserId {
+			tmpUser = "系统数据不需理会"
+		}
+
 		tmpReason := vUserReward.Reason
+		if "out" == tmpReason {
+			tmpUser = "系统数据不需理会"
+		}
+
 		if "exchange_2" == tmpReason {
 			tmpReason = "exchange"
 		}
@@ -3172,9 +3182,7 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 	var (
 		day               = -1
 		userLocationsYes  []*LocationNew
-		userLocationsBef  []*LocationNew
 		rewardLocationYes int64
-		rewardLocationBef int64
 	)
 	// 全网
 	userLocationsYes, err = uuc.locationRepo.GetLocationDailyYesterday(ctx, day)
@@ -3666,12 +3674,18 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 	}
 
 	// 全网前天
-	userLocationsBef, err = uuc.locationRepo.GetLocationDailyYesterday(ctx, day-1)
-	for _, userLocationBef := range userLocationsBef {
-		rewardLocationBef += userLocationBef.Usdt
+	var (
+		rewardFourYes *Reward
+	)
+	fmt.Println("今天：", rewardLocationYes)
+	rewardFourYes, err = uuc.ubRepo.GetRewardFourYes(ctx) // 推荐人奖励
+	if nil == err && nil != rewardFourYes {
+		rewardLocationYes += rewardFourYes.Amount
 	}
+	fmt.Println("今天+昨日沉淀：", rewardLocationYes)
 	// 全球
-	totalReward := rewardLocationYes/100/100*70*total + rewardLocationBef/100/100*30*total
+	//totalReward := rewardLocationYes/100/100*70*total + rewardLocationBef/100/100*30*total
+	totalReward := rewardLocationYes / 100 / 100 * 70 * total
 
 	var (
 		fourUserRecommendTotal map[int64]int64
@@ -3767,6 +3781,18 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 				continue
 			}
 		}
+	}
+
+	fmt.Println("今日沉淀", rewardLocationYes/100/100*30*total)
+	if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
+		err = uuc.ubRepo.FourRewardYes(ctx, rewardLocationYes/100/100*30*total) // 推荐人奖励
+		if nil != err {
+			return err
+		}
+
+		return nil
+	}); nil != err {
+		fmt.Println("err reward daily four yes", err, rewardLocationYes/100/100*30*total)
 	}
 
 	return &v1.AdminDailyLocationRewardReply{}, nil
