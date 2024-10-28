@@ -3677,6 +3677,7 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 	var (
 		rewardFourYes *Reward
 	)
+	rewardLocationYes = rewardLocationYes / 100 * total
 	fmt.Println("今天：", rewardLocationYes)
 	rewardFourYes, err = uuc.ubRepo.GetRewardFourYes(ctx) // 推荐人奖励
 	if nil == err && nil != rewardFourYes {
@@ -3685,7 +3686,7 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 	fmt.Println("今天+昨日沉淀：", rewardLocationYes)
 	// 全球
 	//totalReward := rewardLocationYes/100/100*70*total + rewardLocationBef/100/100*30*total
-	totalReward := rewardLocationYes / 100 / 100 * 70 * total
+	totalReward := rewardLocationYes / 100 * 70
 
 	var (
 		fourUserRecommendTotal map[int64]int64
@@ -3783,16 +3784,16 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 		}
 	}
 
-	fmt.Println("今日沉淀", rewardLocationYes/100/100*30*total)
+	fmt.Println("今日沉淀", rewardLocationYes/100*30)
 	if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
-		err = uuc.ubRepo.FourRewardYes(ctx, rewardLocationYes/100/100*30*total) // 推荐人奖励
+		err = uuc.ubRepo.FourRewardYes(ctx, rewardLocationYes/100*30) // 推荐人奖励
 		if nil != err {
 			return err
 		}
 
 		return nil
 	}); nil != err {
-		fmt.Println("err reward daily four yes", err, rewardLocationYes/100/100*30*total)
+		fmt.Println("err reward daily four yes", err, rewardLocationYes/100*30)
 	}
 
 	return &v1.AdminDailyLocationRewardReply{}, nil
