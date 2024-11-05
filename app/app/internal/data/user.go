@@ -492,8 +492,11 @@ func (u *UserRepo) GetUserByUserIds(ctx context.Context, userIds ...int64) (map[
 	res := make(map[int64]*biz.User, 0)
 	for _, item := range users {
 		res[item.ID] = &biz.User{
-			ID:      item.ID,
-			Address: item.Address,
+			ID:           item.ID,
+			Address:      item.Address,
+			AddressTwo:   item.AddressTwo,
+			AddressThree: item.AddressThree,
+			OutRate:      item.OutRate,
 		}
 	}
 	return res, nil
@@ -2161,6 +2164,48 @@ func (ub *UserBalanceRepo) FourRewardBiw(ctx context.Context, userId int64, rewa
 	return userBalanceRecode.ID, nil
 }
 
+// FourRewardBYes .
+func (ub *UserBalanceRepo) FourRewardYes(ctx context.Context, rewardAmount int64) error {
+	var (
+		err    error
+		reward Reward
+	)
+	reward.UserId = 999999
+	reward.Amount = rewardAmount
+	reward.Type = "four_yes" // 本次分红的行为类型
+	reward.Reason = "four_yes"
+	err = ub.data.DB(ctx).Table("reward").Create(&reward).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// GetRewardFourYes .
+func (ub *UserBalanceRepo) GetRewardFourYes(ctx context.Context) (*biz.Reward, error) {
+	var reward *Reward
+	if err := ub.data.db.Where("user_id=? and reason=?", 999999, "four_yes").Order("id desc").Table("reward").First(&reward).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+
+		return nil, errors.New(500, "REWARD ERROR", err.Error())
+	}
+	return &biz.Reward{
+		ID:               reward.ID,
+		UserId:           reward.UserId,
+		Amount:           reward.Amount,
+		BalanceRecordId:  reward.BalanceRecordId,
+		Type:             reward.Type,
+		TypeRecordId:     reward.TypeRecordId,
+		Reason:           reward.Reason,
+		ReasonLocationId: reward.ReasonLocationId,
+		LocationType:     reward.LocationType,
+		CreatedAt:        reward.CreatedAt,
+	}, nil
+}
+
 // ExchangeBiw .
 func (ub *UserBalanceRepo) ExchangeBiw(ctx context.Context, userId int64, currentMaxNew int64, feeRate int64) (int64, error) {
 	var userBalance UserBalance
@@ -2380,6 +2425,25 @@ func (ui *UserInfoRepo) UpdateUserNewTwoNewTwo(ctx context.Context, userId int64
 	} else {
 		res := ui.data.DB(ctx).Table("user").Where("id=?", userId).
 			Updates(map[string]interface{}{"last_biw": last, "amount_biw": gorm.Expr("amount_biw + ?", amount)})
+		if res.Error != nil {
+			return errors.New(500, "UPDATE_USER_ERROR", "用户信息修改失败")
+		}
+	}
+
+	return nil
+}
+
+// UpdateUserNewTwoNewThree .
+func (ui *UserInfoRepo) UpdateUserNewTwoNewThree(ctx context.Context, userId int64, amount uint64, last int64, coinType string) error {
+	if "USDT" == coinType {
+		res := ui.data.DB(ctx).Table("user").Where("id=?", userId).
+			Updates(map[string]interface{}{"last": last, "amount": amount})
+		if res.Error != nil {
+			return errors.New(500, "UPDATE_USER_ERROR", "用户信息修改失败")
+		}
+	} else {
+		res := ui.data.DB(ctx).Table("user").Where("id=?", userId).
+			Updates(map[string]interface{}{"last_biw": last, "amount_biw": amount})
 		if res.Error != nil {
 			return errors.New(500, "UPDATE_USER_ERROR", "用户信息修改失败")
 		}
@@ -4246,6 +4310,38 @@ func (ub UserBalanceRepo) GetUserBalanceRecordUsdtTotal(ctx context.Context) (in
 		Where("type=?", "deposit").
 		Where("coin_type=?", "usdt").
 		Select("sum(amount) as total").Take(&total).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return total.Total, errors.NotFound("USER_BALANCE_RECORD_NOT_FOUND", "user balance not found")
+		}
+
+		return total.Total, errors.New(500, "USER BALANCE RECORD ERROR", err.Error())
+	}
+
+	return total.Total, nil
+}
+
+// GetUserBalanceRecordUsdtTotalTwo .
+func (ub UserBalanceRepo) GetUserBalanceRecordUsdtTotalTwo(ctx context.Context) (int64, error) {
+	var total UserBalanceTotal
+	if err := ub.data.db.Table("eth_user_record").
+		Where("coin_type=?", "USDT").
+		Select("sum(amount_two) as total").Take(&total).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return total.Total, errors.NotFound("USER_BALANCE_RECORD_NOT_FOUND", "user balance not found")
+		}
+
+		return total.Total, errors.New(500, "USER BALANCE RECORD ERROR", err.Error())
+	}
+
+	return total.Total, nil
+}
+
+// GetUserBalanceRecordUsdtTotalThree .
+func (ub UserBalanceRepo) GetUserBalanceRecordUsdtTotalThree(ctx context.Context) (int64, error) {
+	var total UserBalanceTotal
+	if err := ub.data.db.Table("eth_user_record").
+		Where("coin_type=?", "DHB").
+		Select("sum(amount_two) as total").Take(&total).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return total.Total, errors.NotFound("USER_BALANCE_RECORD_NOT_FOUND", "user balance not found")
 		}

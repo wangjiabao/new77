@@ -215,7 +215,9 @@ type UserBalanceRepo interface {
 	PriceChange(ctx context.Context, userId int64, rewardAmount int64, up string) error
 	AreaRewardBiw(ctx context.Context, userId int64, rewardAmount int64, tmpCurrentReward int64, areaType int64, stop string, tmpMaxNew int64, feeRate int64) (int64, error)
 	FourRewardBiw(ctx context.Context, userId int64, rewardAmount int64, num int64) (int64, error)
+	FourRewardYes(ctx context.Context, rewardAmount int64) error
 	ExchangeBiw(ctx context.Context, userId int64, currentMaxNew int64, feeRate int64) (int64, error)
+	GetRewardFourYes(ctx context.Context) (*Reward, error)
 	SystemWithdrawReward(ctx context.Context, amount int64, locationId int64) error
 	SystemReward(ctx context.Context, amount int64, locationId int64) error
 	SystemDailyReward(ctx context.Context, amount int64, locationId int64) error
@@ -264,6 +266,8 @@ type UserBalanceRepo interface {
 	GetWithdrawNotDeal(ctx context.Context) ([]*Withdraw, error)
 	GetWithdrawByUserIds(ctx context.Context, userIds []int64) ([]*Withdraw, error)
 	GetUserBalanceRecordUsdtTotal(ctx context.Context) (int64, error)
+	GetUserBalanceRecordUsdtTotalTwo(ctx context.Context) (int64, error)
+	GetUserBalanceRecordUsdtTotalThree(ctx context.Context) (int64, error)
 	GetUserBalanceRecordCsdTotal(ctx context.Context) (int64, error)
 	GetUserBalanceRecordHbsTotal(ctx context.Context) (int64, error)
 	GetUserBalanceRecordUsdtTotalToday(ctx context.Context) (int64, error)
@@ -333,6 +337,7 @@ type UserCurrentMonthRecommendRepo interface {
 
 type UserInfoRepo interface {
 	UpdateUserNewTwoNewTwo(ctx context.Context, userId int64, amount uint64, last int64, coinType string) error
+	UpdateUserNewTwoNewThree(ctx context.Context, userId int64, amount uint64, last int64, coinType string) error
 	UpdateUserRecommendLevel(ctx context.Context, userId int64, level uint64) error
 	UpdateUserLast(ctx context.Context, userId int64, coinType string) error
 	CreateUserInfo(ctx context.Context, u *User) (*UserInfo, error)
@@ -495,7 +500,15 @@ func (uuc *UserUseCase) AdminRewardList(ctx context.Context, req *v1.AdminReward
 			}
 		}
 
+		if 999999 == vUserReward.UserId {
+			tmpUser = "系统数据不需理会"
+		}
+
 		tmpReason := vUserReward.Reason
+		if "out" == tmpReason {
+			tmpUser = "系统数据不需理会"
+		}
+
 		if "exchange_2" == tmpReason {
 			tmpReason = "exchange"
 		}
@@ -824,7 +837,7 @@ func (uuc *UserUseCase) AdminAreaLevelUpdate(ctx context.Context, req *v1.AdminA
 
 func (uuc *UserUseCase) AdminRecordList(ctx context.Context, req *v1.RecordListRequest) (*v1.RecordListReply, error) {
 	var (
-		locations  []*UserBalanceRecord
+		locations  []*EthUserRecord
 		userSearch *User
 		userId     int64
 		userIds    []int64
@@ -847,10 +860,10 @@ func (uuc *UserUseCase) AdminRecordList(ctx context.Context, req *v1.RecordListR
 		userId = userSearch.ID
 	}
 
-	locations, err, count = uuc.locationRepo.GetUserBalanceRecords(ctx, &Pagination{
+	locations, err, count = uuc.locationRepo.GetEthUserRecordListByUserId(ctx, &Pagination{
 		PageNum:  int(req.Page),
 		PageSize: 10,
-	}, userId, "usdt")
+	}, userId)
 	if nil != err {
 		return res, nil
 	}
@@ -874,10 +887,18 @@ func (uuc *UserUseCase) AdminRecordList(ctx context.Context, req *v1.RecordListR
 			continue
 		}
 
+		tmpCoinType := "biw"
+		if "USDT" == v.CoinType {
+			tmpCoinType = "usdt"
+		}
+
 		res.Locations = append(res.Locations, &v1.RecordListReply_LocationList{
-			CreatedAt: v.CreatedAt.Add(8 * time.Hour).Format("2006-01-02 15:04:05"),
-			Address:   users[v.UserId].Address,
-			Amount:    fmt.Sprintf("%.2f", float64(v.Amount)/float64(100000)),
+			CreatedAt:    v.CreatedAt.Add(8 * time.Hour).Format("2006-01-02 15:04:05"),
+			Address:      users[v.UserId].Address,
+			AddressThree: users[v.UserId].AddressThree,
+			AddressTwo:   users[v.UserId].AddressTwo,
+			Amount:       fmt.Sprintf("%.2f", float64(v.AmountTwo)),
+			CoinType:     tmpCoinType,
 		})
 	}
 
@@ -887,14 +908,14 @@ func (uuc *UserUseCase) AdminRecordList(ctx context.Context, req *v1.RecordListR
 
 func (uuc *UserUseCase) AdminLocationList(ctx context.Context, req *v1.AdminLocationListRequest) (*v1.AdminLocationListReply, error) {
 	var (
-		locations  []*LocationNew
-		userSearch *User
-		userId     int64
-		userIds    []int64
-		userIdsMap map[int64]int64
-		users      map[int64]*User
-		count      int64
-		err        error
+		locationsOut []*Reward
+		userSearch   *User
+		userId       int64
+		userIds      []int64
+		userIdsMap   map[int64]int64
+		users        map[int64]*User
+		count        int64
+		err          error
 	)
 
 	res := &v1.AdminLocationListReply{
@@ -912,58 +933,98 @@ func (uuc *UserUseCase) AdminLocationList(ctx context.Context, req *v1.AdminLoca
 
 	status := "stop"
 	if "running" == req.Status {
+		var (
+			locations []*LocationNew
+		)
+
 		status = "running"
-	}
-	locations, err, count = uuc.locationRepo.GetLocations(ctx, &Pagination{
-		PageNum:  int(req.Page),
-		PageSize: 10,
-	}, userId, status)
-	if nil != err {
-		return res, nil
-	}
-	res.Count = count
+		locations, err, count = uuc.locationRepo.GetLocations(ctx, &Pagination{
+			PageNum:  int(req.Page),
+			PageSize: 10,
+		}, userId, status)
+		if nil != err {
+			return res, nil
+		}
+		res.Count = count
 
-	userIdsMap = make(map[int64]int64, 0)
-	for _, vLocations := range locations {
-		userIdsMap[vLocations.UserId] = vLocations.UserId
-	}
-	for _, v := range userIdsMap {
-		userIds = append(userIds, v)
-	}
-
-	users, err = uuc.repo.GetUserByUserIds(ctx, userIds...)
-	if nil != err {
-		return res, nil
-	}
-
-	for _, v := range locations {
-		if _, ok := users[v.UserId]; !ok {
-			continue
+		userIdsMap = make(map[int64]int64, 0)
+		for _, vLocations := range locations {
+			userIdsMap[vLocations.UserId] = vLocations.UserId
+		}
+		for _, v := range userIdsMap {
+			userIds = append(userIds, v)
 		}
 
-		var (
-			myAllLocations []*Location
-			out            int64
-		)
-		myAllLocations, err = uuc.locationRepo.GetLocationsByUserId(ctx, v.UserId)
-		if nil == myAllLocations {
+		users, err = uuc.repo.GetUserByUserIds(ctx, userIds...)
+		if nil != err {
 			return res, nil
 		}
 
-		for _, vMyAllLocations := range myAllLocations {
-			if "stop" == vMyAllLocations.Status {
-				out++
+		for _, v := range locations {
+			if _, ok := users[v.UserId]; !ok {
+				continue
 			}
+
+			var (
+				userRecords []*UserBalanceRecord
+			)
+			userRecords, err = uuc.locationRepo.GetUserBalanceRecordsTwo(ctx, v.UserId)
+			if nil != err {
+				return res, nil
+			}
+
+			var created string
+			if 0 < len(userRecords) {
+				created = userRecords[0].CreatedAt.Add(8 * time.Hour).Format("2006-01-02 15:04:05")
+			}
+			res.Locations = append(res.Locations, &v1.AdminLocationListReply_LocationList{
+				Address:       users[v.UserId].Address,
+				Current:       fmt.Sprintf("%.2f", float64(v.Current)/float64(100000)),
+				CurrentMax:    fmt.Sprintf("%.2f", float64(v.CurrentMax)/float64(100000)),
+				Out:           users[v.UserId].OutRate,
+				CurrentMaxSub: fmt.Sprintf("%.2f", float64(v.CurrentMax-v.Current)/float64(100000)),
+				Usdt:          fmt.Sprintf("%.2f", float64(v.Usdt)/float64(100000)),
+				CreatedAt:     created,
+			})
+		}
+	} else {
+		locationsOut, err, count = uuc.locationRepo.GetLocationsOut(ctx, &Pagination{
+			PageNum:  int(req.Page),
+			PageSize: 10,
+		}, userId, status)
+		if nil != err {
+			return res, nil
+		}
+		res.Count = count
+
+		userIdsMap = make(map[int64]int64, 0)
+		for _, vLocations := range locationsOut {
+			userIdsMap[vLocations.UserId] = vLocations.UserId
+		}
+		for _, v := range userIdsMap {
+			userIds = append(userIds, v)
 		}
 
-		res.Locations = append(res.Locations, &v1.AdminLocationListReply_LocationList{
-			Address:       users[v.UserId].Address,
-			Current:       fmt.Sprintf("%.2f", float64(v.Current)/float64(100000)),
-			CurrentMax:    fmt.Sprintf("%.2f", float64(v.CurrentMax)/float64(100000)),
-			Out:           out,
-			CurrentMaxSub: fmt.Sprintf("%.2f", float64(v.CurrentMax-v.Current)/float64(100000)),
-			Usdt:          fmt.Sprintf("%.2f", float64(v.Usdt)/float64(100000)),
-		})
+		users, err = uuc.repo.GetUserByUserIds(ctx, userIds...)
+		if nil != err {
+			return res, nil
+		}
+
+		for _, v := range locationsOut {
+			if _, ok := users[v.UserId]; !ok {
+				continue
+			}
+
+			res.Locations = append(res.Locations, &v1.AdminLocationListReply_LocationList{
+				Address:       users[v.UserId].Address,
+				Current:       fmt.Sprintf("%.2f", float64(v.Amount)/float64(100000)),
+				CurrentMax:    fmt.Sprintf("%.2f", float64(v.Amount)/float64(100000)),
+				Out:           users[v.UserId].OutRate,
+				CurrentMaxSub: "0.00",
+				Usdt:          fmt.Sprintf("%.2f", float64(v.Amount)/250000),
+				CreatedAt:     v.CreatedAt.Add(8 * time.Hour).Format("2006-01-02 15:04:05"),
+			})
+		}
 	}
 
 	return res, nil
@@ -1410,7 +1471,7 @@ func (uuc *UserUseCase) AdminConfigUpdateListen(ctx context.Context, req *v1.Adm
 						if runningLocation.CurrentMax >= runningLocation.CurrentMaxNew {
 							tmpMaxNew = runningLocation.CurrentMax - runningLocation.CurrentMaxNew
 						}
-						err = uuc.locationRepo.UpdateLocationNewNew(ctx, runningLocation.ID, runningLocation.UserId, runningLocation.Status, tmp, tmpMaxNew, 0, runningLocation.StopDate) // 分红占位数据修改
+						err = uuc.locationRepo.UpdateLocationNewNew(ctx, runningLocation.ID, runningLocation.UserId, runningLocation.Status, tmp, tmpMaxNew, 0, runningLocation.StopDate, runningLocation.CurrentMax) // 分红占位数据修改
 						if nil != err {
 							return err
 						}
@@ -2209,6 +2270,8 @@ func (uuc *UserUseCase) AdminAll(ctx context.Context, req *v1.AdminAllRequest) (
 	var (
 		userBalanceUsdtTotal             int64
 		userBalanceRecordUsdtTotal       int64
+		userBalanceRecordUsdtTotalTwo    int64
+		userBalanceRecordUsdtTotalThree  int64
 		userBalanceRecordUsdtTotalToday  int64
 		userWithdrawUsdtTotalToday       int64
 		userWithdrawUsdtTotal            int64
@@ -2230,6 +2293,8 @@ func (uuc *UserUseCase) AdminAll(ctx context.Context, req *v1.AdminAllRequest) (
 	//tmpUserLocationNewCurrent = userLocationNewCurrentMaxNew/100000000 + userLocationNewCurrentMax/100000000 - userLocationNewCurrent/100000000
 	//userBalanceLockUsdtTotal, _ = uuc.ubRepo.GetUserBalanceLockUsdtTotal(ctx)
 	userBalanceRecordUsdtTotal, _ = uuc.ubRepo.GetUserBalanceRecordUsdtTotal(ctx)
+	userBalanceRecordUsdtTotalTwo, _ = uuc.ubRepo.GetUserBalanceRecordUsdtTotalTwo(ctx)
+	userBalanceRecordUsdtTotalThree, _ = uuc.ubRepo.GetUserBalanceRecordUsdtTotalThree(ctx)
 	//userBalanceRecordHbsTotal, _ = uuc.ubRepo.GetUserBalanceRecordHbsTotal(ctx)
 	//userBalanceRecordCsdTotal, _ = uuc.ubRepo.GetUserBalanceRecordCsdTotal(ctx)
 	userBalanceRecordUsdtTotalToday, _ = uuc.ubRepo.GetUserBalanceRecordUsdtTotalToday(ctx)
@@ -2272,6 +2337,8 @@ func (uuc *UserUseCase) AdminAll(ctx context.Context, req *v1.AdminAllRequest) (
 		TotalUser:                    userLocationCount,
 		TodayLocation:                fmt.Sprintf("%.2f", float64(userBalanceRecordUsdtTotalToday)/float64(100000)),
 		AllLocation:                  fmt.Sprintf("%.2f", float64(userBalanceRecordUsdtTotal)/float64(100000)),
+		AllLocationTwo:               fmt.Sprintf("%.2f", float64(userBalanceRecordUsdtTotalTwo)),
+		AllLocationThree:             fmt.Sprintf("%.2f", float64(userBalanceRecordUsdtTotalThree)),
 		TodayLocationReward:          fmt.Sprintf("%.2f", float64(userRewardLocationTotal)/float64(100000)),
 		TodayRecommendReward:         fmt.Sprintf("%.2f", float64(userRewardRecommendTotal)/float64(100000)),
 		TodayRecommendLocationReward: fmt.Sprintf("%.2f", float64(userRewardRecommendLocationTotal)/float64(100000)),
@@ -2772,7 +2839,7 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 					tmpMaxNew = vUserLocations.CurrentMax - vUserLocations.CurrentMaxNew
 				}
 				if 0 < tmpCurrentReward && 0 < bLocationRewardAmount {
-					err = uuc.locationRepo.UpdateLocationNewNew(ctx, vUserLocations.ID, vUserLocations.UserId, tmpStatus, tmpCurrentReward, tmpMaxNew, bLocationRewardAmount, tmpStopDate) // 分红占位数据修改
+					err = uuc.locationRepo.UpdateLocationNewNew(ctx, vUserLocations.ID, vUserLocations.UserId, tmpStatus, tmpCurrentReward, tmpMaxNew, bLocationRewardAmount, tmpStopDate, vUserLocations.CurrentMax) // 分红占位数据修改
 					if nil != err {
 						return err
 					}
@@ -2929,7 +2996,7 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 									}
 
 									if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
-										err = uuc.locationRepo.UpdateLocationNewNew(ctx, tmpMyTopUserRecommendUserLocationLast.ID, tmpMyTopUserRecommendUserLocationLast.UserId, tmpStatus, tmpMyRecommendAmount, tmpMaxNew, bAmount, tmpStopDate) // 分红占位数据修改
+										err = uuc.locationRepo.UpdateLocationNewNew(ctx, tmpMyTopUserRecommendUserLocationLast.ID, tmpMyTopUserRecommendUserLocationLast.UserId, tmpStatus, tmpMyRecommendAmount, tmpMaxNew, bAmount, tmpStopDate, tmpMyTopUserRecommendUserLocationLast.CurrentMax) // 分红占位数据修改
 										if nil != err {
 											return err
 										}
@@ -3000,14 +3067,14 @@ func (uuc *UserUseCase) AdminAddMoney(ctx context.Context, req *v1.AdminDailyAdd
 
 	if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { //
 		if req.Usdt > 0 {
-			err = uuc.uiRepo.UpdateUserNewTwoNewTwo(ctx, user.ID, uint64(req.Usdt), 0, "USDT")
+			err = uuc.uiRepo.UpdateUserNewTwoNewThree(ctx, user.ID, uint64(req.Usdt), 0, "USDT")
 			if nil != err {
 				return err
 			}
 		}
 
 		if req.Biw > 0 {
-			err = uuc.uiRepo.UpdateUserNewTwoNewTwo(ctx, user.ID, uint64(req.Biw), 0, "BIW")
+			err = uuc.uiRepo.UpdateUserNewTwoNewThree(ctx, user.ID, uint64(req.Biw), 0, "BIW")
 			if nil != err {
 				return err
 			}
@@ -3115,9 +3182,7 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 	var (
 		day               = -1
 		userLocationsYes  []*LocationNew
-		userLocationsBef  []*LocationNew
 		rewardLocationYes int64
-		rewardLocationBef int64
 	)
 	// 全网
 	userLocationsYes, err = uuc.locationRepo.GetLocationDailyYesterday(ctx, day)
@@ -3178,7 +3243,7 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 						}
 
 						if 0 < tmpCurrentReward && 0 < bLocationRewardAmount {
-							err = uuc.locationRepo.UpdateLocationNewNew(ctx, vUserLocationsItem.ID, vUserLocationsItem.UserId, vUserLocationsItem.Status, tmpCurrentReward, tmpMaxNew, bLocationRewardAmount, vUserLocationsItem.StopDate) // 分红占位数据修改
+							err = uuc.locationRepo.UpdateLocationNewNew(ctx, vUserLocationsItem.ID, vUserLocationsItem.UserId, vUserLocationsItem.Status, tmpCurrentReward, tmpMaxNew, bLocationRewardAmount, vUserLocationsItem.StopDate, vUserLocationsItem.CurrentMax) // 分红占位数据修改
 							if nil != err {
 								return err
 							}
@@ -3274,7 +3339,7 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 						}
 
 						if 0 < tmpCurrentReward && 0 < bLocationRewardAmount {
-							err = uuc.locationRepo.UpdateLocationNewNew(ctx, vUserLocationsItem.ID, vUserLocationsItem.UserId, vUserLocationsItem.Status, tmpCurrentReward, tmpMaxNew, bLocationRewardAmount, vUserLocationsItem.StopDate) // 分红占位数据修改
+							err = uuc.locationRepo.UpdateLocationNewNew(ctx, vUserLocationsItem.ID, vUserLocationsItem.UserId, vUserLocationsItem.Status, tmpCurrentReward, tmpMaxNew, bLocationRewardAmount, vUserLocationsItem.StopDate, vUserLocationsItem.CurrentMax) // 分红占位数据修改
 							if nil != err {
 								return err
 							}
@@ -3369,7 +3434,7 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 						}
 
 						if 0 < tmpCurrentReward && 0 < bLocationRewardAmount {
-							err = uuc.locationRepo.UpdateLocationNewNew(ctx, vUserLocationsItem.ID, vUserLocationsItem.UserId, vUserLocationsItem.Status, tmpCurrentReward, tmpMaxNew, bLocationRewardAmount, vUserLocationsItem.StopDate) // 分红占位数据修改
+							err = uuc.locationRepo.UpdateLocationNewNew(ctx, vUserLocationsItem.ID, vUserLocationsItem.UserId, vUserLocationsItem.Status, tmpCurrentReward, tmpMaxNew, bLocationRewardAmount, vUserLocationsItem.StopDate, vUserLocationsItem.CurrentMax) // 分红占位数据修改
 							if nil != err {
 								return err
 							}
@@ -3464,7 +3529,7 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 						}
 
 						if 0 < tmpCurrentReward && 0 < bLocationRewardAmount {
-							err = uuc.locationRepo.UpdateLocationNewNew(ctx, vUserLocationsItem.ID, vUserLocationsItem.UserId, vUserLocationsItem.Status, tmpCurrentReward, tmpMaxNew, bLocationRewardAmount, vUserLocationsItem.StopDate) // 分红占位数据修改
+							err = uuc.locationRepo.UpdateLocationNewNew(ctx, vUserLocationsItem.ID, vUserLocationsItem.UserId, vUserLocationsItem.Status, tmpCurrentReward, tmpMaxNew, bLocationRewardAmount, vUserLocationsItem.StopDate, vUserLocationsItem.CurrentMax) // 分红占位数据修改
 							if nil != err {
 								return err
 							}
@@ -3559,7 +3624,7 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 						}
 
 						if 0 < tmpCurrentReward && 0 < bLocationRewardAmount {
-							err = uuc.locationRepo.UpdateLocationNewNew(ctx, vUserLocationsItem.ID, vUserLocationsItem.UserId, vUserLocationsItem.Status, tmpCurrentReward, tmpMaxNew, bLocationRewardAmount, vUserLocationsItem.StopDate) // 分红占位数据修改
+							err = uuc.locationRepo.UpdateLocationNewNew(ctx, vUserLocationsItem.ID, vUserLocationsItem.UserId, vUserLocationsItem.Status, tmpCurrentReward, tmpMaxNew, bLocationRewardAmount, vUserLocationsItem.StopDate, vUserLocationsItem.CurrentMax) // 分红占位数据修改
 							if nil != err {
 								return err
 							}
@@ -3609,12 +3674,19 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 	}
 
 	// 全网前天
-	userLocationsBef, err = uuc.locationRepo.GetLocationDailyYesterday(ctx, day-1)
-	for _, userLocationBef := range userLocationsBef {
-		rewardLocationBef += userLocationBef.Usdt
+	var (
+		rewardFourYes *Reward
+	)
+	rewardLocationYes = rewardLocationYes / 100 * total
+	fmt.Println("今天：", rewardLocationYes)
+	rewardFourYes, err = uuc.ubRepo.GetRewardFourYes(ctx) // 推荐人奖励
+	if nil == err && nil != rewardFourYes {
+		rewardLocationYes += rewardFourYes.Amount
 	}
+	fmt.Println("今天+昨日沉淀：", rewardLocationYes)
 	// 全球
-	totalReward := rewardLocationYes/100/100*70*total + rewardLocationBef/100/100*30*total
+	//totalReward := rewardLocationYes/100/100*70*total + rewardLocationBef/100/100*30*total
+	totalReward := rewardLocationYes / 100 * 70
 
 	var (
 		fourUserRecommendTotal map[int64]int64
@@ -3710,6 +3782,18 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 				continue
 			}
 		}
+	}
+
+	fmt.Println("今日沉淀", rewardLocationYes/100*30)
+	if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
+		err = uuc.ubRepo.FourRewardYes(ctx, rewardLocationYes/100*30) // 推荐人奖励
+		if nil != err {
+			return err
+		}
+
+		return nil
+	}); nil != err {
+		fmt.Println("err reward daily four yes", err, rewardLocationYes/100*30)
 	}
 
 	return &v1.AdminDailyLocationRewardReply{}, nil

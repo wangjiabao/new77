@@ -4,7 +4,7 @@ package api;
 
 
 import "google/api/annotations.proto";
-import "validate/validate.proto";
+//import "validate/validate.proto";
 
 option go_package = "/api;api";
 option java_multiple_files = true;
@@ -649,7 +649,10 @@ message RecordListReply { // 投资列表
 	message  LocationList {
 		string created_at = 1; // 时间
 		string address = 2; // 地址
+		string addressTwo = 3; // 地址
+		string addressThree = 4; // 地址
 		string amount = 5;
+		string coinType = 6;
 	}
 
 	int64 count = 2;
@@ -671,6 +674,7 @@ message AdminLocationListReply { // 出局列表
 		string usdt = 9; // 节点
 		string currentMaxSub = 10; // 收益
 		int64 out = 11; // 出局
+		string createdAt = 12;
 	}
 	int64 count = 2;
 }
@@ -762,6 +766,8 @@ message AdminAllReply {
 	int64 totalUser = 2; // 激活人数
 	string todayLocation = 4; // 今日入金u数量
 	string allLocation = 5; // 总入金u数量
+	string allLocationTwo = 20; // 总入金u数量
+	string allLocationThree = 21; // 总入金u数量
 	string todayLocationReward = 1; // 今日静态释放
 	string todayRecommendReward = 3; // 今日动态释放
 	string todayRecommendLocationReward = 8; // 今日直推秒结释放

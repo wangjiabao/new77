@@ -21,6 +21,7 @@ type EthUserRecord struct {
 	RelAmount int64
 	CoinType  string
 	Last      int64
+	CreatedAt time.Time
 }
 
 type Location struct {
@@ -107,8 +108,11 @@ type LocationRepo interface {
 	UpdateLocation(ctx context.Context, id int64, status string, current int64, stopDate time.Time) error
 	UpdateLocationLastLevel(ctx context.Context, id int64, lastLevel int64) error
 	GetLocations(ctx context.Context, b *Pagination, userId int64, status string) ([]*LocationNew, error, int64)
+	GetLocationsOut(ctx context.Context, b *Pagination, userId int64, status string) ([]*Reward, error, int64)
 	GetLocations2(ctx context.Context, b *Pagination, userId int64) ([]*LocationNew, error, int64)
 	GetUserBalanceRecords(ctx context.Context, b *Pagination, userId int64, coinType string) ([]*UserBalanceRecord, error, int64)
+	GetUserBalanceRecordsTwo(ctx context.Context, userId int64) ([]*UserBalanceRecord, error)
+	GetEthUserRecordListByUserId(ctx context.Context, b *Pagination, userId int64) ([]*EthUserRecord, error, int64)
 	GetLocationsAll(ctx context.Context, b *Pagination, userId int64) ([]*LocationNew, error, int64)
 	UpdateLocationRowAndCol(ctx context.Context, id int64) error
 	GetLocationsStopNotUpdate(ctx context.Context) ([]*Location, error)
@@ -132,7 +136,7 @@ type LocationRepo interface {
 	GetLocationsNewByUserId(ctx context.Context, userId int64) ([]*LocationNew, error)
 	GetLocationsNew2ByUserId(ctx context.Context, userId int64) ([]*LocationNew, error)
 	UpdateLocationNew(ctx context.Context, id int64, status string, current int64, stopDate time.Time) error
-	UpdateLocationNewNew(ctx context.Context, id int64, userId int64, status string, current int64, amountB int64, biw int64, stopDate time.Time) error
+	UpdateLocationNewNew(ctx context.Context, id int64, userId int64, status string, current int64, amountB int64, biw int64, stopDate time.Time, usdt int64) error
 	UpdateLocationNewNewNew(ctx context.Context, id int64, current int64) error
 	UpdateLocationNew2(ctx context.Context, id int64, status string, current int64, stopDate time.Time) error
 	UpdateLocationNewCurrent(ctx context.Context, id int64, current int64) error
