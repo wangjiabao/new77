@@ -2948,7 +2948,7 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 
 							var tmpMyRecommendAmount int64
 							tmpI := i
-							lenMyUserRecommendUserLocationsLast := len(myUserRecommendUserLocationsLast)
+							lenMyUserRecommendUserLocationsLast := tmpRecommendUser.OutRate
 							if tmpRecommendUser.RecommendLevel > 0 && tmpRecommendUser.RecommendLevel < 9 {
 								tmpI = int(tmpRecommendUser.RecommendLevel) - 1
 								lenMyUserRecommendUserLocationsLast = 8
@@ -2958,17 +2958,17 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 								tmpMyRecommendAmount = tmpMinUsdt / 1000 * locationRewardRate / 100 * recommendOneRate
 							} else if 1 == tmpI {
 								tmpMyRecommendAmount = tmpMinUsdt / 1000 * locationRewardRate / 100 * recommendTwoRate
-							} else if 2 == tmpI && 2 <= lenMyUserRecommendUserLocationsLast { // 3代需要复投1次
+							} else if 2 == tmpI && 1 <= lenMyUserRecommendUserLocationsLast { // 3代需要复投1次
 								tmpMyRecommendAmount = tmpMinUsdt / 1000 * locationRewardRate / 100 * recommendThreeRate
-							} else if 3 == tmpI && 3 <= lenMyUserRecommendUserLocationsLast { // 4代需要复投2次
+							} else if 3 == tmpI && 2 <= lenMyUserRecommendUserLocationsLast { // 4代需要复投2次
 								tmpMyRecommendAmount = tmpMinUsdt / 1000 * locationRewardRate / 100 * recommendFourRate
-							} else if 4 == tmpI && 4 <= lenMyUserRecommendUserLocationsLast { // 5代需要复投3次
+							} else if 4 == tmpI && 3 <= lenMyUserRecommendUserLocationsLast { // 5代需要复投3次
 								tmpMyRecommendAmount = tmpMinUsdt / 1000 * locationRewardRate / 100 * recommendFiveRate
-							} else if 5 == tmpI && 5 <= lenMyUserRecommendUserLocationsLast { // 6代需要复投4次
+							} else if 5 == tmpI && 4 <= lenMyUserRecommendUserLocationsLast { // 6代需要复投4次
 								tmpMyRecommendAmount = tmpMinUsdt / 1000 * locationRewardRate / 100 * recommendSixRate
-							} else if 6 == tmpI && 6 <= lenMyUserRecommendUserLocationsLast { // 7代需要复投5次
+							} else if 6 == tmpI && 5 <= lenMyUserRecommendUserLocationsLast { // 7代需要复投5次
 								tmpMyRecommendAmount = tmpMinUsdt / 1000 * locationRewardRate / 100 * recommendSevenRate
-							} else if 7 == tmpI && 7 <= lenMyUserRecommendUserLocationsLast { // 8代需要复投6次
+							} else if 7 == tmpI && 6 <= lenMyUserRecommendUserLocationsLast { // 8代需要复投6次
 								tmpMyRecommendAmount = tmpMinUsdt / 1000 * locationRewardRate / 100 * recommendEightRate
 							} else {
 								continue

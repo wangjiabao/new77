@@ -354,6 +354,7 @@ func (u *UserRepo) GetUserById(ctx context.Context, Id int64) (*biz.User, error)
 		ID:             user.ID,
 		Address:        user.Address,
 		RecommendLevel: user.RecommendLevel,
+		OutRate:        user.OutRate,
 	}, nil
 }
 
