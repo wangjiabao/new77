@@ -2815,76 +2815,76 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 		return &v1.AdminDailyLocationRewardReply{}, nil
 	}
 
-	//for _, vUserLocations := range userLocations {
-	//	// 奖励
-	//	tmpCurrentReward := vUserLocations.Usdt / 1000 * locationRewardRate
-	//	tmpCurrentReward = tmpCurrentReward / 6
-	//	bLocationRewardAmount := tmpCurrentReward * bPriceBase / bPrice
-	//
-	//	if 0 < tmpCurrentReward && 0 < bLocationRewardAmount {
-	//		if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
-	//			tmpStatus := vUserLocations.Status
-	//			tmpStopDate := time.Now().UTC().Add(8 * time.Hour)
-	//			if vUserLocations.Current+tmpCurrentReward >= vUserLocations.CurrentMax { // 占位分红人分满停止
-	//				tmpStatus = "stop"
-	//				tmpStopDate = time.Now().UTC().Add(8 * time.Hour)
-	//
-	//				tmpCurrentReward = vUserLocations.CurrentMax - vUserLocations.Current
-	//				bLocationRewardAmount = tmpCurrentReward * bPriceBase / bPrice
-	//				stopLocationIds[vUserLocations.ID] = vUserLocations.ID
-	//			}
-	//
-	//			var tmpMaxNew int64
-	//			if vUserLocations.CurrentMaxNew < vUserLocations.CurrentMax {
-	//				tmpMaxNew = vUserLocations.CurrentMax - vUserLocations.CurrentMaxNew
-	//			}
-	//			if 0 < tmpCurrentReward && 0 < bLocationRewardAmount {
-	//				err = uuc.locationRepo.UpdateLocationNewNew(ctx, vUserLocations.ID, vUserLocations.UserId, tmpStatus, tmpCurrentReward, tmpMaxNew, bLocationRewardAmount, tmpStopDate, vUserLocations.CurrentMax) // 分红占位数据修改
-	//				if nil != err {
-	//					return err
-	//				}
-	//
-	//				_, err = uuc.ubRepo.LocationRewardBiw(ctx, vUserLocations.UserId, bLocationRewardAmount, tmpStatus, tmpMaxNew, feeRate)
-	//				if nil != err {
-	//					return err
-	//				}
-	//			}
-	//
-	//			// 业绩减掉
-	//			if "stop" == tmpStatus {
-	//				tmpTop := vUserLocations.Top
-	//				tmpTopNum := vUserLocations.TopNum
-	//				for j := 0; j < 10000 && 0 < tmpTop && 0 < tmpTopNum; j++ {
-	//					err = uuc.locationRepo.UpdateLocationNewTotalSub(ctx, tmpTop, tmpTopNum, vUserLocations.Usdt/100000)
-	//					if nil != err {
-	//						return err
-	//					}
-	//
-	//					var (
-	//						currentLocation *LocationNew
-	//					)
-	//					currentLocation, err = uuc.locationRepo.GetLocationById(ctx, tmpTop)
-	//					if nil != err {
-	//						return err
-	//					}
-	//
-	//					if nil != currentLocation && 0 < currentLocation.Top {
-	//						tmpTop = currentLocation.Top
-	//						tmpTopNum = currentLocation.TopNum
-	//						continue
-	//					}
-	//
-	//					break
-	//				}
-	//			}
-	//
-	//			return nil
-	//		}); nil != err {
-	//			fmt.Println("err reward daily", err, vUserLocations)
-	//			continue
-	//		}
-	//	}
-	//}
+	for _, vUserLocations := range userLocations {
+		// 奖励
+		tmpCurrentReward := vUserLocations.Usdt / 1000 * locationRewardRate
+		tmpCurrentReward = tmpCurrentReward / 6
+		bLocationRewardAmount := tmpCurrentReward * bPriceBase / bPrice
+
+		if 0 < tmpCurrentReward && 0 < bLocationRewardAmount {
+			if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
+				tmpStatus := vUserLocations.Status
+				tmpStopDate := time.Now().UTC().Add(8 * time.Hour)
+				if vUserLocations.Current+tmpCurrentReward >= vUserLocations.CurrentMax { // 占位分红人分满停止
+					tmpStatus = "stop"
+					tmpStopDate = time.Now().UTC().Add(8 * time.Hour)
+
+					tmpCurrentReward = vUserLocations.CurrentMax - vUserLocations.Current
+					bLocationRewardAmount = tmpCurrentReward * bPriceBase / bPrice
+					stopLocationIds[vUserLocations.ID] = vUserLocations.ID
+				}
+
+				var tmpMaxNew int64
+				if vUserLocations.CurrentMaxNew < vUserLocations.CurrentMax {
+					tmpMaxNew = vUserLocations.CurrentMax - vUserLocations.CurrentMaxNew
+				}
+				if 0 < tmpCurrentReward && 0 < bLocationRewardAmount {
+					err = uuc.locationRepo.UpdateLocationNewNew(ctx, vUserLocations.ID, vUserLocations.UserId, tmpStatus, tmpCurrentReward, tmpMaxNew, bLocationRewardAmount, tmpStopDate, vUserLocations.CurrentMax) // 分红占位数据修改
+					if nil != err {
+						return err
+					}
+
+					_, err = uuc.ubRepo.LocationRewardBiw(ctx, vUserLocations.UserId, bLocationRewardAmount, tmpStatus, tmpMaxNew, feeRate)
+					if nil != err {
+						return err
+					}
+				}
+
+				// 业绩减掉
+				if "stop" == tmpStatus {
+					tmpTop := vUserLocations.Top
+					tmpTopNum := vUserLocations.TopNum
+					for j := 0; j < 10000 && 0 < tmpTop && 0 < tmpTopNum; j++ {
+						err = uuc.locationRepo.UpdateLocationNewTotalSub(ctx, tmpTop, tmpTopNum, vUserLocations.Usdt/100000)
+						if nil != err {
+							return err
+						}
+
+						var (
+							currentLocation *LocationNew
+						)
+						currentLocation, err = uuc.locationRepo.GetLocationById(ctx, tmpTop)
+						if nil != err {
+							return err
+						}
+
+						if nil != currentLocation && 0 < currentLocation.Top {
+							tmpTop = currentLocation.Top
+							tmpTopNum = currentLocation.TopNum
+							continue
+						}
+
+						break
+					}
+				}
+
+				return nil
+			}); nil != err {
+				fmt.Println("err reward daily", err, vUserLocations)
+				continue
+			}
+		}
+	}
 
 	for _, vUserLocations := range userLocations {
 		var (
@@ -2956,24 +2956,24 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 
 							if 0 == tmpI { // 当前用户被此人直推
 								tmpMyRecommendAmount = tmpMinUsdt / 1000 * locationRewardRate / 100 * recommendOneRate
-								if 12 == tmpMyTopUserRecommendUserId {
-									fmt.Println(i, tmpMyRecommendAmount, tmpMinUsdt/1000*locationRewardRate, tmpMinUsdt/1000*locationRewardRate/100*recommendOneRate, recommendOneRate)
-								}
+								//if 12 == tmpMyTopUserRecommendUserId {
+								//	fmt.Println(i, tmpMyRecommendAmount, tmpMinUsdt/1000*locationRewardRate, tmpMinUsdt/1000*locationRewardRate/100*recommendOneRate, recommendOneRate)
+								//}
 							} else if 1 == tmpI {
 								tmpMyRecommendAmount = tmpMinUsdt / 1000 * locationRewardRate / 100 * recommendTwoRate
-								if 12 == tmpMyTopUserRecommendUserId {
-									fmt.Println(i, tmpMyRecommendAmount, tmpMinUsdt/1000*locationRewardRate, tmpMinUsdt/1000*locationRewardRate/100*recommendTwoRate, recommendTwoRate)
-								}
+								//if 12 == tmpMyTopUserRecommendUserId {
+								//	fmt.Println(i, tmpMyRecommendAmount, tmpMinUsdt/1000*locationRewardRate, tmpMinUsdt/1000*locationRewardRate/100*recommendTwoRate, recommendTwoRate)
+								//}
 							} else if 2 == tmpI && 1 <= lenMyUserRecommendUserLocationsLast { // 3代需要复投1次
 								tmpMyRecommendAmount = tmpMinUsdt / 1000 * locationRewardRate / 100 * recommendThreeRate
-								if 12 == tmpMyTopUserRecommendUserId {
-									fmt.Println(i, tmpMyRecommendAmount, tmpMinUsdt/1000*locationRewardRate, tmpMinUsdt/1000*locationRewardRate/100*recommendThreeRate, recommendThreeRate)
-								}
+								//if 12 == tmpMyTopUserRecommendUserId {
+								//	fmt.Println(i, tmpMyRecommendAmount, tmpMinUsdt/1000*locationRewardRate, tmpMinUsdt/1000*locationRewardRate/100*recommendThreeRate, recommendThreeRate)
+								//}
 							} else if 3 == tmpI && 2 <= lenMyUserRecommendUserLocationsLast { // 4代需要复投2次
 								tmpMyRecommendAmount = tmpMinUsdt / 1000 * locationRewardRate / 100 * recommendFourRate
-								if 12 == tmpMyTopUserRecommendUserId {
-									fmt.Println(i, tmpMyRecommendAmount, tmpMinUsdt/1000*locationRewardRate, tmpMinUsdt/1000*locationRewardRate/100*recommendFourRate, recommendFourRate)
-								}
+								//if 12 == tmpMyTopUserRecommendUserId {
+								//	fmt.Println(i, tmpMyRecommendAmount, tmpMinUsdt/1000*locationRewardRate, tmpMinUsdt/1000*locationRewardRate/100*recommendFourRate, recommendFourRate)
+								//}
 							} else if 4 == tmpI && 3 <= lenMyUserRecommendUserLocationsLast { // 5代需要复投3次
 								tmpMyRecommendAmount = tmpMinUsdt / 1000 * locationRewardRate / 100 * recommendFiveRate
 							} else if 5 == tmpI && 4 <= lenMyUserRecommendUserLocationsLast { // 6代需要复投4次
@@ -2989,72 +2989,72 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 							tmpMyRecommendAmount = tmpMyRecommendAmount / 6
 							if 0 < tmpMyRecommendAmount { // 扣除推荐人分红
 								bAmount := tmpMyRecommendAmount * bPriceBase / bPrice
-								if 12 == tmpMyTopUserRecommendUserId {
-									fmt.Println(bAmount, feeRate)
+								//if 12 == tmpMyTopUserRecommendUserId {
+								//	fmt.Println(bAmount, feeRate)
+								//}
+								tmpStatus := tmpMyTopUserRecommendUserLocationLast.Status
+								tmpStopDate := time.Now().UTC().Add(8 * time.Hour)
+								// 过了
+								if tmpMyTopUserRecommendUserLocationLast.Current+tmpMyRecommendAmount >= tmpMyTopUserRecommendUserLocationLast.CurrentMax { // 占位分红人分满停止
+									tmpStatus = "stop"
+									tmpStopDate = time.Now().UTC().Add(8 * time.Hour)
+
+									tmpMyRecommendAmount = tmpMyTopUserRecommendUserLocationLast.CurrentMax - tmpMyTopUserRecommendUserLocationLast.Current
+									bAmount = tmpMyRecommendAmount * bPriceBase / bPrice
+									stopLocationIds[vUserLocations.ID] = vUserLocations.ID
 								}
-								//tmpStatus := tmpMyTopUserRecommendUserLocationLast.Status
-								//tmpStopDate := time.Now().UTC().Add(8 * time.Hour)
-								//// 过了
-								//if tmpMyTopUserRecommendUserLocationLast.Current+tmpMyRecommendAmount >= tmpMyTopUserRecommendUserLocationLast.CurrentMax { // 占位分红人分满停止
-								//	tmpStatus = "stop"
-								//	tmpStopDate = time.Now().UTC().Add(8 * time.Hour)
-								//
-								//	tmpMyRecommendAmount = tmpMyTopUserRecommendUserLocationLast.CurrentMax - tmpMyTopUserRecommendUserLocationLast.Current
-								//	bAmount = tmpMyRecommendAmount * bPriceBase / bPrice
-								//	stopLocationIds[vUserLocations.ID] = vUserLocations.ID
-								//}
-								//
-								//if 0 < tmpMyRecommendAmount && 0 < bAmount {
-								//	var tmpMaxNew int64
-								//	if tmpMyTopUserRecommendUserLocationLast.CurrentMaxNew < tmpMyTopUserRecommendUserLocationLast.CurrentMax {
-								//		tmpMaxNew = tmpMyTopUserRecommendUserLocationLast.CurrentMax - tmpMyTopUserRecommendUserLocationLast.CurrentMaxNew
-								//	}
-								//
-								//	if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
-								//		err = uuc.locationRepo.UpdateLocationNewNew(ctx, tmpMyTopUserRecommendUserLocationLast.ID, tmpMyTopUserRecommendUserLocationLast.UserId, tmpStatus, tmpMyRecommendAmount, tmpMaxNew, bAmount, tmpStopDate, tmpMyTopUserRecommendUserLocationLast.CurrentMax) // 分红占位数据修改
-								//		if nil != err {
-								//			return err
-								//		}
-								//
-								//		_, err = uuc.ubRepo.RecommendRewardBiw(ctx, tmpMyTopUserRecommendUserId, bAmount, int64(i+1), tmpStatus, tmpMaxNew, feeRate) // 推荐人奖励
-								//		if nil != err {
-								//			return err
-								//		}
-								//
-								//		// 业绩减掉
-								//		if "stop" == tmpStatus {
-								//			tmpTop := tmpMyTopUserRecommendUserLocationLast.Top
-								//			tmpTopNum := tmpMyTopUserRecommendUserLocationLast.TopNum
-								//			for j := 0; j < 10000 && 0 < tmpTop && 0 < tmpTopNum; j++ {
-								//				err = uuc.locationRepo.UpdateLocationNewTotalSub(ctx, tmpTop, tmpTopNum, tmpMyTopUserRecommendUserLocationLast.Usdt/100000)
-								//				if nil != err {
-								//					return err
-								//				}
-								//
-								//				var (
-								//					currentLocation *LocationNew
-								//				)
-								//				currentLocation, err = uuc.locationRepo.GetLocationById(ctx, tmpTop)
-								//				if nil != err {
-								//					return err
-								//				}
-								//
-								//				if nil != currentLocation && 0 < currentLocation.Top {
-								//					tmpTop = currentLocation.Top
-								//					tmpTopNum = currentLocation.TopNum
-								//					continue
-								//				}
-								//
-								//				break
-								//			}
-								//		}
-								//
-								//		return nil
-								//	}); nil != err {
-								//		fmt.Println("err reward daily recommend", err, myUserRecommendUserLocationsLast)
-								//		continue
-								//	}
-								//}
+
+								if 0 < tmpMyRecommendAmount && 0 < bAmount {
+									var tmpMaxNew int64
+									if tmpMyTopUserRecommendUserLocationLast.CurrentMaxNew < tmpMyTopUserRecommendUserLocationLast.CurrentMax {
+										tmpMaxNew = tmpMyTopUserRecommendUserLocationLast.CurrentMax - tmpMyTopUserRecommendUserLocationLast.CurrentMaxNew
+									}
+
+									if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
+										err = uuc.locationRepo.UpdateLocationNewNew(ctx, tmpMyTopUserRecommendUserLocationLast.ID, tmpMyTopUserRecommendUserLocationLast.UserId, tmpStatus, tmpMyRecommendAmount, tmpMaxNew, bAmount, tmpStopDate, tmpMyTopUserRecommendUserLocationLast.CurrentMax) // 分红占位数据修改
+										if nil != err {
+											return err
+										}
+
+										_, err = uuc.ubRepo.RecommendRewardBiw(ctx, tmpMyTopUserRecommendUserId, bAmount, int64(i+1), tmpStatus, tmpMaxNew, feeRate) // 推荐人奖励
+										if nil != err {
+											return err
+										}
+
+										// 业绩减掉
+										if "stop" == tmpStatus {
+											tmpTop := tmpMyTopUserRecommendUserLocationLast.Top
+											tmpTopNum := tmpMyTopUserRecommendUserLocationLast.TopNum
+											for j := 0; j < 10000 && 0 < tmpTop && 0 < tmpTopNum; j++ {
+												err = uuc.locationRepo.UpdateLocationNewTotalSub(ctx, tmpTop, tmpTopNum, tmpMyTopUserRecommendUserLocationLast.Usdt/100000)
+												if nil != err {
+													return err
+												}
+
+												var (
+													currentLocation *LocationNew
+												)
+												currentLocation, err = uuc.locationRepo.GetLocationById(ctx, tmpTop)
+												if nil != err {
+													return err
+												}
+
+												if nil != currentLocation && 0 < currentLocation.Top {
+													tmpTop = currentLocation.Top
+													tmpTopNum = currentLocation.TopNum
+													continue
+												}
+
+												break
+											}
+										}
+
+										return nil
+									}); nil != err {
+										fmt.Println("err reward daily recommend", err, myUserRecommendUserLocationsLast)
+										continue
+									}
+								}
 							}
 						}
 					}
