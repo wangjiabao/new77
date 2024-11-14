@@ -2948,10 +2948,17 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 
 							var tmpMyRecommendAmount int64
 							tmpI := i
+							limitI := -1
 							lenMyUserRecommendUserLocationsLast := tmpRecommendUser.OutRate
 							if tmpRecommendUser.RecommendLevel > 0 && tmpRecommendUser.RecommendLevel < 9 {
-								tmpI = int(tmpRecommendUser.RecommendLevel) - 1
+								limitI = int(tmpRecommendUser.RecommendLevel) - 1
 								lenMyUserRecommendUserLocationsLast = 8
+							}
+
+							if -1 < limitI {
+								if tmpI > limitI {
+									continue
+								}
 							}
 
 							if 0 == tmpI { // 当前用户被此人直推
