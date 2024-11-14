@@ -2939,12 +2939,12 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 								continue
 							}
 
-							tmpMinUsdt := tmpMyTopUserRecommendUserLocationLast.Usdt
-							if vUserLocations.Usdt < tmpMinUsdt {
-								tmpMinUsdt = vUserLocations.Usdt
-							}
+							//tmpMinUsdt := tmpMyTopUserRecommendUserLocationLast.Usdt
+							//if vUserLocations.Usdt < tmpMinUsdt {
+							//	tmpMinUsdt = vUserLocations.Usdt
+							//}
 
-							//tmpMinUsdt := vUserLocations.Usdt
+							tmpMinUsdt := vUserLocations.Usdt
 
 							var tmpMyRecommendAmount int64
 							tmpI := i
