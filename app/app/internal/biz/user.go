@@ -2990,7 +2990,7 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 							if 0 < tmpMyRecommendAmount { // 扣除推荐人分红
 								bAmount := tmpMyRecommendAmount * bPriceBase / bPrice
 								if 12 == tmpMyTopUserRecommendUserId {
-									fmt.Println(bAmount, int64(i+1), tmpMyRecommendAmount, tmpMinUsdt, vUserLocations.Usdt, tmpMyTopUserRecommendUserLocationLast.Usdt, feeRate)
+									fmt.Println(bAmount, feeRate)
 								}
 								//tmpStatus := tmpMyTopUserRecommendUserLocationLast.Status
 								//tmpStopDate := time.Now().UTC().Add(8 * time.Hour)
