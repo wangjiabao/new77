@@ -2952,7 +2952,6 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 							lenMyUserRecommendUserLocationsLast := tmpRecommendUser.OutRate
 							if tmpRecommendUser.RecommendLevel > 0 && tmpRecommendUser.RecommendLevel < 9 {
 								limitI = int(tmpRecommendUser.RecommendLevel) - 1
-								lenMyUserRecommendUserLocationsLast = 8
 							}
 
 							if -1 < limitI {
