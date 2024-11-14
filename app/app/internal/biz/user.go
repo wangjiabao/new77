@@ -2956,12 +2956,24 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 
 							if 0 == tmpI { // 当前用户被此人直推
 								tmpMyRecommendAmount = tmpMinUsdt / 1000 * locationRewardRate / 100 * recommendOneRate
+								if 12 == tmpMyTopUserRecommendUserId {
+									fmt.Println(i, tmpMyRecommendAmount, tmpMinUsdt/1000*locationRewardRate, tmpMinUsdt/1000*locationRewardRate/100*recommendOneRate, recommendOneRate)
+								}
 							} else if 1 == tmpI {
 								tmpMyRecommendAmount = tmpMinUsdt / 1000 * locationRewardRate / 100 * recommendTwoRate
+								if 12 == tmpMyTopUserRecommendUserId {
+									fmt.Println(i, tmpMyRecommendAmount, tmpMinUsdt/1000*locationRewardRate, tmpMinUsdt/1000*locationRewardRate/100*recommendTwoRate, recommendTwoRate)
+								}
 							} else if 2 == tmpI && 1 <= lenMyUserRecommendUserLocationsLast { // 3代需要复投1次
 								tmpMyRecommendAmount = tmpMinUsdt / 1000 * locationRewardRate / 100 * recommendThreeRate
+								if 12 == tmpMyTopUserRecommendUserId {
+									fmt.Println(i, tmpMyRecommendAmount, tmpMinUsdt/1000*locationRewardRate, tmpMinUsdt/1000*locationRewardRate/100*recommendThreeRate, recommendThreeRate)
+								}
 							} else if 3 == tmpI && 2 <= lenMyUserRecommendUserLocationsLast { // 4代需要复投2次
 								tmpMyRecommendAmount = tmpMinUsdt / 1000 * locationRewardRate / 100 * recommendFourRate
+								if 12 == tmpMyTopUserRecommendUserId {
+									fmt.Println(i, tmpMyRecommendAmount, tmpMinUsdt/1000*locationRewardRate, tmpMinUsdt/1000*locationRewardRate/100*recommendFourRate, recommendFourRate)
+								}
 							} else if 4 == tmpI && 3 <= lenMyUserRecommendUserLocationsLast { // 5代需要复投3次
 								tmpMyRecommendAmount = tmpMinUsdt / 1000 * locationRewardRate / 100 * recommendFiveRate
 							} else if 5 == tmpI && 4 <= lenMyUserRecommendUserLocationsLast { // 6代需要复投4次
