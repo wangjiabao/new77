@@ -569,6 +569,8 @@ message AdminRewardListReply {
 		string amount = 2; // 数量
 		string address = 5; // 地址
 		string reason = 6; // 原因 每一条替换文案 认购reason=buy，提现reason=withdraw，兑换reason=exchange，前四名reason=four，挖矿reason=location，矩阵reason=area，直推reason=recommend
+		string addressTwo = 7;
+		int64 num = 8;
 	}
 	 int64 count = 2;
 }

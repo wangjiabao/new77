@@ -209,7 +209,7 @@ type UserBalanceRepo interface {
 	WithdrawReward(ctx context.Context, userId int64, amount int64, locationId int64, myLocationId int64, locationType string, status string) (int64, error)
 	RecommendReward(ctx context.Context, userId int64, amount int64, locationId int64, status string) (int64, error)
 	RecommendTeamReward(ctx context.Context, userId int64, rewardAmount int64, amount int64, amountDhb int64, locationId int64, recommendNum int64, status string) (int64, error)
-	RecommendRewardBiw(ctx context.Context, userId int64, rewardAmount int64, recommendNum int64, stop string, tmpMaxNew int64, feeRate int64) (int64, error)
+	RecommendRewardBiw(ctx context.Context, userId int64, rewardAmount int64, recommendNum int64, stop string, tmpMaxNew int64, feeRate int64, userIdTwo int64) (int64, error)
 	LocationRewardBiw(ctx context.Context, userId int64, rewardAmount int64, stop string, currentMaxNew int64, feeRate int64) (int64, error)
 	RecommendLocationRewardBiw(ctx context.Context, userId int64, rewardAmount int64, recommendNum int64, stop string, tmpMaxNew int64, feeRate int64) (int64, error)
 	PriceChange(ctx context.Context, userId int64, rewardAmount int64, up string) error
@@ -456,6 +456,7 @@ func (uuc *UserUseCase) AdminRewardList(ctx context.Context, req *v1.AdminReward
 		userId      int64 = 0
 		userRewards []*Reward
 		users       map[int64]*User
+		usersTwo    = make(map[int64]*User, 0)
 		userIdsMap  map[int64]int64
 		userIds     []int64
 		err         error
@@ -484,14 +485,22 @@ func (uuc *UserUseCase) AdminRewardList(ctx context.Context, req *v1.AdminReward
 	res.Count = count
 
 	userIdsMap = make(map[int64]int64, 0)
+	userIdsTwo := make([]int64, 0)
 	for _, vUserReward := range userRewards {
 		userIdsMap[vUserReward.UserId] = vUserReward.UserId
+		if 0 < vUserReward.TypeRecordId {
+			userIdsTwo = append(userIdsTwo, vUserReward.TypeRecordId)
+		}
 	}
 	for _, v := range userIdsMap {
 		userIds = append(userIds, v)
 	}
 
 	users, err = uuc.repo.GetUserByUserIds(ctx, userIds...)
+	if 0 < len(userIdsTwo) {
+		usersTwo, err = uuc.repo.GetUserByUserIds(ctx, userIdsTwo...)
+	}
+
 	for _, vUserReward := range userRewards {
 		tmpUser := ""
 		if nil != users {
@@ -513,11 +522,18 @@ func (uuc *UserUseCase) AdminRewardList(ctx context.Context, req *v1.AdminReward
 			tmpReason = "exchange"
 		}
 
+		addressTwoTmp := ""
+		if _, ok := usersTwo[vUserReward.TypeRecordId]; ok {
+			addressTwoTmp = usersTwo[vUserReward.TypeRecordId].Address
+		}
+
 		res.Rewards = append(res.Rewards, &v1.AdminRewardListReply_List{
-			CreatedAt: vUserReward.CreatedAt.Add(8 * time.Hour).Format("2006-01-02 15:04:05"),
-			Amount:    fmt.Sprintf("%.2f", float64(vUserReward.Amount)/float64(100000)),
-			Address:   tmpUser,
-			Reason:    tmpReason,
+			CreatedAt:  vUserReward.CreatedAt.Add(8 * time.Hour).Format("2006-01-02 15:04:05"),
+			Amount:     fmt.Sprintf("%.2f", float64(vUserReward.Amount)/float64(100000)),
+			Address:    tmpUser,
+			Reason:     tmpReason,
+			Num:        vUserReward.ReasonLocationId,
+			AddressTwo: addressTwoTmp,
 		})
 	}
 
@@ -2804,6 +2820,20 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 		}
 	}
 
+	if 0 == bPrice {
+		fmt.Println("分发错误：价格为0")
+		return nil, nil
+	}
+	if 0 == bPriceBase {
+		fmt.Println("分发错误：价格为0")
+		return nil, nil
+	}
+	if 0 == locationRewardRate {
+		fmt.Println("分发错误：分红rate为0")
+		return nil, nil
+	}
+
+	price := float64(bPrice) / float64(bPriceBase)
 	var (
 		stopLocationIds map[int64]int64
 	)
@@ -2815,11 +2845,19 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 		return &v1.AdminDailyLocationRewardReply{}, nil
 	}
 
-	for _, vUserLocations := range userLocations {
+	userLocationsReward := make(map[int]int64, 0)
+	for k, vUserLocations := range userLocations {
 		// 奖励
-		tmpCurrentReward := vUserLocations.Usdt / 1000 * locationRewardRate
-		tmpCurrentReward = tmpCurrentReward / 6
-		bLocationRewardAmount := tmpCurrentReward * bPriceBase / bPrice
+		tmpUsdt := vUserLocations.Usdt
+		var (
+			tmpCurrentReward      int64
+			bLocationRewardAmount int64
+		)
+		tmpCurrentRewardF := float64(tmpUsdt) * (float64(locationRewardRate) / 1000)
+		tmpCurrentRewardF = tmpCurrentRewardF / 6
+
+		tmpCurrentReward = int64(tmpCurrentRewardF)
+		bLocationRewardAmount = int64(tmpCurrentRewardF / price)
 
 		if 0 < tmpCurrentReward && 0 < bLocationRewardAmount {
 			if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
@@ -2830,7 +2868,7 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 					tmpStopDate = time.Now().UTC().Add(8 * time.Hour)
 
 					tmpCurrentReward = vUserLocations.CurrentMax - vUserLocations.Current
-					bLocationRewardAmount = tmpCurrentReward * bPriceBase / bPrice
+					bLocationRewardAmount = int64(float64(tmpCurrentReward) / price)
 					stopLocationIds[vUserLocations.ID] = vUserLocations.ID
 				}
 
@@ -2839,6 +2877,7 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 					tmpMaxNew = vUserLocations.CurrentMax - vUserLocations.CurrentMaxNew
 				}
 				if 0 < tmpCurrentReward && 0 < bLocationRewardAmount {
+					userLocationsReward[k] = tmpCurrentReward
 					err = uuc.locationRepo.UpdateLocationNewNew(ctx, vUserLocations.ID, vUserLocations.UserId, tmpStatus, tmpCurrentReward, tmpMaxNew, bLocationRewardAmount, tmpStopDate, vUserLocations.CurrentMax) // 分红占位数据修改
 					if nil != err {
 						return err
@@ -2886,11 +2925,17 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 		}
 	}
 
-	for _, vUserLocations := range userLocations {
+	for k, vUserLocations := range userLocations {
 		var (
 			userRecommend       *UserRecommend
 			tmpRecommendUserIds []string
 		)
+		if _, ok := userLocationsReward[k]; !ok {
+			continue
+		}
+		if 0 >= userLocationsReward[k] {
+			continue
+		}
 
 		// 推荐人
 		userRecommend, err = uuc.urRepo.GetUserRecommendByUserId(ctx, vUserLocations.UserId)
@@ -2944,9 +2989,12 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 							//	tmpMinUsdt = vUserLocations.Usdt
 							//}
 
-							tmpMinUsdt := vUserLocations.Usdt
+							//tmpMinUsdt := vUserLocations.Usdt
+							//if 0 == tmpMinUsdt {
+							//	fmt.Println("分发错误：投资金额", vUserLocations)
+							//	continue
+							//}
 
-							var tmpMyRecommendAmount int64
 							tmpI := i
 							limitI := -1
 							lenMyUserRecommendUserLocationsLast := tmpRecommendUser.OutRate
@@ -2959,45 +3007,64 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 									continue
 								}
 							}
-
+							var tmpMyRecommendAmount int64
+							var tmpMyRecommendAmountF float64
 							if 0 == tmpI { // 当前用户被此人直推
-								tmpMyRecommendAmount = tmpMinUsdt / 1000 * locationRewardRate / 100 * recommendOneRate
-								//if 12 == tmpMyTopUserRecommendUserId {
-								//	fmt.Println(i, tmpMyRecommendAmount, tmpMinUsdt/1000*locationRewardRate, tmpMinUsdt/1000*locationRewardRate/100*recommendOneRate, recommendOneRate)
-								//}
+								if 0 == recommendOneRate {
+									continue
+								}
+								tmpMyRecommendAmountF = float64(userLocationsReward[k]) * (float64(recommendOneRate) / 100)
+
 							} else if 1 == tmpI {
-								tmpMyRecommendAmount = tmpMinUsdt / 1000 * locationRewardRate / 100 * recommendTwoRate
-								//if 12 == tmpMyTopUserRecommendUserId {
-								//	fmt.Println(i, tmpMyRecommendAmount, tmpMinUsdt/1000*locationRewardRate, tmpMinUsdt/1000*locationRewardRate/100*recommendTwoRate, recommendTwoRate)
-								//}
+								if 0 == recommendTwoRate {
+									continue
+								}
+								tmpMyRecommendAmountF = float64(userLocationsReward[k]) * (float64(recommendTwoRate) / 100)
+
 							} else if 2 == tmpI && 1 <= lenMyUserRecommendUserLocationsLast { // 3代需要复投1次
-								tmpMyRecommendAmount = tmpMinUsdt / 1000 * locationRewardRate / 100 * recommendThreeRate
-								//if 12 == tmpMyTopUserRecommendUserId {
-								//	fmt.Println(i, tmpMyRecommendAmount, tmpMinUsdt/1000*locationRewardRate, tmpMinUsdt/1000*locationRewardRate/100*recommendThreeRate, recommendThreeRate)
-								//}
+								if 0 == recommendThreeRate {
+									continue
+								}
+								tmpMyRecommendAmountF = float64(userLocationsReward[k]) * (float64(recommendThreeRate) / 100)
+
 							} else if 3 == tmpI && 2 <= lenMyUserRecommendUserLocationsLast { // 4代需要复投2次
-								tmpMyRecommendAmount = tmpMinUsdt / 1000 * locationRewardRate / 100 * recommendFourRate
-								//if 12 == tmpMyTopUserRecommendUserId {
-								//	fmt.Println(i, tmpMyRecommendAmount, tmpMinUsdt/1000*locationRewardRate, tmpMinUsdt/1000*locationRewardRate/100*recommendFourRate, recommendFourRate)
-								//}
+								if 0 == recommendFourRate {
+									continue
+								}
+								tmpMyRecommendAmountF = float64(userLocationsReward[k]) * (float64(recommendFourRate) / 100)
+
 							} else if 4 == tmpI && 3 <= lenMyUserRecommendUserLocationsLast { // 5代需要复投3次
-								tmpMyRecommendAmount = tmpMinUsdt / 1000 * locationRewardRate / 100 * recommendFiveRate
+								if 0 == recommendFiveRate {
+									continue
+								}
+								tmpMyRecommendAmountF = float64(userLocationsReward[k]) * (float64(recommendFiveRate) / 100)
+
 							} else if 5 == tmpI && 4 <= lenMyUserRecommendUserLocationsLast { // 6代需要复投4次
-								tmpMyRecommendAmount = tmpMinUsdt / 1000 * locationRewardRate / 100 * recommendSixRate
+								if 0 == recommendSixRate {
+									continue
+								}
+								tmpMyRecommendAmountF = float64(userLocationsReward[k]) * (float64(recommendSixRate) / 100)
+
 							} else if 6 == tmpI && 5 <= lenMyUserRecommendUserLocationsLast { // 7代需要复投5次
-								tmpMyRecommendAmount = tmpMinUsdt / 1000 * locationRewardRate / 100 * recommendSevenRate
+								if 0 == recommendSevenRate {
+									continue
+								}
+								tmpMyRecommendAmountF = float64(userLocationsReward[k]) * (float64(recommendSevenRate) / 100)
+
 							} else if 7 == tmpI && 6 <= lenMyUserRecommendUserLocationsLast { // 8代需要复投6次
-								tmpMyRecommendAmount = tmpMinUsdt / 1000 * locationRewardRate / 100 * recommendEightRate
+								if 0 == recommendEightRate {
+									continue
+								}
+								tmpMyRecommendAmountF = float64(userLocationsReward[k]) * (float64(recommendEightRate) / 100)
+
 							} else {
 								continue
 							}
 
-							tmpMyRecommendAmount = tmpMyRecommendAmount / 6
+							tmpMyRecommendAmount = int64(tmpMyRecommendAmountF)
+							bAmount := int64(tmpMyRecommendAmountF / price)
+
 							if 0 < tmpMyRecommendAmount { // 扣除推荐人分红
-								bAmount := tmpMyRecommendAmount * bPriceBase / bPrice
-								//if 12 == tmpMyTopUserRecommendUserId {
-								//	fmt.Println(bAmount, feeRate)
-								//}
 								tmpStatus := tmpMyTopUserRecommendUserLocationLast.Status
 								tmpStopDate := time.Now().UTC().Add(8 * time.Hour)
 								// 过了
@@ -3006,7 +3073,7 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 									tmpStopDate = time.Now().UTC().Add(8 * time.Hour)
 
 									tmpMyRecommendAmount = tmpMyTopUserRecommendUserLocationLast.CurrentMax - tmpMyTopUserRecommendUserLocationLast.Current
-									bAmount = tmpMyRecommendAmount * bPriceBase / bPrice
+									bAmount = int64(float64(tmpMyRecommendAmount) / price)
 									stopLocationIds[vUserLocations.ID] = vUserLocations.ID
 								}
 
@@ -3022,7 +3089,7 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 											return err
 										}
 
-										_, err = uuc.ubRepo.RecommendRewardBiw(ctx, tmpMyTopUserRecommendUserId, bAmount, int64(i+1), tmpStatus, tmpMaxNew, feeRate) // 推荐人奖励
+										_, err = uuc.ubRepo.RecommendRewardBiw(ctx, tmpMyTopUserRecommendUserId, bAmount, int64(i+1), tmpStatus, tmpMaxNew, feeRate, vUserLocations.UserId) // 推荐人奖励
 										if nil != err {
 											return err
 										}

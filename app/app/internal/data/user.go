@@ -2337,7 +2337,7 @@ func (ub *UserBalanceRepo) RecommendLocationRewardBiw(ctx context.Context, userI
 }
 
 // RecommendRewardBiw .
-func (ub *UserBalanceRepo) RecommendRewardBiw(ctx context.Context, userId int64, rewardAmount int64, recommendNum int64, stop string, tmpMaxNew int64, feeRate int64) (int64, error) {
+func (ub *UserBalanceRepo) RecommendRewardBiw(ctx context.Context, userId int64, rewardAmount int64, recommendNum int64, stop string, tmpMaxNew int64, feeRate int64, userIdTwo int64) (int64, error) {
 	var err error
 	if err = ub.data.DB(ctx).Table("user_balance").
 		Where("user_id=?", userId).
@@ -2403,6 +2403,7 @@ func (ub *UserBalanceRepo) RecommendRewardBiw(ctx context.Context, userId int64,
 	var reward Reward
 	reward.UserId = userBalance.UserId
 	reward.Amount = rewardAmount
+	reward.TypeRecordId = userIdTwo
 	reward.BalanceRecordId = userBalanceRecode.ID
 	reward.Type = "system_reward_recommend_daily" // 本次分红的行为类型
 	reward.Reason = "recommend"                   // 给我分红的理由

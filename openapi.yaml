@@ -1703,6 +1703,10 @@ components:
                     type: string
                 reason:
                     type: string
+                addressTwo:
+                    type: string
+                num:
+                    type: string
         AdminTradeListReply:
             type: object
             properties:
