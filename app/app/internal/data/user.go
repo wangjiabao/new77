@@ -663,12 +663,13 @@ func (u *UserRepo) GetUsers(ctx context.Context, b *biz.Pagination, address stri
 	res := make([]*biz.User, 0)
 	for _, item := range users {
 		res = append(res, &biz.User{
-			ID:        item.ID,
-			Address:   item.Address,
-			CreatedAt: item.CreatedAt,
-			Amount:    item.Amount,
-			AmountBiw: item.AmountBiw,
-			OutRate:   item.OutRate,
+			ID:             item.ID,
+			Address:        item.Address,
+			CreatedAt:      item.CreatedAt,
+			Amount:         item.Amount,
+			AmountBiw:      item.AmountBiw,
+			OutRate:        item.OutRate,
+			RecommendLevel: item.RecommendLevel,
 		})
 	}
 	return res, nil, count

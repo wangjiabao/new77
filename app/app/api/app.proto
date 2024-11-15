@@ -636,6 +636,7 @@ message AdminUserListReply { // 用户信息
 		int64 historyRecommend = 6; // 历史推荐人数
 		int64 amountUsdt = 12;
 		int64 amountBiw = 13;
+		int64 recommendLevel = 14;
 	}
 
 	int64 count = 2;

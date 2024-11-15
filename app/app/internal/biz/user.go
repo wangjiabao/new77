@@ -804,6 +804,7 @@ func (uuc *UserUseCase) AdminUserList(ctx context.Context, req *v1.AdminUserList
 			AreaMin:          areaMin,
 			AmountBiw:        int64(vUsers.AmountBiw),
 			AmountUsdt:       int64(vUsers.Amount),
+			RecommendLevel:   vUsers.RecommendLevel,
 		})
 	}
 

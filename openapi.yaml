@@ -1788,6 +1788,8 @@ components:
                     type: string
                 amountBiw:
                     type: string
+                recommendLevel:
+                    type: string
         AdminUserRecommendReply:
             type: object
             properties:
