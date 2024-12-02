@@ -2310,6 +2310,9 @@ func (a *AppService) AdminWithdrawEth(ctx context.Context, req *v1.AdminWithdraw
 		if "usdt" == withdraw.Type {
 			//tokenAddress = "0x337610d27c682E347C9cD60BD4b3b107C9d34dDd"
 			tokenAddress = "0x55d398326f99059fF775485246999027B3197955"
+		} else if "ispay" == withdraw.Type {
+			//tokenAddress = "0x337610d27c682E347C9cD60BD4b3b107C9d34dDd"
+			tokenAddress = "0x6fc3aa805521ad6cc739c9f63d5a8e0caf0660de"
 		} else {
 			continue
 		}

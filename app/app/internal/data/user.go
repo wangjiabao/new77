@@ -93,6 +93,7 @@ type UserBalance struct {
 	BalanceUsdt    int64     `gorm:"type:bigint"`
 	BalanceUsdtNew int64     `gorm:"type:bigint"`
 	BalanceDhb     int64     `gorm:"type:bigint"`
+	BalanceC       int64     `gorm:"type:bigint"`
 	CreatedAt      time.Time `gorm:"type:datetime;not null"`
 	UpdatedAt      time.Time `gorm:"type:datetime;not null"`
 }
@@ -4183,6 +4184,7 @@ func (ub UserBalanceRepo) GetUserBalanceByUserIds(ctx context.Context, userIds .
 			UserId:      userBalance.UserId,
 			BalanceUsdt: userBalance.BalanceUsdt,
 			BalanceDhb:  userBalance.BalanceDhb,
+			BalanceC:    userBalance.BalanceC,
 		}
 	}
 

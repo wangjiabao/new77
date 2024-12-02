@@ -116,6 +116,7 @@ type UserBalance struct {
 	UserId      int64
 	BalanceUsdt int64
 	BalanceDhb  int64
+	BalanceC    int64
 }
 
 type Withdraw struct {
@@ -795,6 +796,7 @@ func (uuc *UserUseCase) AdminUserList(ctx context.Context, req *v1.AdminUserList
 			CreatedAt:        vUsers.CreatedAt.Add(8 * time.Hour).Format("2006-01-02 15:04:05"),
 			Address:          vUsers.Address,
 			BalanceUsdt:      fmt.Sprintf("%.2f", float64(userBalances[vUsers.ID].BalanceUsdt)/float64(100000)),
+			BalanceC:         fmt.Sprintf("%.2f", float64(userBalances[vUsers.ID].BalanceC)/float64(100000)),
 			BalanceDhb:       fmt.Sprintf("%.2f", float64(userBalances[vUsers.ID].BalanceDhb)/float64(100000)),
 			Vip:              lastLevel,
 			Out:              out,

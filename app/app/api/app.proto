@@ -628,6 +628,7 @@ message AdminUserListReply { // 用户信息
 		string address = 2; // 地址
 		string balanceUsdt = 3; // 可提usdt数量
 		string balanceDhb = 4; // isps数量
+		string balanceC = 15; // ispay数量
 		int64 out = 7; // 出局次数
 		int64 areaTotal = 9; // 总业绩
 		int64 areaMin = 10; // 小区
