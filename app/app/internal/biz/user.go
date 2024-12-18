@@ -356,6 +356,7 @@ type UserRepo interface {
 	GetUsersNewTwo(ctx context.Context) ([]*User, error)
 	GetUserById(ctx context.Context, Id int64) (*User, error)
 	UndoUser(ctx context.Context, userId int64, undo int64) (bool, error)
+	LockUser(ctx context.Context, userId int64, lock int64) (bool, error)
 	GetAdminByAccount(ctx context.Context, account string, password string) (*Admin, error)
 	GetAdminById(ctx context.Context, id int64) (*Admin, error)
 	GetUserByAddresses(ctx context.Context, Addresses ...string) (map[string]*User, error)
@@ -808,6 +809,7 @@ func (uuc *UserUseCase) AdminUserList(ctx context.Context, req *v1.AdminUserList
 			AmountBiw:        int64(vUsers.AmountBiw),
 			AmountUsdt:       int64(vUsers.Amount),
 			RecommendLevel:   vUsers.RecommendLevel,
+			Lock:             vUsers.Lock,
 		})
 	}
 
@@ -833,6 +835,28 @@ func (uuc *UserUseCase) AdminUndoUpdate(ctx context.Context, req *v1.AdminUndoUp
 	}
 
 	_, err = uuc.repo.UndoUser(ctx, req.SendBody.UserId, undo)
+	if nil != err {
+		return res, err
+	}
+
+	return res, nil
+}
+
+func (uuc *UserUseCase) LockUser(ctx context.Context, req *v1.LockUserRequest) (*v1.LockUserReply, error) {
+	var (
+		err  error
+		lock int64
+	)
+
+	res := &v1.LockUserReply{}
+
+	if 1 == req.SendBody.Lock {
+		lock = 1
+	} else {
+		lock = 0
+	}
+
+	_, err = uuc.repo.LockUser(ctx, req.SendBody.UserId, lock)
 	if nil != err {
 		return res, err
 	}

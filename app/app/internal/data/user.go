@@ -673,6 +673,7 @@ func (u *UserRepo) GetUsers(ctx context.Context, b *biz.Pagination, address stri
 			AmountBiw:      item.AmountBiw,
 			OutRate:        item.OutRate,
 			RecommendLevel: item.RecommendLevel,
+			Lock:           item.Lock,
 		})
 	}
 	return res, nil, count
@@ -1134,6 +1135,16 @@ func (ur *UserRecommendRepo) UpdateUserAreaLevelUp(ctx context.Context, userId i
 // UndoUser .
 func (u *UserRepo) UndoUser(ctx context.Context, userId int64, undo int64) (bool, error) {
 	res := u.data.DB(ctx).Table("user").Where("id=?", userId).Updates(map[string]interface{}{"undo": undo})
+	if res.Error != nil {
+		return false, errors.New(500, "CREATE_USER_ERROR", "用户修改失败")
+	}
+
+	return true, nil
+}
+
+// LockUser .
+func (u *UserRepo) LockUser(ctx context.Context, userId int64, lock int64) (bool, error) {
+	res := u.data.DB(ctx).Table("user").Where("id=?", userId).Updates(map[string]interface{}{"lock": lock})
 	if res.Error != nil {
 		return false, errors.New(500, "CREATE_USER_ERROR", "用户修改失败")
 	}

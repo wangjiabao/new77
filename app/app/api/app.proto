@@ -411,6 +411,13 @@ service App {
 		};
 	};
 
+	rpc LockUser(LockUserRequest) returns (LockUserReply) {
+		option (google.api.http) = {
+			post: "/api/admin_dhb/lock_user"
+			body: "send_body"
+		};
+	};
+
 	rpc AdminRecommendLevelUpdate (AdminRecommendLevelRequest) returns (AdminRecommendLevelReply) {
 		option (google.api.http) = {
 			post: "/api/admin_dhb/admin_recommend_level"
@@ -638,6 +645,7 @@ message AdminUserListReply { // 用户信息
 		int64 amountUsdt = 12;
 		int64 amountBiw = 13;
 		int64 recommendLevel = 14;
+		int64 lock = 17;
 	}
 
 	int64 count = 2;
@@ -1115,4 +1123,16 @@ message AdminDailyAddMoneyRequest {
 }
 
 message AdminDailyAddMoneyReply {
+}
+
+message LockUserRequest {
+	message SendBody{
+		int64 user_id = 1;
+		int64 lock = 2;
+	}
+
+	SendBody send_body = 1;
+}
+
+message LockUserReply {
 }
