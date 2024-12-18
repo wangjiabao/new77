@@ -31,6 +31,7 @@ type User struct {
 	AmountBiw       uint64
 	RecommendLevel  int64
 	OutRate         int64
+	Lock            int64
 	CreatedAt       time.Time
 }
 
@@ -2836,6 +2837,21 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 		return nil, nil
 	}
 
+	var (
+		users    []*User
+		usersMap map[int64]*User
+	)
+	users, err = uuc.repo.GetAllUsers(ctx)
+	if nil == users {
+		fmt.Println("今日分红错误用户获取失败")
+		return nil, nil
+	}
+
+	usersMap = make(map[int64]*User, 0)
+	for _, vUsers := range users {
+		usersMap[vUsers.ID] = vUsers
+	}
+
 	price := float64(bPrice) / float64(bPriceBase)
 	var (
 		stopLocationIds map[int64]int64
@@ -2850,6 +2866,12 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 
 	userLocationsReward := make(map[int]int64, 0)
 	for k, vUserLocations := range userLocations {
+		if _, ok := usersMap[vUserLocations.UserId]; ok {
+			if 1 == usersMap[vUserLocations.UserId].Lock {
+				continue
+			}
+		}
+
 		// 奖励
 		tmpUsdt := vUserLocations.Usdt
 		var (
@@ -2929,6 +2951,12 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 	}
 
 	for k, vUserLocations := range userLocations {
+		if _, ok := usersMap[vUserLocations.UserId]; ok {
+			if 1 == usersMap[vUserLocations.UserId].Lock {
+				continue
+			}
+		}
+
 		var (
 			userRecommend       *UserRecommend
 			tmpRecommendUserIds []string
@@ -2964,6 +2992,12 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 					tmpRecommendUser, err = uuc.repo.GetUserById(ctx, tmpMyTopUserRecommendUserId)
 					if nil != err || nil == tmpRecommendUser {
 						continue
+					}
+
+					if _, ok := usersMap[tmpMyTopUserRecommendUserId]; ok {
+						if 1 == usersMap[tmpMyTopUserRecommendUserId].Lock {
+							continue
+						}
 					}
 
 					var myUserRecommendUserLocationsLast []*LocationNew
@@ -3269,6 +3303,21 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 		}
 	}
 
+	var (
+		users    []*User
+		usersMap map[int64]*User
+	)
+	users, err = uuc.repo.GetAllUsers(ctx)
+	if nil == users {
+		fmt.Println("今日分红错误用户获取失败")
+		return nil, nil
+	}
+
+	usersMap = make(map[int64]*User, 0)
+	for _, vUsers := range users {
+		usersMap[vUsers.ID] = vUsers
+	}
+
 	// 获取今日收益
 	var (
 		day               = -1
@@ -3292,6 +3341,12 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 		return &v1.AdminDailyLocationRewardReply{}, nil
 	}
 	for _, vUserLocations := range userLocations {
+		if _, ok := usersMap[vUserLocations.UserId]; ok {
+			if 1 == usersMap[vUserLocations.UserId].Lock {
+				continue
+			}
+		}
+
 		// 1大区
 		if vUserLocations.Total >= vUserLocations.TotalTwo && vUserLocations.Total >= vUserLocations.TotalThree {
 			if areaOne <= vUserLocations.TotalTwo+vUserLocations.TotalThree || 1 <= vUserLocations.LastLevel {
@@ -3390,6 +3445,12 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 		return &v1.AdminDailyLocationRewardReply{}, nil
 	}
 	for _, vUserLocations := range userLocations {
+		if _, ok := usersMap[vUserLocations.UserId]; ok {
+			if 1 == usersMap[vUserLocations.UserId].Lock {
+				continue
+			}
+		}
+
 		// 1大区
 		if vUserLocations.Total >= vUserLocations.TotalTwo && vUserLocations.Total >= vUserLocations.TotalThree {
 			if areaTwo <= vUserLocations.TotalTwo+vUserLocations.TotalThree || 2 <= vUserLocations.LastLevel {
@@ -3485,6 +3546,12 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 		return &v1.AdminDailyLocationRewardReply{}, nil
 	}
 	for _, vUserLocations := range userLocations {
+		if _, ok := usersMap[vUserLocations.UserId]; ok {
+			if 1 == usersMap[vUserLocations.UserId].Lock {
+				continue
+			}
+		}
+
 		// 1大区
 		if vUserLocations.Total >= vUserLocations.TotalTwo && vUserLocations.Total >= vUserLocations.TotalThree {
 			if areaThree <= vUserLocations.TotalTwo+vUserLocations.TotalThree || 3 <= vUserLocations.LastLevel {
@@ -3580,6 +3647,12 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 		return &v1.AdminDailyLocationRewardReply{}, nil
 	}
 	for _, vUserLocations := range userLocations {
+		if _, ok := usersMap[vUserLocations.UserId]; ok {
+			if 1 == usersMap[vUserLocations.UserId].Lock {
+				continue
+			}
+		}
+
 		// 1大区
 		if vUserLocations.Total >= vUserLocations.TotalTwo && vUserLocations.Total >= vUserLocations.TotalThree {
 			if areaFour <= vUserLocations.TotalTwo+vUserLocations.TotalThree || 4 <= vUserLocations.LastLevel {
@@ -3675,6 +3748,12 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 		return &v1.AdminDailyLocationRewardReply{}, nil
 	}
 	for _, vUserLocations := range userLocations {
+		if _, ok := usersMap[vUserLocations.UserId]; ok {
+			if 1 == usersMap[vUserLocations.UserId].Lock {
+				continue
+			}
+		}
+
 		// 1大区
 		if vUserLocations.Total >= vUserLocations.TotalTwo && vUserLocations.Total >= vUserLocations.TotalThree {
 			if areaFive <= vUserLocations.TotalTwo+vUserLocations.TotalThree || 5 <= vUserLocations.LastLevel {
@@ -3861,6 +3940,12 @@ func (uuc *UserUseCase) AdminDailyAreaReward(ctx context.Context, req *v1.AdminD
 		}
 
 		if 0 < tmpMyRecommendAmount {
+			if _, ok := usersMap[vTopFour.Key]; ok {
+				if 1 == usersMap[vTopFour.Key].Lock {
+					continue
+				}
+			}
+
 			if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
 				_, err = uuc.ubRepo.FourRewardBiw(ctx, vTopFour.Key, tmpMyRecommendAmount, int64(k+1)) // 推荐人奖励
 				if nil != err {

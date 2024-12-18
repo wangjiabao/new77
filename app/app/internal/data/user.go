@@ -26,6 +26,7 @@ type User struct {
 	Undo            int64     `gorm:"type:int;not null"`
 	RecommendLevel  int64     `gorm:"type:int;not null"`
 	OutRate         int64     `gorm:"type:int;not null"`
+	Lock            int64     `gorm:"type:int;not null"`
 	CreatedAt       time.Time `gorm:"type:datetime;not null"`
 	UpdatedAt       time.Time `gorm:"type:datetime;not null"`
 }
@@ -520,6 +521,7 @@ func (u *UserRepo) GetAllUsers(ctx context.Context) ([]*biz.User, error) {
 		res = append(res, &biz.User{
 			ID:      item.ID,
 			Address: item.Address,
+			Lock:    item.Lock,
 		})
 	}
 	return res, nil
