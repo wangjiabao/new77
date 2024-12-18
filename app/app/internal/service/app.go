@@ -1876,6 +1876,10 @@ func (a *AppService) AdminUndoUpdate(ctx context.Context, req *v1.AdminUndoUpdat
 	return &v1.AdminUndoUpdateReply{}, nil
 }
 
+func (a *AppService) LockUser(ctx context.Context, req *v1.LockUserRequest) (*v1.LockUserReply, error) {
+	return a.uuc.LockUser(ctx, req)
+}
+
 func (a *AppService) AdminAreaLevelUpdate(ctx context.Context, req *v1.AdminAreaLevelUpdateRequest) (*v1.AdminAreaLevelUpdateReply, error) {
 	//return a.uuc.AdminAreaLevelUpdate(ctx, req)
 	return &v1.AdminAreaLevelUpdateReply{}, nil
