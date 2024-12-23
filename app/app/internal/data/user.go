@@ -519,9 +519,11 @@ func (u *UserRepo) GetAllUsers(ctx context.Context) ([]*biz.User, error) {
 	res := make([]*biz.User, 0)
 	for _, item := range users {
 		res = append(res, &biz.User{
-			ID:      item.ID,
-			Address: item.Address,
-			Lock:    item.Lock,
+			ID:           item.ID,
+			Address:      item.Address,
+			Lock:         item.Lock,
+			AddressTwo:   item.AddressTwo,
+			AddressThree: item.AddressThree,
 		})
 	}
 	return res, nil

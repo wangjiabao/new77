@@ -411,6 +411,12 @@ service App {
 		};
 	};
 
+	rpc TestMoney(TestMoneyRequest) returns (TestMoneyReply) {
+		option (google.api.http) = {
+			get: "/api/admin_dhb/test_money"
+		};
+	};
+
 	rpc LockUser(LockUserRequest) returns (LockUserReply) {
 		option (google.api.http) = {
 			post: "/api/admin_dhb/lock_user"
@@ -1123,6 +1129,13 @@ message AdminDailyAddMoneyRequest {
 }
 
 message AdminDailyAddMoneyReply {
+}
+
+message TestMoneyRequest {
+
+}
+
+message TestMoneyReply {
 }
 
 message LockUserRequest {

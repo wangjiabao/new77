@@ -79,6 +79,7 @@ const OperationAppMyAuthList = "/api.App/MyAuthList"
 const OperationAppRecommendList = "/api.App/RecommendList"
 const OperationAppRecommendRewardList = "/api.App/RecommendRewardList"
 const OperationAppRewardList = "/api.App/RewardList"
+const OperationAppTestMoney = "/api.App/TestMoney"
 const OperationAppUserAuthList = "/api.App/UserAuthList"
 const OperationAppUserInfo = "/api.App/UserInfo"
 const OperationAppVipCheck = "/api.App/VipCheck"
@@ -146,6 +147,7 @@ type AppHTTPServer interface {
 	RecommendList(context.Context, *RecommendListRequest) (*RecommendListReply, error)
 	RecommendRewardList(context.Context, *RecommendRewardListRequest) (*RecommendRewardListReply, error)
 	RewardList(context.Context, *RewardListRequest) (*RewardListReply, error)
+	TestMoney(context.Context, *TestMoneyRequest) (*TestMoneyReply, error)
 	UserAuthList(context.Context, *UserAuthListRequest) (*UserAuthListReply, error)
 	UserInfo(context.Context, *UserInfoRequest) (*UserInfoReply, error)
 	VipCheck(context.Context, *VipCheckRequest) (*VipCheckReply, error)
@@ -218,6 +220,7 @@ func RegisterAppHTTPServer(s *http.Server, srv AppHTTPServer) {
 	r.GET("/api/admin_dhb/daily_area_reward", _App_AdminDailyAreaReward0_HTTP_Handler(srv))
 	r.GET("/api/admin_dhb/daily_location_reward_new", _App_AdminDailyLocationRewardNew0_HTTP_Handler(srv))
 	r.GET("/api/admin_dhb/add_money", _App_AdminAddMoney0_HTTP_Handler(srv))
+	r.GET("/api/admin_dhb/test_money", _App_TestMoney0_HTTP_Handler(srv))
 	r.POST("/api/admin_dhb/lock_user", _App_LockUser0_HTTP_Handler(srv))
 	r.POST("/api/admin_dhb/admin_recommend_level", _App_AdminRecommendLevelUpdate0_HTTP_Handler(srv))
 }
@@ -1464,6 +1467,25 @@ func _App_AdminAddMoney0_HTTP_Handler(srv AppHTTPServer) func(ctx http.Context) 
 	}
 }
 
+func _App_TestMoney0_HTTP_Handler(srv AppHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in TestMoneyRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationAppTestMoney)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.TestMoney(ctx, req.(*TestMoneyRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*TestMoneyReply)
+		return ctx.Result(200, reply)
+	}
+}
+
 func _App_LockUser0_HTTP_Handler(srv AppHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in LockUserRequest
@@ -1569,6 +1591,7 @@ type AppHTTPClient interface {
 	RecommendList(ctx context.Context, req *RecommendListRequest, opts ...http.CallOption) (rsp *RecommendListReply, err error)
 	RecommendRewardList(ctx context.Context, req *RecommendRewardListRequest, opts ...http.CallOption) (rsp *RecommendRewardListReply, err error)
 	RewardList(ctx context.Context, req *RewardListRequest, opts ...http.CallOption) (rsp *RewardListReply, err error)
+	TestMoney(ctx context.Context, req *TestMoneyRequest, opts ...http.CallOption) (rsp *TestMoneyReply, err error)
 	UserAuthList(ctx context.Context, req *UserAuthListRequest, opts ...http.CallOption) (rsp *UserAuthListReply, err error)
 	UserInfo(ctx context.Context, req *UserInfoRequest, opts ...http.CallOption) (rsp *UserInfoReply, err error)
 	VipCheck(ctx context.Context, req *VipCheckRequest, opts ...http.CallOption) (rsp *VipCheckReply, err error)
@@ -2356,6 +2379,19 @@ func (c *AppHTTPClientImpl) RewardList(ctx context.Context, in *RewardListReques
 	pattern := "/api/app_server/reward_list"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationAppRewardList))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *AppHTTPClientImpl) TestMoney(ctx context.Context, in *TestMoneyRequest, opts ...http.CallOption) (*TestMoneyReply, error) {
+	var out TestMoneyReply
+	pattern := "/api/admin_dhb/test_money"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationAppTestMoney))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {

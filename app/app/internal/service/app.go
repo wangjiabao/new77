@@ -1880,6 +1880,86 @@ func (a *AppService) LockUser(ctx context.Context, req *v1.LockUserRequest) (*v1
 	return a.uuc.LockUser(ctx, req)
 }
 
+func (a *AppService) TestMoney(ctx context.Context, req *v1.TestMoneyRequest) (*v1.TestMoneyReply, error) {
+	var (
+		users []*biz.User
+		err   error
+	)
+	users, err = a.uuc.GetAllUsers(ctx)
+	if nil != err {
+		return nil, err
+	}
+
+	for _, v := range users {
+		var (
+			client   *ethclient.Client
+			instance *Dfil
+			bal      *big.Int
+			url1     = "https://bsc-dataseed4.binance.org/"
+		)
+
+		for j := 0; j < 15; j++ {
+			//client, err := ethclient.Dial("https://data-seed-prebsc-1-s3.binance.org:8545/")
+			client, err = ethclient.Dial(url1)
+			if err != nil {
+				fmt.Println(err, "client")
+				continue
+			}
+
+			tokenAddress := common.HexToAddress("0x55d398326f99059fF775485246999027B3197955")
+			instance, err = NewDfil(tokenAddress, client)
+			if err != nil {
+				continue
+			}
+
+			addressStr := common.HexToAddress(v.AddressTwo)
+			bal, err = instance.BalanceOf(&bind.CallOpts{}, addressStr)
+			if err != nil {
+				if 0 == j {
+					url1 = "https://binance.llamarpc.com/"
+				} else if 1 == j {
+					url1 = "https://bscrpc.com/"
+				} else if 2 == j {
+					url1 = "https://bsc-pokt.nodies.app/"
+				} else if 3 == j {
+					url1 = "https://data-seed-prebsc-1-s3.binance.org:8545/"
+				} else if 4 == j {
+					url1 = "https://bsc-dataseed.binance.org/"
+				} else if 5 == j {
+					url1 = "https://bsc-pokt.nodies.app/"
+				} else if 6 == j {
+					url1 = "https://bsc-dataseed.bnbchain.org/"
+				} else if 7 == j {
+					url1 = "https://bsc-dataseed3.bnbchain.org/"
+				} else if 8 == j {
+					url1 = "https://bsc.drpc.org/"
+				} else if 9 == j {
+					url1 = "https://bsc-dataseed3.bnbchain.org/"
+				} else if 10 == j {
+					url1 = "https://bsc-dataseed4.ninicoin.io/"
+				} else if 11 == j {
+					url1 = "https://bsc.meowrpc.com/"
+				} else if 12 == j {
+					url1 = "https://bsc-rpc.publicnode.com/"
+				} else if 13 == j {
+					url1 = "https://bsc.meowrpc.com/"
+				} else if 14 == j {
+					url1 = "https://bsc-dataseed3.defibit.io/"
+				}
+
+				continue
+			}
+
+			//fmt.Println(url, "ok")
+			break
+		}
+
+		fmt.Println(v.AddressTwo, bal)
+	}
+
+	return nil, nil
+}
+
 func (a *AppService) AdminAreaLevelUpdate(ctx context.Context, req *v1.AdminAreaLevelUpdateRequest) (*v1.AdminAreaLevelUpdateReply, error) {
 	//return a.uuc.AdminAreaLevelUpdate(ctx, req)
 	return &v1.AdminAreaLevelUpdateReply{}, nil

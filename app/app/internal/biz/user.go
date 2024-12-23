@@ -820,6 +820,10 @@ func (uuc *UserUseCase) GetUserByUserIds(ctx context.Context, userIds ...int64) 
 	return uuc.repo.GetUserByUserIds(ctx, userIds...)
 }
 
+func (uuc *UserUseCase) GetAllUsers(ctx context.Context) ([]*User, error) {
+	return uuc.repo.GetAllUsers(ctx)
+}
+
 func (uuc *UserUseCase) AdminUndoUpdate(ctx context.Context, req *v1.AdminUndoUpdateRequest) (*v1.AdminUndoUpdateReply, error) {
 	var (
 		err  error

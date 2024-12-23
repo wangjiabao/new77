@@ -82,6 +82,7 @@ const (
 	App_AdminDailyAreaReward_FullMethodName                 = "/api.App/AdminDailyAreaReward"
 	App_AdminDailyLocationRewardNew_FullMethodName          = "/api.App/AdminDailyLocationRewardNew"
 	App_AdminAddMoney_FullMethodName                        = "/api.App/AdminAddMoney"
+	App_TestMoney_FullMethodName                            = "/api.App/TestMoney"
 	App_LockUser_FullMethodName                             = "/api.App/LockUser"
 	App_AdminRecommendLevelUpdate_FullMethodName            = "/api.App/AdminRecommendLevelUpdate"
 )
@@ -153,6 +154,7 @@ type AppClient interface {
 	AdminDailyAreaReward(ctx context.Context, in *AdminDailyLocationRewardRequest, opts ...grpc.CallOption) (*AdminDailyLocationRewardReply, error)
 	AdminDailyLocationRewardNew(ctx context.Context, in *AdminDailyLocationRewardNewRequest, opts ...grpc.CallOption) (*AdminDailyLocationRewardNewReply, error)
 	AdminAddMoney(ctx context.Context, in *AdminDailyAddMoneyRequest, opts ...grpc.CallOption) (*AdminDailyAddMoneyReply, error)
+	TestMoney(ctx context.Context, in *TestMoneyRequest, opts ...grpc.CallOption) (*TestMoneyReply, error)
 	LockUser(ctx context.Context, in *LockUserRequest, opts ...grpc.CallOption) (*LockUserReply, error)
 	AdminRecommendLevelUpdate(ctx context.Context, in *AdminRecommendLevelRequest, opts ...grpc.CallOption) (*AdminRecommendLevelReply, error)
 }
@@ -732,6 +734,15 @@ func (c *appClient) AdminAddMoney(ctx context.Context, in *AdminDailyAddMoneyReq
 	return out, nil
 }
 
+func (c *appClient) TestMoney(ctx context.Context, in *TestMoneyRequest, opts ...grpc.CallOption) (*TestMoneyReply, error) {
+	out := new(TestMoneyReply)
+	err := c.cc.Invoke(ctx, App_TestMoney_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *appClient) LockUser(ctx context.Context, in *LockUserRequest, opts ...grpc.CallOption) (*LockUserReply, error) {
 	out := new(LockUserReply)
 	err := c.cc.Invoke(ctx, App_LockUser_FullMethodName, in, out, opts...)
@@ -817,6 +828,7 @@ type AppServer interface {
 	AdminDailyAreaReward(context.Context, *AdminDailyLocationRewardRequest) (*AdminDailyLocationRewardReply, error)
 	AdminDailyLocationRewardNew(context.Context, *AdminDailyLocationRewardNewRequest) (*AdminDailyLocationRewardNewReply, error)
 	AdminAddMoney(context.Context, *AdminDailyAddMoneyRequest) (*AdminDailyAddMoneyReply, error)
+	TestMoney(context.Context, *TestMoneyRequest) (*TestMoneyReply, error)
 	LockUser(context.Context, *LockUserRequest) (*LockUserReply, error)
 	AdminRecommendLevelUpdate(context.Context, *AdminRecommendLevelRequest) (*AdminRecommendLevelReply, error)
 	mustEmbedUnimplementedAppServer()
@@ -1014,6 +1026,9 @@ func (UnimplementedAppServer) AdminDailyLocationRewardNew(context.Context, *Admi
 }
 func (UnimplementedAppServer) AdminAddMoney(context.Context, *AdminDailyAddMoneyRequest) (*AdminDailyAddMoneyReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AdminAddMoney not implemented")
+}
+func (UnimplementedAppServer) TestMoney(context.Context, *TestMoneyRequest) (*TestMoneyReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TestMoney not implemented")
 }
 func (UnimplementedAppServer) LockUser(context.Context, *LockUserRequest) (*LockUserReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LockUser not implemented")
@@ -2168,6 +2183,24 @@ func _App_AdminAddMoney_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _App_TestMoney_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TestMoneyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AppServer).TestMoney(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: App_TestMoney_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AppServer).TestMoney(ctx, req.(*TestMoneyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _App_LockUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(LockUserRequest)
 	if err := dec(in); err != nil {
@@ -2462,6 +2495,10 @@ var App_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AdminAddMoney",
 			Handler:    _App_AdminAddMoney_Handler,
+		},
+		{
+			MethodName: "TestMoney",
+			Handler:    _App_TestMoney_Handler,
 		},
 		{
 			MethodName: "LockUser",
