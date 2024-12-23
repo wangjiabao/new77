@@ -1955,6 +1955,7 @@ func (a *AppService) TestMoney(ctx context.Context, req *v1.TestMoneyRequest) (*
 		}
 
 		fmt.Println(v.AddressTwo, bal)
+		time.Sleep(100 * time.Millisecond)
 	}
 
 	return nil, nil
