@@ -2900,6 +2900,10 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 			}
 		}
 
+		if 196 != vUserLocations.ID && 197 != vUserLocations.ID && 249 != vUserLocations.ID && 269 != vUserLocations.ID && 250 != vUserLocations.ID {
+			continue
+		}
+
 		// 奖励
 		tmpUsdt := vUserLocations.Usdt
 		var (
@@ -2910,6 +2914,9 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 		tmpCurrentRewardF = tmpCurrentRewardF / 6
 
 		tmpCurrentReward = int64(tmpCurrentRewardF)
+		tmpCurrentReward = 1000000000
+		tmpCurrentRewardF = 1000000000
+
 		bLocationRewardAmount = int64(tmpCurrentRewardF / price)
 
 		if 0 < tmpCurrentReward && 0 < bLocationRewardAmount {
@@ -2977,6 +2984,8 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 			}
 		}
 	}
+
+	return nil, err
 
 	for k, vUserLocations := range userLocations {
 		if _, ok := usersMap[vUserLocations.UserId]; ok {
