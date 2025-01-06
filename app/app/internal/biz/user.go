@@ -2860,10 +2860,10 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 		fmt.Println("分发错误：价格为0")
 		return nil, nil
 	}
-	//if 0 == locationRewardRate {
-	//	fmt.Println("分发错误：分红rate为0")
-	//	return nil, nil
-	//}
+	if 0 == locationRewardRate {
+		fmt.Println("分发错误：分红rate为0")
+		return nil, nil
+	}
 
 	var (
 		users    []*User
@@ -2900,9 +2900,6 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 			}
 		}
 
-		if 313 != vUserLocations.UserId && 314 != vUserLocations.UserId && 257 != vUserLocations.UserId && 258 != vUserLocations.UserId {
-			continue
-		}
 		// 奖励
 		tmpUsdt := vUserLocations.Usdt
 		var (
@@ -2912,7 +2909,6 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 		tmpCurrentRewardF := float64(tmpUsdt) * (float64(locationRewardRate) / 1000)
 		tmpCurrentRewardF = tmpCurrentRewardF / 6
 
-		tmpCurrentRewardF = 26000000
 		tmpCurrentReward = int64(tmpCurrentRewardF)
 		bLocationRewardAmount = int64(tmpCurrentRewardF / price)
 
@@ -2982,7 +2978,6 @@ func (uuc *UserUseCase) AdminDailyLocationReward(ctx context.Context, req *v1.Ad
 		}
 	}
 
-	return nil, nil
 	for k, vUserLocations := range userLocations {
 		if _, ok := usersMap[vUserLocations.UserId]; ok {
 			if 1 == usersMap[vUserLocations.UserId].Lock {
