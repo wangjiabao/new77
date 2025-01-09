@@ -340,6 +340,7 @@ type UserCurrentMonthRecommendRepo interface {
 type UserInfoRepo interface {
 	UpdateUserNewTwoNewTwo(ctx context.Context, userId int64, amount uint64, last int64, coinType string) error
 	UpdateUserNewTwoNewThree(ctx context.Context, userId int64, amount uint64, last int64, coinType string) error
+	UpdateUserBalance(ctx context.Context, userId int64, amount uint64, coinType string) error
 	UpdateUserRecommendLevel(ctx context.Context, userId int64, level uint64) error
 	UpdateUserLast(ctx context.Context, userId int64, coinType string) error
 	CreateUserInfo(ctx context.Context, u *User) (*UserInfo, error)
@@ -3219,17 +3220,33 @@ func (uuc *UserUseCase) AdminAddMoney(ctx context.Context, req *v1.AdminDailyAdd
 	}
 
 	if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { //
-		if req.Usdt > 0 {
-			err = uuc.uiRepo.UpdateUserNewTwoNewThree(ctx, user.ID, uint64(req.Usdt), 0, "USDT")
-			if nil != err {
-				return err
+		if "balance" == req.AddType {
+			if req.Usdt > 0 {
+				err = uuc.uiRepo.UpdateUserBalance(ctx, user.ID, uint64(req.Usdt), "USDT")
+				if nil != err {
+					return err
+				}
 			}
-		}
 
-		if req.Biw > 0 {
-			err = uuc.uiRepo.UpdateUserNewTwoNewThree(ctx, user.ID, uint64(req.Biw), 0, "BIW")
-			if nil != err {
-				return err
+			if req.Biw > 0 {
+				err = uuc.uiRepo.UpdateUserBalance(ctx, user.ID, uint64(req.Biw), "BIW")
+				if nil != err {
+					return err
+				}
+			}
+		} else {
+			if req.Usdt > 0 {
+				err = uuc.uiRepo.UpdateUserNewTwoNewThree(ctx, user.ID, uint64(req.Usdt), 0, "USDT")
+				if nil != err {
+					return err
+				}
+			}
+
+			if req.Biw > 0 {
+				err = uuc.uiRepo.UpdateUserNewTwoNewThree(ctx, user.ID, uint64(req.Biw), 0, "BIW")
+				if nil != err {
+					return err
+				}
 			}
 		}
 

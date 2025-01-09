@@ -2471,6 +2471,25 @@ func (ui *UserInfoRepo) UpdateUserNewTwoNewThree(ctx context.Context, userId int
 	return nil
 }
 
+// UpdateUserBalance .
+func (ui *UserInfoRepo) UpdateUserBalance(ctx context.Context, userId int64, amount uint64, coinType string) error {
+	if "USDT" == coinType {
+		res := ui.data.DB(ctx).Table("user_balance").Where("user_id=?", userId).
+			Updates(map[string]interface{}{"balance_usdt": amount})
+		if res.Error != nil {
+			return errors.New(500, "UPDATE_USER_BALANCE_ERROR", "用户信息修改失败")
+		}
+	} else {
+		res := ui.data.DB(ctx).Table("user_balance").Where("user_id=?", userId).
+			Updates(map[string]interface{}{"balance_dhb": amount})
+		if res.Error != nil {
+			return errors.New(500, "UPDATE_USER_BALANCE_ERROR", "用户信息修改失败")
+		}
+	}
+
+	return nil
+}
+
 // UpdateUserRecommendLevel .
 func (ui *UserInfoRepo) UpdateUserRecommendLevel(ctx context.Context, userId int64, level uint64) error {
 	res := ui.data.DB(ctx).Table("user").Where("id=?", userId).
