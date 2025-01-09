@@ -667,7 +667,7 @@ func (a *AppService) DepositWithdraw(ctx context.Context, req *v1.DepositRequest
 			return nil, nil
 		}
 		for _, tmpUser := range needUsers {
-			fmt.Println("归集信息：", tmpUser)
+			//fmt.Println("归集信息：", tmpUser)
 			var bal *big.Int
 			addressStr := common.HexToAddress(tmpUser.AddressTwo)
 			bal, err = instance.BalanceOf(&bind.CallOpts{}, addressStr)
