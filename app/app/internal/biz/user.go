@@ -3222,14 +3222,21 @@ func (uuc *UserUseCase) AdminAddMoney(ctx context.Context, req *v1.AdminDailyAdd
 	if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { //
 		if "balance" == req.AddType {
 			if req.Usdt > 0 {
-				err = uuc.uiRepo.UpdateUserBalance(ctx, user.ID, uint64(req.Usdt), "USDT")
+				err = uuc.uiRepo.UpdateUserBalance(ctx, user.ID, uint64(req.Usdt)*100000, "USDT")
 				if nil != err {
 					return err
 				}
 			}
 
 			if req.Biw > 0 {
-				err = uuc.uiRepo.UpdateUserBalance(ctx, user.ID, uint64(req.Biw), "BIW")
+				err = uuc.uiRepo.UpdateUserBalance(ctx, user.ID, uint64(req.Biw)*100000, "BIW")
+				if nil != err {
+					return err
+				}
+			}
+
+			if req.Ispay > 0 {
+				err = uuc.uiRepo.UpdateUserBalance(ctx, user.ID, uint64(req.Ispay)*100000, "ISPAY")
 				if nil != err {
 					return err
 				}

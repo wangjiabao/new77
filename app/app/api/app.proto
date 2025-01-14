@@ -1125,6 +1125,7 @@ message AdminDailyLocationRewardNewReply {
 message AdminDailyAddMoneyRequest {
 	int64 usdt = 1;
 	int64 biw = 2;
+	int64 ispay = 5;
 	string address = 3;
 	string addType = 4;
 }

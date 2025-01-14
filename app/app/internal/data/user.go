@@ -2479,6 +2479,12 @@ func (ui *UserInfoRepo) UpdateUserBalance(ctx context.Context, userId int64, amo
 		if res.Error != nil {
 			return errors.New(500, "UPDATE_USER_BALANCE_ERROR", "用户信息修改失败")
 		}
+	} else if "ISPAY" == coinType {
+		res := ui.data.DB(ctx).Table("user_balance").Where("user_id=?", userId).
+			Updates(map[string]interface{}{"balance_c": amount})
+		if res.Error != nil {
+			return errors.New(500, "UPDATE_USER_BALANCE_ERROR", "用户信息修改失败")
+		}
 	} else {
 		res := ui.data.DB(ctx).Table("user_balance").Where("user_id=?", userId).
 			Updates(map[string]interface{}{"balance_dhb": amount})

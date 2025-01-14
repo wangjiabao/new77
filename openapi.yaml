@@ -20,6 +20,10 @@ paths:
                   in: query
                   schema:
                     type: string
+                - name: ispay
+                  in: query
+                  schema:
+                    type: string
                 - name: address
                   in: query
                   schema:
